@@ -1,7 +1,8 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { Session, User } from '@supabase/supabase-js';
+import { Session } from '@supabase/supabase-js';
 import { SupabaseService } from '../supabase.service';
+import { Profile } from '../models';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -33,7 +34,7 @@ export class AuthService {
   }
 
   private async loadRole(userId: string) {
-    const { data } = await this.supabase.from('profiles').select('role').eq('id', userId).single();
+    const { data } = await this.supabase.from('profiles').select('role').eq('id', userId).single<Pick<Profile, 'role'>>();
     this._role.set(data?.role ?? 'user');
   }
 
