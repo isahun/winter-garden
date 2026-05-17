@@ -48,3 +48,7 @@ DIAGRAMS.md
 ROADMAP.md
 WIREFRAMES.md
 instruccions_rubrica.md
+
+# environment
+src/environments/environment.ts
+> src/environments/environment.development.ts
