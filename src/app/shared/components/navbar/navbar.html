@@ -7,39 +7,31 @@
     </button>
 
     <div class="hidden md:flex items-center gap-4">
-      <a routerLink="/shop">Catàleg</a>
-      <a routerLink="/events">Tallers</a>
-      <a routerLink="/stores">Botigues</a>
-      <a routerLink="/cart">Carret</a>
-      @if (auth.isLoggedIn()) {
-        @if (auth.isAdmin()) {
-          <a routerLink="/admin/dashboard">Admin</a>
-        }
-        <a routerLink="/account">El meu compte</a>
-        <button (click)="auth.logout()">Sortir</button>
-      } @else {
-        <a routerLink="/auth/login">Entrar</a>
-        <a routerLink="/auth/register">Registrar-me</a>
-      }
+      <ng-container [ngTemplateOutlet]="navLinks" />
     </div>
   </div>
 
   @if (menuOpen()) {
     <div class="flex flex-col gap-3 pt-3 md:hidden">
-      <a routerLink="/shop" (click)="menuOpen.set(false)">Catàleg</a>
-      <a routerLink="/events" (click)="menuOpen.set(false)">Tallers</a>
-      <a routerLink="/stores" (click)="menuOpen.set(false)">Botigues</a>
-      <a routerLink="/cart" (click)="menuOpen.set(false)">Carret</a>
-      @if (auth.isLoggedIn()) {
-        @if (auth.isAdmin()) {
-          <a routerLink="/admin/dashboard" (click)="menuOpen.set(false)">Admin</a>
-        }
-        <a routerLink="/account" (click)="menuOpen.set(false)">El meu compte</a>
-        <button (click)="auth.logout(); menuOpen.set(false)">Sortir</button>
-      } @else {
-        <a routerLink="/auth/login" (click)="menuOpen.set(false)">Entrar</a>
-        <a routerLink="/auth/register" (click)="menuOpen.set(false)">Registrar-me</a>
-      }
+      <ng-container [ngTemplateOutlet]="navLinks" />
     </div>
   }
 </nav>
+
+<ng-template #navLinks>
+  <a routerLink="/shop" (click)="menuOpen.set(false)">Catàleg</a>
+  <a routerLink="/events" (click)="menuOpen.set(false)">Tallers</a>
+  <a routerLink="/stores" (click)="menuOpen.set(false)">Botigues</a>
+  <a routerLink="/cart" (click)="menuOpen.set(false)">Carret</a>
+
+  @if (auth.isLoggedIn()) {
+    @if (auth.isAdmin()) {
+      <a routerLink="/admin/dashboard" (click)="menuOpen.set(false)">Admin</a>
+    }
+    <a routerLink="/account" (click)="menuOpen.set(false)">El meu compte</a>
+    <button (click)="auth.logout(); menuOpen.set(false)">Sortir</button>
+  } @else {
+    <a routerLink="/auth/login" (click)="menuOpen.set(false)">Entrar</a>
+    <a routerLink="/auth/register" (click)="menuOpen.set(false)">Registrar-me</a>
+  }
+</ng-template>
