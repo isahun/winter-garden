@@ -14,18 +14,15 @@ export class AuthService {
   readonly user = computed(() => this._session()?.user ?? null);
   readonly isLoggedIn = computed(() => !!this._session());
 
-  // Rol de l'usuari (ve del perfil a la BD, no del JWT)
   private _role = signal<'user' | 'admin' | null>(null);
   readonly isAdmin = computed(() => this._role() === 'admin');
 
   constructor() {
-    // Recupera sessió activa en carregar l'app
     this.supabase.auth.getSession().then(({ data }) => {
       this._session.set(data.session);
       if (data.session) this.loadRole(data.session.user.id);
     });
 
-    // Escolta canvis de sessió (login, logout, token refresh)
     this.supabase.auth.onAuthStateChange((_, session) => {
       this._session.set(session);
       if (session) this.loadRole(session.user.id);
