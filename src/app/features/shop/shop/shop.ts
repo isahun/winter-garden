@@ -26,8 +26,7 @@ export class Shop implements OnInit {
   });
 
   async ngOnInit() {
-    const { data, error } = await this.productService.getAllProducts();
-    if(error) console.error('Error carregant productes:', error);
+    const { data } = await this.productService.getAllProducts();
     this.products.set(data ?? []);
   }
 }
