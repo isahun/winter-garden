@@ -11,20 +11,20 @@ graph TB
     subgraph Client["Client · Angular 22"]
         UI[Pages / Components]
         SVC[Services]
-        INT[Interceptors\nauth · error · loading]
-        GRD[Guards\nauth · role]
+        INT["Interceptors<br/>auth · error · loading"]
+        GRD["Guards<br/>auth · role"]
     end
 
     subgraph Supabase["Supabase · Backend"]
-        AUTH[Auth Service\nJWT + RLS]
-        DB[(PostgreSQL\nproducts · orders\nworkshops · stores)]
-        STR[Storage\nproduct images]
-        EFN[Edge Functions\nStripe · Claude AI]
+        AUTH["Auth Service<br/>JWT + RLS"]
+        DB[("PostgreSQL<br/>products · orders<br/>workshops · stores")]
+        STR["Storage<br/>product images"]
+        EFN["Edge Functions<br/>Stripe · Claude AI"]
     end
 
     subgraph External["Serveis externs"]
-        STRIPE[Stripe API\npagaments]
-        CLAUDE[Claude API\nchatbot IA]
+        STRIPE["Stripe API<br/>pagaments"]
+        CLAUDE["Claude API<br/>chatbot IA"]
     end
 
     UI --> SVC
@@ -66,7 +66,7 @@ erDiagram
         decimal price
         int stock
         uuid category_id FK
-        text[] images
+        text images
         varchar size
         boolean active
     }
@@ -75,7 +75,7 @@ erDiagram
         uuid user_id FK
         varchar status
         decimal total
-        jsonb shipping_address
+        varchar shipping_address
         timestamp created_at
     }
     order_items {
@@ -127,33 +127,33 @@ erDiagram
 ```mermaid
 flowchart TD
     A([Entra al web]) --> B[Home]
-    B --> C[Catàleg de productes]
+    B --> C[Cataleg de productes]
     C --> D{Filtrar / cercar}
     D --> C
     C --> E[Detall de producte]
     E --> F[Afegir al carret]
     F --> G{Continua comprant?}
-    G -- Sí --> C
+    G -- Si --> C
     G -- No --> H[Veure carret]
-    H --> I{Està loguejat?}
+    H --> I{Esta loguejat?}
     I -- No --> J{Vol compte?}
-    J -- Sí --> K[Registre]
+    J -- Si --> K[Registre]
     J -- No --> L[Checkout com a guest]
     K --> L
-    I -- Sí --> L
+    I -- Si --> L
     L --> M[Formulari Stripe]
     M --> N{Pagament OK?}
     N -- Error --> O[Missatge d'error]
     O --> M
-    N -- Èxit --> P[Confirmació de comanda]
+    N -- Exit --> P[Confirmacio de comanda]
     P --> Q([Fi])
 
     B --> R[Veure calendari de tallers]
     R --> S[Detall del taller]
     S --> T{Loguejat?}
     T -- No --> K
-    T -- Sí --> U[Apuntar-se al taller]
-    U --> V[Confirmació]
+    T -- Si --> U[Apuntar-se al taller]
+    U --> V[Confirmacio]
 
     B --> W[Veure mapa de botigues]
     W --> X[Clic al marcador]
@@ -168,33 +168,33 @@ flowchart TD
 flowchart TD
     A([Login admin]) --> B{Guard: rol admin?}
     B -- No --> C[Redirect a Home]
-    B -- Sí --> D[Admin Dashboard]
+    B -- Si --> D[Admin Dashboard]
 
-    D --> E[Estadístiques\nChart.js]
-    D --> F[Gestió de productes]
-    D --> G[Gestió de comandes]
-    D --> H[Gestió de tallers\ndes del calendari]
-    D --> I[Gestió de botigues\ndes del mapa]
+    D --> E["Estadistiques<br/>Chart.js"]
+    D --> F[Gestio de productes]
+    D --> G[Gestio de comandes]
+    D --> H["Gestio de tallers<br/>des del calendari"]
+    D --> I["Gestio de botigues<br/>des del mapa"]
 
     F --> F1[Crear producte]
     F --> F2[Editar producte]
     F --> F3[Eliminar producte]
-    F1 & F2 --> F4[Formulari validat\namb imatge]
+    F1 & F2 --> F4["Formulari validat<br/>amb imatge"]
 
     G --> G1[Llistar comandes]
-    G1 --> G2[Filtrar per estat\npendent · enviat · completat]
+    G1 --> G2["Filtrar per estat<br/>pendent · enviat · completat"]
     G1 --> G3[Canviar estat de comanda]
 
-    H --> H1[Crear taller\ndes del calendari]
-    H --> H2[Editar taller\nclic sobre l'event]
+    H --> H1["Crear taller<br/>des del calendari"]
+    H --> H2["Editar taller<br/>clic sobre l'event"]
     H --> H3[Eliminar taller]
 
-    I --> I1[Afegir marcador\nal mapa]
-    I --> I2[Editar info botiga\nclick sobre marcador]
+    I --> I1["Afegir marcador<br/>al mapa"]
+    I --> I2["Editar info botiga<br/>clic sobre marcador"]
     I --> I3[Eliminar botiga]
 
     E --> E1[Vendes per mes]
-    E --> E2[Productes més venuts]
+    E --> E2[Productes mes venuts]
     E --> E3[Estat de comandes]
     E --> E4[Inscripcions a tallers]
 ```
@@ -216,15 +216,15 @@ sequenceDiagram
     SupabaseAuth-->>Angular: JWT token + user data
     Angular->>Angular: Desa token (Supabase session)
     Angular->>SupabaseDB: Consulta perfil (role)
-    SupabaseDB-->>Angular: { role: 'admin' | 'user' }
+    SupabaseDB-->>Angular: role admin o user
     Angular->>Angular: Redirect segons rol
 
     Note over Angular,SupabaseDB: Peticions posteriors autenticades
 
     User->>Angular: Accedeix a recurs protegit
     Angular->>AuthInterceptor: HTTP request
-    AuthInterceptor->>AuthInterceptor: Afegeix JWT a la capçalera
-    AuthInterceptor->>SupabaseDB: GET /recurs (Authorization: Bearer JWT)
+    AuthInterceptor->>AuthInterceptor: Afegeix JWT a la capcalera
+    AuthInterceptor->>SupabaseDB: GET /recurs amb Authorization Bearer
     SupabaseDB->>SupabaseDB: Comprova RLS Policy
     SupabaseDB-->>Angular: Dades filtrades per rol
     Angular-->>User: Mostra dades
@@ -238,23 +238,23 @@ sequenceDiagram
 sequenceDiagram
     actor User
     participant Angular
-    participant EdgeFn as Edge Function (Supabase)
+    participant EdgeFn as EdgeFn-Supabase
     participant Stripe
     participant DB as PostgreSQL
 
     User->>Angular: Confirma comanda
-    Angular->>EdgeFn: POST /create-payment-intent\n{ items[], total }
+    Angular->>EdgeFn: POST /create-payment-intent amb items i total
     EdgeFn->>Stripe: createPaymentIntent(amount, currency)
-    Stripe-->>EdgeFn: { client_secret }
-    EdgeFn-->>Angular: { client_secret }
+    Stripe-->>EdgeFn: client_secret
+    EdgeFn-->>Angular: client_secret
     Angular->>Stripe: stripe.confirmPayment(client_secret)
-    Stripe-->>Angular: { status }
+    Stripe-->>Angular: status
 
-    alt Pagament exitós
+    alt Pagament exitos
         Angular->>EdgeFn: POST /confirm-order
         EdgeFn->>DB: INSERT INTO orders + order_items
-        EdgeFn-->>Angular: { order_id }
-        Angular-->>User: Pàgina de confirmació
+        EdgeFn-->>Angular: order_id
+        Angular-->>User: Pagina de confirmacio
     else Pagament fallit
         Angular-->>User: Missatge d'error
         User->>Angular: Reintenta
@@ -268,18 +268,18 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     actor User
-    participant Widget as Chatbot Widget (Angular)
-    participant EdgeFn as Edge Function (Supabase)
-    participant Claude as Claude API
+    participant Widget as ChatbotWidget
+    participant EdgeFn as EdgeFn-Supabase
+    participant Claude as ClaudeAPI
     participant DB as PostgreSQL
 
-    User->>Widget: "Tinc un racó de 30x30cm amb poca llum"
-    Widget->>EdgeFn: POST /ai-chat\n{ message, conversation_history }
-    EdgeFn->>DB: SELECT productes actius (context)
+    User->>Widget: Tinc un raco de 30x30cm amb poca llum
+    Widget->>EdgeFn: POST /ai-chat amb message
+    EdgeFn->>DB: SELECT productes actius per context
     DB-->>EdgeFn: Llista de productes
     EdgeFn->>Claude: Messages amb context de productes
-    Claude-->>EdgeFn: Recomanació amb productes concrets
-    EdgeFn-->>Widget: { response, recommended_product_ids[] }
+    Claude-->>EdgeFn: Recomanacio amb productes concrets
+    EdgeFn-->>Widget: response i recommended_product_ids
     Widget-->>User: Resposta + links als productes recomanats
 ```
 
@@ -289,24 +289,34 @@ sequenceDiagram
 
 ```mermaid
 graph LR
-    ROOT["/"] --> HOME["/ · Home"]
-    ROOT --> SHOP["/shop · Catàleg"]
-    ROOT --> DETAIL["/shop/:id · Detall"]
-    ROOT --> CART["/cart · Carret"]
-    ROOT --> CHECKOUT["/checkout · Checkout"]
-    ROOT --> EVENTS["/events · Calendari"]
-    ROOT --> STORES["/stores · Mapa"]
-    ROOT --> AUTH["/auth"]
+    ROOT["AppComponent<br/>router-outlet"] --> AUTH["/auth<br/>(sense Layout)"]
+    ROOT --> LAYOUT["Layout<br/>Navbar + router-outlet"]
+    ROOT --> WILD["** redir. /"]
+
     AUTH --> LOGIN["/auth/login"]
     AUTH --> REGISTER["/auth/register"]
-    ROOT --> ACCOUNT["/account · Perfil\n🔒 auth guard"]
-    ACCOUNT --> ORDERS["/account/orders"]
-    ROOT --> ADMIN["/admin\n🔒 admin guard"]
+
+    LAYOUT --> HOME["/ Home"]
+    LAYOUT --> SHOP["/shop Cataleg"]
+    LAYOUT --> DETAIL["/shop/:id Detall"]
+    LAYOUT --> CART["/cart Carret"]
+    LAYOUT --> CHECKOUT["/checkout<br/>authGuard"]
+    LAYOUT --> EVENTS["/events Calendari"]
+    LAYOUT --> STORES["/stores Mapa"]
+    LAYOUT --> ACCOUNT["/account<br/>authGuard"]
+    LAYOUT --> ADMIN["/admin<br/>authGuard + adminGuard"]
+
+    ACCOUNT --> ACC_ROOT["/account Perfil"]
+    ACCOUNT --> ACC_ORD["/account/orders"]
+
     ADMIN --> DASH["/admin/dashboard"]
     ADMIN --> PROD["/admin/products"]
     ADMIN --> ORD["/admin/orders"]
     ADMIN --> EVT["/admin/events"]
 
-    style ACCOUNT fill:#fef9c3
-    style ADMIN fill:#fee2e2
+    style AUTH fill:#f0f0f0,stroke:#aaa
+    style LAYOUT fill:#f0fdf4,stroke:#16a34a
+    style ACCOUNT fill:#fef9c3,stroke:#ca8a04
+    style CHECKOUT fill:#fef9c3,stroke:#ca8a04
+    style ADMIN fill:#fee2e2,stroke:#dc2626
 ```
