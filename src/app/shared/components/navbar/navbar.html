@@ -1,37 +1,52 @@
-<nav class="border-b px-6 py-4">
+<nav class="border-b px-6 py-4" aria-label="Navegació principal">
   <div class="flex items-center justify-between">
     <a routerLink="/" class="font-bold text-lg">Secret Garden</a>
 
-    <button class="block md:hidden text-2xl" (click)="menuOpen.set(!menuOpen())">
+    <button
+      class="block md:hidden text-2xl"
+      (click)="menuOpen.set(!menuOpen())"
+      [attr.aria-expanded]="menuOpen()"
+      aria-controls="mobile-menu"
+      aria-label="Menú"
+    >
       {{ menuOpen() ? '✕' : '☰' }}
     </button>
 
-    <div class="hidden md:flex items-center gap-4">
+    <ul class="hidden md:flex items-center gap-4 list-none">
       <ng-container [ngTemplateOutlet]="navLinks" />
-    </div>
+    </ul>
   </div>
 
   @if (menuOpen()) {
-    <div class="flex flex-col gap-3 pt-3 md:hidden">
+    <ul id="mobile-menu" class="flex flex-col gap-3 pt-3 md:hidden list-none">
       <ng-container [ngTemplateOutlet]="navLinks" />
-    </div>
+    </ul>
   }
 </nav>
 
 <ng-template #navLinks>
-  <a routerLink="/shop" (click)="menuOpen.set(false)">Catàleg</a>
-  <a routerLink="/events" (click)="menuOpen.set(false)">Tallers</a>
-  <a routerLink="/stores" (click)="menuOpen.set(false)">Botigues</a>
-  <a routerLink="/cart" (click)="menuOpen.set(false)">Carret</a>
+  <li><a routerLink="/shop" (click)="menuOpen.set(false)">Catàleg</a></li>
+  <li><a routerLink="/events" (click)="menuOpen.set(false)">Tallers</a></li>
+  <li><a routerLink="/stores" (click)="menuOpen.set(false)">Botigues</a></li>
+  <li>
+    <a routerLink="/cart" (click)="menuOpen.set(false)" class="relative">
+      Carret
+      @if (cart.count() > 0) {
+        <span class="absolute -top-2 -right-3 bg-green-700 text-white text-xs rounded-full px-1.5">
+          {{ cart.count() }}
+        </span>
+      }
+    </a>
+  </li>
 
   @if (auth.isLoggedIn()) {
     @if (auth.isAdmin()) {
-      <a routerLink="/admin/dashboard" (click)="menuOpen.set(false)">Admin</a>
+      <li><a routerLink="/admin/dashboard" (click)="menuOpen.set(false)">Admin</a></li>
     }
-    <a routerLink="/account" (click)="menuOpen.set(false)">El meu compte</a>
-    <button (click)="auth.logout(); menuOpen.set(false)">Sortir</button>
+    <li><a routerLink="/account" (click)="menuOpen.set(false)">El meu compte</a></li>
+    <li><button (click)="auth.logout(); menuOpen.set(false)">Sortir</button></li>
   } @else {
-    <a routerLink="/auth/login" (click)="menuOpen.set(false)">Entrar</a>
-    <a routerLink="/auth/register" (click)="menuOpen.set(false)">Registrar-me</a>
+    <li><a routerLink="/auth/login" (click)="menuOpen.set(false)">Entrar</a></li>
+    <li><a routerLink="/auth/register" (click)="menuOpen.set(false)">Registrar-me</a></li>
   }
 </ng-template>
