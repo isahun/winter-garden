@@ -1,1 +1,28 @@
-<p>footer works!</p>
+<footer class="border-t mt-12 px-6 py-8">
+  <div class="container mx-auto grid md:grid-cols-3 gap-8">
+    <section>
+      <h2 class="font-bold mb-3">Secret Garden</h2>
+      <p class="text-sm text-gray-600">Jardins eterns i terrariums de plantes preservades fets a mà.</p>
+    </section>
+
+    <nav aria-label="Navegació peu de pàgina">
+      <h2 class="font-bold mb-3">Navegació</h2>
+      <ul class="space-y-2 text-sm text-gray-600 list-none">
+        <li><a routerLink="/shop" class="hover:underline">Catàleg</a></li>
+        <li><a routerLink="/events" class="hover:underline">Tallers</a></li>
+        <li><a routerLink="/stores" class="hover:underline">Botigues</a></li>
+      </ul>
+    </nav>
+
+    <section>
+      <h2 class="font-bold mb-3">Contacte</h2>
+      <address class="text-sm text-gray-600 not-italic">
+        <a href="mailto:hola@secretgarden.cat" class="hover:underline">hola@secretgarden.cat</a>
+      </address>
+    </section>
+  </div>
+
+  <p class="text-center text-xs text-gray-400 mt-8">
+    <small>© 2025 Secret Garden. Tots els drets reservats.</small>
+  </p>
+</footer>
