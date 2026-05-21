@@ -25,28 +25,32 @@
 </nav>
 
 <ng-template #navLinks>
-  <li><a routerLink="/shop" (click)="menuOpen.set(false)">Catàleg</a></li>
-  <li><a routerLink="/events" (click)="menuOpen.set(false)">Tallers</a></li>
-  <li><a routerLink="/stores" (click)="menuOpen.set(false)">Botigues</a></li>
-  <li>
-    <a routerLink="/cart" (click)="menuOpen.set(false)" class="relative">
-      Carret
-      @if (cart.count() > 0) {
-        <span class="absolute -top-2 -right-3 bg-green-700 text-white text-xs rounded-full px-1.5">
-          {{ cart.count() }}
-        </span>
-      }
-    </a>
-  </li>
-
-  @if (auth.isLoggedIn()) {
-    @if (auth.isAdmin()) {
-      <li><a routerLink="/admin/dashboard" (click)="menuOpen.set(false)">Admin</a></li>
-    }
-    <li><a routerLink="/account" (click)="menuOpen.set(false)">El meu compte</a></li>
+  @if (auth.isAdmin()) {
+    <li><a routerLink="/admin/dashboard" (click)="menuOpen.set(false)">Dashboard</a></li>
+    <li><a routerLink="/admin/products" (click)="menuOpen.set(false)">Productes</a></li>
+    <li><a routerLink="/admin/orders" (click)="menuOpen.set(false)">Comandes</a></li>
+    <li><a routerLink="/admin/events" (click)="menuOpen.set(false)">Tallers</a></li>
     <li><button (click)="auth.logout(); menuOpen.set(false)">Sortir</button></li>
   } @else {
-    <li><a routerLink="/auth/login" (click)="menuOpen.set(false)">Entrar</a></li>
-    <li><a routerLink="/auth/register" (click)="menuOpen.set(false)">Registrar-me</a></li>
+    <li><a routerLink="/shop" (click)="menuOpen.set(false)">Catàleg</a></li>
+    <li><a routerLink="/events" (click)="menuOpen.set(false)">Tallers</a></li>
+    <li><a routerLink="/stores" (click)="menuOpen.set(false)">Botigues</a></li>
+    <li>
+      <a routerLink="/cart" (click)="menuOpen.set(false)" class="relative">
+        Carret
+        @if (cart.count() > 0) {
+          <span class="absolute -top-2 -right-3 bg-green-700 text-white text-xs rounded-full px-1.5">
+            {{ cart.count() }}
+          </span>
+        }
+      </a>
+    </li>
+    @if (auth.isLoggedIn()) {
+      <li><a routerLink="/account" (click)="menuOpen.set(false)">El meu compte</a></li>
+      <li><button (click)="auth.logout(); menuOpen.set(false)">Sortir</button></li>
+    } @else {
+      <li><a routerLink="/auth/login" (click)="menuOpen.set(false)">Entrar</a></li>
+      <li><a routerLink="/auth/register" (click)="menuOpen.set(false)">Registrar-me</a></li>
+    }
   }
 </ng-template>
