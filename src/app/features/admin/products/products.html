@@ -1,1 +1,63 @@
-<p>products works!</p>
+<section class="container mx-auto px-4 py-8">
+  <header class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-semibold">Gestió de productes</h1>
+    <button (click)="createProductAdmin()" class="btn-primary">+ Nou producte</button>
+  </header>
+
+  @if (editing()) {
+  <section class="card p-6 mb-6" aria-label="{{ isNew() ? 'Formulari nou producte' : 'Formulari editar producte' }}">
+    <h2 class="font-semibold mb-4">{{ isNew() ? 'Nou producte' : 'Editar producte' }}</h2>
+    <form class="grid md:grid-cols-2 gap-4">
+      <label class="sr-only" for="p-name">Nom</label>
+      <input id="p-name" [(ngModel)]="editing()!.name" name="name" placeholder="Nom" class="input" />
+      <label class="sr-only" for="p-price">Preu</label>
+      <input id="p-price" [(ngModel)]="editing()!.price" name="price" type="number" placeholder="Preu" class="input" />
+      <label class="sr-only" for="p-stock">Estoc</label>
+      <input id="p-stock" [(ngModel)]="editing()!.stock" name="stock" type="number" placeholder="Estoc" class="input" />
+      <label class="sr-only" for="p-size">Mida</label>
+      <input id="p-size" [(ngModel)]="editing()!.size" name="size" placeholder="Mida (opcional)" class="input" />
+      <label class="sr-only" for="p-desc">Descripció</label>
+      <textarea id="p-desc" [(ngModel)]="editing()!.description" name="description" placeholder="Descripció"
+        class="input md:col-span-2"></textarea>
+      <div class="flex gap-3 md:col-span-2">
+        <button type="button" (click)="saveProductAdmin()" class="btn-primary">Guardar</button>
+        <button type="button" (click)="cancelEditAdmin()" class="btn-secondary">Cancel·lar</button>
+      </div>
+    </form>
+  </section>
+  }
+
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <caption class="sr-only">
+        Llista de productes
+      </caption>
+      <thead class="border-b">
+        <tr class="text-left">
+          <th scope="col" class="pb-3">Nom</th>
+          <th scope="col" class="pb-3">Preu</th>
+          <th scope="col" class="pb-3">Estoc</th>
+          <th scope="col" class="pb-3">Accions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y">
+        @for (product of products(); track product.id) {
+        <tr>
+          <td class="py-3">{{ product.name }}</td>
+          <td class="py-3">{{ product.price }}€</td>
+          <td class="py-3">{{ product.stock }}</td>
+          <td class="py-3 flex gap-2">
+            <button (click)="openEditAdmin(product)" class="text-blue-600 hover:underline text-sm">
+              Editar
+            </button>
+            <button (click)="deleteProductAdmin(product.id)" class="text-red-500 hover:underline text-sm"
+              [attr.aria-label]="'Eliminar ' + product.name">
+              Eliminar
+            </button>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</section>
