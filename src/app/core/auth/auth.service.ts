@@ -3,11 +3,13 @@ import { Router } from '@angular/router';
 import { Session } from '@supabase/supabase-js';
 import { SupabaseService } from '../supabase.service';
 import { Profile } from '../models';
+import { CartService } from '../services/cart.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly supabase = inject(SupabaseService).client;
   private readonly router = inject(Router);
+  private readonly cart = inject(CartService);
 
   private _session = signal<Session | null>(null);
 
@@ -31,7 +33,11 @@ export class AuthService {
   }
 
   private async loadRole(userId: string) {
-    const { data } = await this.supabase.from('profiles').select('role').eq('id', userId).single<Pick<Profile, 'role'>>();
+    const { data } = await this.supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', userId)
+      .single<Pick<Profile, 'role'>>();
     this._role.set(data?.role ?? 'user');
   }
 
@@ -49,6 +55,14 @@ export class AuthService {
 
   async logout() {
     await this.supabase.auth.signOut();
+    this.cart.clearCart();
     this.router.navigate(['/']);
+  }
+
+  async loginWithGoogle() {
+    await this.supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.origin },
+    });
   }
 }

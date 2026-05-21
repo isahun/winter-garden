@@ -28,13 +28,17 @@ export class Login {
     this.error.set('');
 
     const { email, password } = this.form.value;
-    const { error } = await this.auth.login(email!,password!);
+    const { error } = await this.auth.login(email!, password!);
 
-    if(error) {
+    if (error) {
       this.error.set('Email o contrasenya incorrectes');
     } else {
       this.router.navigate(['/']);
     }
     this.loading.set(false);
+  }
+
+  async loginWithGoogle() {
+    await this.auth.loginWithGoogle();
   }
 }
