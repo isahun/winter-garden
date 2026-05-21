@@ -12,13 +12,15 @@ export const routes: Routes = [
       },
       {
         path: 'register',
-        loadComponent: () => import('./features/auth/register/register').then((module) => module.Register),
+        loadComponent: () =>
+          import('./features/auth/register/register').then((module) => module.Register),
       },
     ],
   },
   {
     path: '',
-    loadComponent: () => import('./shared/components/layout/layout').then((module) => module.Layout),
+    loadComponent: () =>
+      import('./shared/components/layout/layout').then((module) => module.Layout),
     children: [
       {
         path: '',
@@ -31,7 +33,9 @@ export const routes: Routes = [
       {
         path: 'shop/:id',
         loadComponent: () =>
-          import('./features/shop/product-detail/product-detail').then((module) => module.ProductDetail),
+          import('./features/shop/product-detail/product-detail').then(
+            (module) => module.ProductDetail,
+          ),
       },
       {
         path: 'cart',
@@ -40,7 +44,8 @@ export const routes: Routes = [
       {
         path: 'checkout',
         canActivate: [authGuard],
-        loadComponent: () => import('./features/checkout/checkout').then((module) => module.Checkout),
+        loadComponent: () =>
+          import('./features/checkout/checkout').then((module) => module.Checkout),
       },
       {
         path: 'events',
@@ -61,7 +66,13 @@ export const routes: Routes = [
           },
           {
             path: 'orders',
-            loadComponent: () => import('./features/account/orders/orders').then((module) => module.Orders),
+            loadComponent: () =>
+              import('./features/account/orders/orders').then((module) => module.Orders),
+          },
+          {
+            path: 'favorites',
+            loadComponent: () =>
+              import('./features/account/favorites/favorites').then((module) => module.Favorites),
           },
         ],
       },
@@ -81,7 +92,8 @@ export const routes: Routes = [
           },
           {
             path: 'orders',
-            loadComponent: () => import('./features/admin/orders/orders').then((module) => module.Orders),
+            loadComponent: () =>
+              import('./features/admin/orders/orders').then((module) => module.Orders),
           },
           {
             path: 'events',

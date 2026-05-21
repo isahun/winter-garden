@@ -1,4 +1,5 @@
-import { Injectable, computed, signal } from '@angular/core';
+import {  Injectable, PLATFORM_ID, computed, effect, inject, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Product } from '../models';
 
 export interface CartItem {
@@ -6,9 +7,12 @@ export interface CartItem {
   quantity: number;
 }
 
+const CART_KEY = 'wg_cart';
+
 @Injectable({ providedIn: 'root' })
 export class CartService {
-  private _items = signal<CartItem[]>([]);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private _items = signal<CartItem[]>(this.loadFromStorage());
 
   readonly items = this._items.asReadonly();
   readonly total = computed(() =>
@@ -17,6 +21,24 @@ export class CartService {
   readonly count = computed(() =>
     this._items().reduce((sum, item) => sum + item.quantity, 0),
   );
+
+  constructor() {
+    effect(() => {
+      if (this.isBrowser) {
+        localStorage.setItem(CART_KEY, JSON.stringify(this._items()));
+      }
+    });
+  }
+
+  private loadFromStorage(): CartItem[] {
+    if (!isPlatformBrowser(inject(PLATFORM_ID))) return [];
+    try {
+      const stored = localStorage.getItem(CART_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  }
 
   addToCart(product: Product) {
     this._items.update(items => {
