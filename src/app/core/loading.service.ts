@@ -5,14 +5,6 @@ export class LoadingService {
   readonly isLoading = signal(false);
   private count = 0;
 
-  show() {
-    this.count++;
-    this.isLoading.set(true);
-  }
-  hide() {
-    if (--this.count <= 0) {
-      this.count = 0;
-      this.isLoading.set(false);
-    }
-  }
+  show() { this.count++; this.isLoading.set(true); }
+  hide() { if (--this.count <= 0) { this.count = 0; this.isLoading.set(false); } }
 }

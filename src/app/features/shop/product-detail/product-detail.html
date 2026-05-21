@@ -1,1 +1,41 @@
-<p>product-detail works!</p>
+@if (product(); as product) {
+  <article class="container mx-auto px-4 py-8 max-w-4xl">
+    <a routerLink="/shop" class="text-sm text-gray-500 hover:underline mb-4 inline-block">← Tornar al catàleg</a>
+
+    <div class="grid md:grid-cols-2 gap-8">
+      <img
+        [src]="product.images[0] || 'assets/placeholder.jpg'"
+        [alt]="product.name"
+        class="w-full aspect-square object-cover rounded-lg"
+      />
+
+      <section class="space-y-4" aria-label="Informació del producte">
+        <p class="text-sm text-green-700 font-medium">{{ product.categories?.name }}</p>
+        <h1 class="text-3xl font-semibold">{{ product.name }}</h1>
+        <p class="text-2xl font-bold text-green-800">
+          <strong>{{ product.price | currency:'EUR' }}</strong>
+        </p>
+        <p class="text-gray-600">{{ product.description }}</p>
+
+        @if (product.size) {
+          <p class="text-sm text-gray-500">Mida: <strong>{{ product.size }}</strong></p>
+        }
+
+        <p class="text-sm" [class]="product.stock > 0 ? 'text-green-600' : 'text-red-500'">
+          {{ product.stock > 0 ? 'En estoc (' + product.stock + ' unitats)' : 'Sense estoc' }}
+        </p>
+
+        <button
+          (click)="addProductToCart()"
+          [disabled]="product.stock === 0"
+          class="btn-primary w-full"
+          [attr.aria-label]="'Afegir ' + product.name + ' al carret'"
+        >
+          {{ added() ? '✓ Afegit al carret' : 'Afegir al carret' }}
+        </button>
+      </section>
+    </div>
+  </article>
+} @else {
+  <p class="container mx-auto px-4 py-8 text-gray-500">Carregant producte...</p>
+}

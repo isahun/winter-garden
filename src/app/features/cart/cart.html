@@ -1,1 +1,61 @@
-<p>cart works!</p>
+<section class="container mx-auto px-4 py-8 max-w-2xl">
+  <h1 class="text-3xl font-semibold mb-6">El teu carret</h1>
+
+  @if (cart.count() === 0) {
+    <p class="text-gray-500 mb-4">El carret és buit.</p>
+    <a routerLink="/shop" class="btn-primary">Veure el catàleg</a>
+  } @else {
+    <ul class="space-y-4 mb-8 list-none">
+      @for (item of cart.items(); track item.product.id) {
+        <li class="flex items-center gap-4 p-4 border rounded-lg">
+          <img
+            [src]="item.product.images[0] || 'assets/placeholder.jpg'"
+            [alt]="item.product.name"
+            class="w-16 h-16 object-cover rounded"
+          />
+          <div class="flex-1">
+            <h2 class="font-medium">{{ item.product.name }}</h2>
+            <p class="text-green-700">{{ item.product.price | currency:'EUR' }}</p>
+          </div>
+
+          <div class="flex items-center gap-2" role="group" [attr.aria-label]="'Quantitat de ' + item.product.name">
+            <button
+              (click)="cart.updateQuantity(item.product.id, item.quantity - 1)"
+              class="w-8 h-8 border rounded hover:bg-gray-100"
+              aria-label="Reduir quantitat"
+            >−</button>
+            <output class="w-8 text-center">{{ item.quantity }}</output>
+            <button
+              (click)="cart.updateQuantity(item.product.id, item.quantity + 1)"
+              class="w-8 h-8 border rounded hover:bg-gray-100"
+              aria-label="Augmentar quantitat"
+            >+</button>
+          </div>
+
+          <p class="w-20 text-right font-medium">{{ item.product.price * item.quantity | currency:'EUR' }}</p>
+
+          <button
+            (click)="cart.removeFromCart(item.product.id)"
+            class="text-red-400 hover:text-red-600"
+            [attr.aria-label]="'Eliminar ' + item.product.name + ' del carret'"
+          >✕</button>
+        </li>
+      }
+    </ul>
+
+    <footer class="border-t pt-4 space-y-4">
+      <div class="flex justify-between text-xl font-semibold">
+        <span>Total</span>
+        <output>{{ cart.total() | currency:'EUR' }}</output>
+      </div>
+
+      @if (auth.isLoggedIn()) {
+        <a routerLink="/checkout" class="btn-primary w-full text-center block">Finalitzar compra</a>
+      } @else {
+        <a routerLink="/auth/login" class="btn-primary w-full text-center block">Inicia sessió per comprar</a>
+      }
+
+      <a routerLink="/shop" class="block text-center text-sm text-gray-500 hover:underline">← Continuar comprant</a>
+    </footer>
+  }
+</section>
