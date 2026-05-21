@@ -74,6 +74,11 @@ export const routes: Routes = [
             loadComponent: () =>
               import('./features/account/favorites/favorites').then((module) => module.Favorites),
           },
+          {
+            path: 'workshops',
+            loadComponent: () =>
+              import('./features/account/workshops/workshops').then((module) => module.Workshops),
+          },
         ],
       },
       {

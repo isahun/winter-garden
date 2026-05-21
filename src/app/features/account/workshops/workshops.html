@@ -1,0 +1,23 @@
+<section class="container mx-auto px-4 py-8 max-w-2xl">
+  <h1 class="text-3xl font-semibold mb-6">Els meus tallers</h1>
+
+  @if (workshops().length === 0) {
+    <p class="text-gray-500 mb-4">Encara no t'has apuntat a cap taller.</p>
+    <a routerLink="/events" class="btn-primary">Veure tallers</a>
+  } @else {
+    <ul class="space-y-4 list-none">
+      @for (w of workshops(); track w.id) {
+        <li class="border rounded-xl p-4 flex justify-between items-start gap-4">
+          <div>
+            <h2 class="font-medium">{{ w.title }}</h2>
+            <p class="text-sm text-gray-500 mt-1">📍 {{ w.location }}</p>
+            <time class="text-sm text-gray-400">{{ w.date | date:'dd/MM/yyyy' }}</time>
+          </div>
+          <button (click)="cancelSignup(w.id)" class="btn-secondary text-sm shrink-0">
+            Cancel·lar
+          </button>
+        </li>
+      }
+    </ul>
+  }
+</section>
