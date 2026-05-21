@@ -3,6 +3,8 @@ import { RouterLink } from '@angular/router';
 import { CurrencyPipe } from '@angular/common';
 import { ProductService } from '../../../core/services/product.service';
 import { Product } from '../../../core/models';
+import { FavoritesService } from '../../../core/services/favorites.service';
+import { AuthService } from '../../../core/auth/auth.service';
 
 @Component({
   selector: 'app-shop',
@@ -11,6 +13,8 @@ import { Product } from '../../../core/models';
 })
 export class Shop implements OnInit {
   private productService = inject(ProductService);
+  favorites = inject(FavoritesService);
+  auth = inject(AuthService);
 
   products = signal<Product[]>([]);
   search = signal('');
@@ -28,5 +32,6 @@ export class Shop implements OnInit {
   async ngOnInit() {
     const { data } = await this.productService.getAllProducts();
     this.products.set(data ?? []);
+    if (this.auth.isLoggedIn()) await this.favorites.loadFavorites();
   }
 }
