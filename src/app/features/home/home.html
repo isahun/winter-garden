@@ -1,1 +1,70 @@
-<p>home works!</p>
+<section class="bg-gradient-to-br from-green-50 to-emerald-100 py-24 text-center">
+  <div class="container mx-auto px-4 max-w-2xl">
+    <h1 class="text-5xl font-semibold mb-4 text-gray-800">Jardins eterns per a cada racó</h1>
+    <p class="text-lg text-gray-600 mb-8">Plantes preservades fetes a mà. Sense reg, sense cures. Per sempre.</p>
+    <div class="flex gap-4 justify-center flex-wrap">
+      <a routerLink="/shop" class="btn-primary">Descobreix la col·lecció</a>
+      <a routerLink="/events" class="btn-secondary">Els nostres tallers</a>
+    </div>
+  </div>
+</section>
+
+@if (featured().length > 0) {
+<section class="container mx-auto px-4 py-16">
+  <h2 class="text-2xl font-semibold mb-8 text-center">Productes destacats</h2>
+  <ul class="grid sm:grid-cols-2 md:grid-cols-3 gap-6 list-none">
+    @for (product of featured(); track product.id) {
+    <li class="card p-4 flex flex-col">
+      @if (product.images?.[0]) {
+        <img [src]="product.images[0]" [alt]="product.name" class="w-full h-48 object-cover rounded-lg mb-3" />
+      }
+      <h3 class="font-medium mb-1">{{ product.name }}</h3>
+      <p class="text-gray-500 text-sm mb-3 flex-1">{{ product.price | currency:'EUR' }}</p>
+      <a [routerLink]="['/shop', product.id]" class="btn-secondary text-sm text-center">Veure producte</a>
+    </li>
+    }
+  </ul>
+  <div class="text-center mt-8">
+    <a routerLink="/shop" class="btn-primary">Veure tot el catàleg</a>
+  </div>
+</section>
+}
+
+<section class="bg-gray-50 py-16">
+  <div class="container mx-auto px-4">
+    <ul class="grid md:grid-cols-3 gap-8 text-center list-none">
+      <li>
+        <p class="text-4xl mb-3" aria-hidden="true">🌿</p>
+        <h3 class="font-semibold mb-2">Fet a mà</h3>
+        <p class="text-sm text-gray-500">Cada jardí és únic, creat amb cura al nostre taller de Barcelona.</p>
+      </li>
+      <li>
+        <p class="text-4xl mb-3" aria-hidden="true">♾️</p>
+        <h3 class="font-semibold mb-2">Plantes preservades</h3>
+        <p class="text-sm text-gray-500">Sense reg ni llum especial. La bellesa de la natura per sempre.</p>
+      </li>
+      <li>
+        <p class="text-4xl mb-3" aria-hidden="true">📦</p>
+        <h3 class="font-semibold mb-2">Enviament a casa</h3>
+        <p class="text-sm text-gray-500">Embalatge sostenible i entrega segura a tot l'estat.</p>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section class="container mx-auto px-4 py-16">
+  <div class="grid md:grid-cols-2 gap-6">
+    <article class="card p-8 text-center">
+      <p class="text-4xl mb-3" aria-hidden="true">📍</p>
+      <h2 class="text-xl font-semibold mb-2">Les nostres botigues</h2>
+      <p class="text-gray-500 text-sm mb-4">Visita'ns i veu els jardins en persona.</p>
+      <a routerLink="/stores" class="btn-secondary">Veure mapa</a>
+    </article>
+    <article class="card p-8 text-center">
+      <p class="text-4xl mb-3" aria-hidden="true">🌱</p>
+      <h2 class="text-xl font-semibold mb-2">Tallers i esdeveniments</h2>
+      <p class="text-gray-500 text-sm mb-4">Aprèn a crear el teu propi jardí amb nosaltres.</p>
+      <a routerLink="/events" class="btn-secondary">Veure tallers</a>
+    </article>
+  </div>
+</section>
