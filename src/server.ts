@@ -8,6 +8,7 @@ import express from 'express';
 import { join } from 'node:path';
 import { createClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
+import { GoogleGenAI } from '@google/genai';
 import 'dotenv/config';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
@@ -21,6 +22,7 @@ const supabaseAdmin = createClient(
 );
 
 const stripe = new Stripe(process.env['STRIPE_SECRET_KEY']!);
+const ai = new GoogleGenAI({ apiKey: process.env['GEMINI_API_KEY']! });
 
 app.use(express.json());
 
@@ -36,6 +38,45 @@ app.post('/api/payment-intent', async (req, res) => {
     automatic_payment_methods: { enabled: true },
   });
   res.json({ clientSecret: intent.client_secret });
+});
+
+app.post('/api/chatbot', async (req, res) => {
+  const { message } = req.body;
+  if (!message) {
+    res.status(400).json({ error: 'Missatge buit' });
+    return;
+  }
+
+  const { data: products } = await supabaseAdmin
+    .from('products')
+    .select('name, description, price')
+    .limit(20);
+
+  const productContext = (products ?? [])
+    .map((p: any) => `- ${p.name} (${p.price}€): ${p.description ?? ''}`)
+    .join('\n');
+
+  res.setHeader('Content-Type', 'text/plain');
+  res.setHeader('Transfer-Encoding', 'chunked');
+
+  ai.models
+    .generateContentStream({
+      model: 'gemini-2.5-flash',
+      contents: message,
+      config: {
+        systemInstruction: `Ets l'assessora de jardins de Secret Garden, una botiga de jardins eterns de plantes preservades. Ajudes els clients a trobar el jardí perfecte. Respon sempre en català, de forma amable i breu. Aquí tens el catàleg actual:\n${productContext}`,
+      },
+    })
+    .then(async (stream) => {
+      for await (const chunk of stream) {
+        if (chunk.text) res.write(chunk.text);
+      }
+      res.end();
+    })
+    .catch((error) => {
+      console.error('Error Gemini:', error);
+      res.status(500).send('Error generant la resposta.');
+    });
 });
 
 app.use(
