@@ -1,10 +1,11 @@
-@if (product(); as product) {
+﻿@if (product(); as product) {
 <article class="container mx-auto px-4 py-8 max-w-4xl">
   <a routerLink="/shop" class="text-sm text-gray-500 hover:underline mb-4 inline-block">← Tornar al catàleg</a>
 
   <div class="grid md:grid-cols-2 gap-8">
     <img [src]="product.images[0] || 'assets/placeholder.jpg'" [alt]="product.name"
-      class="w-full aspect-square object-cover rounded-lg" />
+      class="w-full aspect-square object-cover rounded-lg cursor-pointer"
+      (click)="lightboxOpen.set(true)" />
 
     <section class="space-y-4" aria-label="Informació del producte">
       @if (auth.isLoggedIn()) {
@@ -36,6 +37,33 @@
     </section>
   </div>
 </article>
+@if (related().length > 0) {
+<section class="container mx-auto px-4 pb-12 max-w-4xl mt-12" aria-label="Productes relacionats">
+  <h2 class="text-xl font-semibold mb-6">També et pot interessar</h2>
+  <ul class="grid grid-cols-2 md:grid-cols-3 gap-6 list-none">
+    @for (p of related(); track p.id) {
+    <li class="card">
+      <a [routerLink]="['/shop', p.id]" class="block">
+        <img [src]="p.images[0] || 'assets/placeholder.jpg'" [alt]="p.name"
+          class="w-full aspect-square object-cover rounded-t" />
+        <div class="p-3">
+          <h3 class="font-medium text-sm">{{ p.name }}</h3>
+          <p class="text-green-700 font-semibold text-sm">{{ p.price | currency:'EUR' }}</p>
+        </div>
+      </a>
+    </li>
+    }
+  </ul>
+</section>
+}
+@if (lightboxOpen()) {
+<div class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+  (click)="lightboxOpen.set(false)" role="dialog" aria-modal="true" aria-label="Imatge ampliada">
+  <img [src]="product.images[0]" [alt]="product.name"
+    class="max-h-full max-w-full object-contain rounded-lg shadow-xl" />
+  <button class="absolute top-4 right-4 text-white text-3xl leading-none" aria-label="Tancar">✕</button>
+</div>
+}
 } @else {
 <p class="container mx-auto px-4 py-8 text-gray-500">Carregant producte...</p>
 }

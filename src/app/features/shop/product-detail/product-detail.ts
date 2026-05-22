@@ -7,7 +7,6 @@ import { Product } from '../../../core/models';
 import { FavoritesService } from '../../../core/services/favorites.service';
 import { AuthService } from '../../../core/auth/auth.service';
 
-
 @Component({
   selector: 'app-product-detail',
   imports: [CurrencyPipe, RouterLink],
@@ -22,13 +21,18 @@ export class ProductDetail implements OnInit {
   favorites = inject(FavoritesService);
   auth = inject(AuthService);
 
-
   product = signal<Product | null>(null);
   added = signal(false);
+  related = signal<Product[]>([]);
+  lightboxOpen = signal(false);
 
   async ngOnInit() {
     const { data } = await this.productService.getProductById(this.id());
     this.product.set(data);
+    if (data?.category_id) {
+      const { data: rel } = await this.productService.getRelatedProducts(data.category_id, data.id);
+      this.related.set(rel ?? []);
+    }
     if (this.auth.isLoggedIn()) await this.favorites.loadFavorites();
   }
 
@@ -38,5 +42,4 @@ export class ProductDetail implements OnInit {
     this.added.set(true);
     setTimeout(() => this.added.set(false), 2000);
   }
-
 }
