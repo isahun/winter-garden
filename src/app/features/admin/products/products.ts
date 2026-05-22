@@ -2,13 +2,14 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../../core/services/product.service';
 import { Product } from '../../../core/models';
+import { RouterLink } from '@angular/router';
 
 const CLOUD_NAME = 'dou285kwq';
 const UPLOAD_PRESET = 'winter_garden';
 
 @Component({
   selector: 'app-products',
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink],
   templateUrl: './products.html',
 })
 export class Products implements OnInit {
