@@ -32,4 +32,17 @@ export class ProductService {
   async deleteProduct(id: number) {
     return this.supabase.from('products').delete().eq('id', id);
   }
+
+  async getCategories() {
+    return this.supabase.from('categories').select('*').order('name');
+  }
+
+  async getRelatedProducts(categoryId: number, excludeId: number) {
+    return this.supabase
+      .from('products')
+      .select('*, categories!category_id(name,slug)')
+      .eq('category_id', categoryId)
+      .neq('id', excludeId)
+      .limit(3);
+  }
 }
