@@ -18,10 +18,12 @@
     @for (product of filteredProducts(); track product.id) {
     <li class="relative">
       <a [routerLink]="['/shop', product.id]" class="card hover:shadow-md transition block">
+        @if (auth.isLoggedIn()) {
         <button (click)="favorites.toggleFavorite(product); $event.preventDefault()"
           class="absolute top-2 right-2 text-xl" [attr.aria-label]="'Favorit'">
           {{ favorites.isFavorite(product.id)() ? '❤️' : '🤍' }}
         </button>
+        }
         <img [src]="product.images[0] || 'assets/placeholder.jpg'" [alt]="product.name"
           class="w-full aspect-square object-cover rounded" />
         <div class="p-3">
