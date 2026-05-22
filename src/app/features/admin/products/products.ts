@@ -1,11 +1,9 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { ProductService } from '../../../core/services/product.service';
 import { Product } from '../../../core/models';
-import { RouterLink } from '@angular/router';
-
-const CLOUD_NAME = 'dou285kwq';
-const UPLOAD_PRESET = 'winter_garden';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-products',
@@ -45,8 +43,8 @@ export class Products implements OnInit {
     this.uploading.set(true);
     const form = new FormData();
     form.append('file', file);
-    form.append('upload_preset', UPLOAD_PRESET);
-    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+    form.append('upload_preset', environment.cloudinaryUploadPreset);
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${environment.cloudinaryCloudName}/image/upload`, {
       method: 'POST',
       body: form,
     });
