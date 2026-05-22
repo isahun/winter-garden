@@ -1,5 +1,10 @@
 <div class="min-h-screen flex items-center justify-center">
-  <form [formGroup]="form" (ngSubmit)="submit()" class="w-full max-w-sm space-y-4">
+  <div class="w-full max-w-sm">
+    <div class="flex gap-4 mb-6 text-sm">
+      <a routerLink="/" class="text-gray-500 hover:underline">← Inici</a>
+      <a routerLink="/shop" class="text-gray-500 hover:underline">Catàleg</a>
+    </div>
+  <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
     <h1 class="text-2xl font-semibold">Crear compte</h1>
 
     @if (error()) {
@@ -22,4 +27,5 @@
       Ja tens compte? <a routerLink="/auth/login" class="underline">Inicia sessió</a>
     </p>
   </form>
+  </div>
 </div>
