@@ -3,10 +3,11 @@ import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { SupabaseService } from '../../../core/supabase.service';
 import { Workshop } from '../../../core/models';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-admin-events',
-  imports: [FormsModule, DatePipe],
+  imports: [FormsModule, DatePipe, RouterLink],
   templateUrl: './admin-events.html',
 })
 export class AdminEvents implements OnInit {
