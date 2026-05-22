@@ -19,10 +19,14 @@ export class AuthService {
   private _role = signal<'user' | 'admin' | null>(null);
   readonly isAdmin = computed(() => this._role() === 'admin');
 
+  private _resolveReady!: () => void;
+  readonly ready = new Promise<void>(resolve => (this._resolveReady = resolve));
+
   constructor() {
     this.supabase.auth.getSession().then(({ data }) => {
       this._session.set(data.session);
       if (data.session) this.loadRole(data.session.user.id);
+      this._resolveReady();
     });
 
     this.supabase.auth.onAuthStateChange((_, session) => {
