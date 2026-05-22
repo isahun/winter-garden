@@ -3,6 +3,9 @@ import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../../core/services/product.service';
 import { Product } from '../../../core/models';
 
+const CLOUD_NAME = 'dou285kwq';
+const UPLOAD_PRESET = 'winter_garden';
+
 @Component({
   selector: 'app-products',
   imports: [FormsModule],
@@ -14,6 +17,7 @@ export class Products implements OnInit {
   products = signal<Product[]>([]);
   editing = signal<Partial<Product> | null>(null);
   isNew = signal(false);
+  uploading = signal(false);
 
   async ngOnInit() {
     const { data } = await this.productService.getAllProducts();
@@ -34,13 +38,38 @@ export class Products implements OnInit {
     this.editing.set(null);
   }
 
+  async uploadImage(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    this.uploading.set(true);
+    const form = new FormData();
+    form.append('file', file);
+    form.append('upload_preset', UPLOAD_PRESET);
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+      method: 'POST',
+      body: form,
+    });
+    const json = await res.json();
+    const url = (json.secure_url as string).replace(
+      '/upload/',
+      '/upload/w_800,h_800,c_pad,b_white,f_auto,q_auto/',
+    );
+    this.editing.update((p) => (p ? { ...p, images: [url] } : p));
+    this.uploading.set(false);
+  }
+
+    removeImage() {
+    this.editing.update(p => (p ? { ...p, images: [] } : p));
+  }
+
   async saveProductAdmin() {
     const data = this.editing();
     if (!data) return;
+    const { categories, created_at, ...payload } = data as Product;
     if (this.isNew()) {
-      await this.productService.createProduct(data);
+      await this.productService.createProduct(payload);
     } else {
-      await this.productService.updateProduct(data.id!, data);
+      await this.productService.updateProduct(payload.id!, payload);
     }
     this.editing.set(null);
     await this.ngOnInit();

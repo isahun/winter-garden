@@ -19,6 +19,22 @@
       <label class="sr-only" for="p-desc">Descripció</label>
       <textarea id="p-desc" [(ngModel)]="editing()!.description" name="description" placeholder="Descripció"
         class="input md:col-span-2"></textarea>
+      <div class="md:col-span-2 space-y-2">
+        @if (editing()!.images?.[0]) {
+        <div class="flex items-center gap-3">
+          <img [src]="editing()!.images![0]" alt="Previsualització" class="w-32 h-32 object-cover rounded" />
+          <button type="button" (click)="removeImage()" class="text-red-500 text-sm hover:underline">
+            Eliminar imatge
+          </button>
+        </div>
+        }
+        <label for="p-image" class="text-sm text-gray-600">Imatge del producte</label>
+        <input id="p-image" type="file" accept="image/*" (change)="uploadImage($event)" class="block text-sm"
+          [disabled]="uploading()" />
+        @if (uploading()) {
+        <p class="text-sm text-gray-500">Pujant imatge...</p>
+        }
+      </div>
       <div class="flex gap-3 md:col-span-2">
         <button type="button" (click)="saveProductAdmin()" class="btn-primary">Guardar</button>
         <button type="button" (click)="cancelEditAdmin()" class="btn-secondary">Cancel·lar</button>
