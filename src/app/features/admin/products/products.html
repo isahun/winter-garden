@@ -19,6 +19,13 @@
       <input id="p-stock" [(ngModel)]="editing()!.stock" name="stock" type="number" placeholder="Estoc" class="input" />
       <label class="sr-only" for="p-size">Mida</label>
       <input id="p-size" [(ngModel)]="editing()!.size" name="size" placeholder="Mida (opcional)" class="input" />
+      <label class="sr-only" for="p-category">Categoria</label>
+      <select id="p-category" [(ngModel)]="editing()!.category_id" name="category_id" class="input">
+        <option [ngValue]="null">Sense categoria</option>
+        @for (cat of categories(); track cat.id) {
+          <option [value]="cat.id">{{ cat.name }}</option>
+        }
+      </select>
       <label class="sr-only" for="p-desc">Descripció</label>
       <textarea id="p-desc" [(ngModel)]="editing()!.description" name="description" placeholder="Descripció"
         class="input md:col-span-2"></textarea>

@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ProductService } from '../../../core/services/product.service';
-import { Product } from '../../../core/models';
+import { Product, Category } from '../../../core/models';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -14,6 +14,7 @@ export class Products implements OnInit {
   private productService = inject(ProductService);
 
   products = signal<Product[]>([]);
+  categories = signal<Category[]>([]);
   editing = signal<Partial<Product> | null>(null);
   isNew = signal(false);
   uploading = signal(false);
@@ -21,6 +22,8 @@ export class Products implements OnInit {
   async ngOnInit() {
     const { data } = await this.productService.getAllProducts();
     this.products.set(data ?? []);
+    const { data: cats } = await this.productService.getCategories();
+    this.categories.set(cats ?? []);
   }
 
   createProductAdmin() {
