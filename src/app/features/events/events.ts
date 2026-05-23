@@ -90,6 +90,11 @@ export class Events {
     this.currentMonth.update((date) => new Date(date.getFullYear(), date.getMonth() + 1, 1));
   }
 
+  goToStore(storeId: number | null | undefined) {
+    if (!storeId) return;
+    this.router.navigate(['/stores'], { queryParams: { store: storeId } });
+  }
+
   isSignedUp(workshopId: number) {
     return this.signedUpIds().has(workshopId);
   }
