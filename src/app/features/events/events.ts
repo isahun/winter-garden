@@ -63,6 +63,7 @@ export class Events {
         plugins: [dayGridPlugin, interactionPlugin],
         initialView: 'dayGridMonth',
         locale: caLocale,
+        displayEventTime: false,
         events: ws.map((w) => ({
           id: String(w.id),
           title: w.title,

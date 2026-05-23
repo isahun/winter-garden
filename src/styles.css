@@ -280,3 +280,13 @@
 .fc-daygrid-event-harness {
   overflow: visible !important;
 }
+
+.fc-daygrid-event {
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.15s;
+}
+
+.fc-daygrid-event:hover {
+  opacity: 0.8;
+  transform: translateY(-1px);
+}
