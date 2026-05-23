@@ -262,3 +262,21 @@
     animation: subtle-float 6s ease-in-out infinite;
   }
 }
+
+/* ─── FullCalendar overrides ─────────────────────────────────────────────── */
+
+.fc-daygrid-event {
+  white-space: normal !important;
+}
+
+.fc-event-title {
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: unset !important;
+  font-size: 0.75rem;
+  line-height: 1.3;
+}
+
+.fc-daygrid-event-harness {
+  overflow: visible !important;
+}
