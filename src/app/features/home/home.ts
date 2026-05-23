@@ -15,6 +15,7 @@ export class Home implements OnInit {
 
   async ngOnInit() {
     const { data } = await this.productService.getAllProducts();
-    this.featured.set((data ?? []).slice(0, 3));
+    const featured = (data ?? []).filter((product) => product.featured);
+    this.featured.set(featured.length > 0 ? featured : (data ?? []).slice(0, 3));
   }
 }
