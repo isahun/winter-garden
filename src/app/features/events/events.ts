@@ -54,6 +54,7 @@ export class Events {
       const { Calendar } = await import('@fullcalendar/core');
       const { default: dayGridPlugin } = await import('@fullcalendar/daygrid');
       const { default: interactionPlugin } = await import('@fullcalendar/interaction');
+      const { default: caLocale } = await import('@fullcalendar/core/locales/ca');
 
       const calendarEl = this.element.nativeElement.querySelector('#calendar');
       if (!calendarEl) return;
@@ -61,7 +62,7 @@ export class Events {
       this.calendar = new Calendar(calendarEl, {
         plugins: [dayGridPlugin, interactionPlugin],
         initialView: 'dayGridMonth',
-        locale: 'ca',
+        locale: caLocale,
         events: ws.map((w) => ({
           id: String(w.id),
           title: w.title,
