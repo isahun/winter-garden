@@ -12,6 +12,12 @@
       <p class="text-sm text-gray-600">{{ w.description }}</p>
       <p class="text-sm text-gray-500">📍 {{ w.location }}</p>
       <p class="text-sm text-gray-500">👥 Aforament: {{ w.capacity }}</p>
+      @if (w.price != null) {
+        <p class="text-sm text-gray-500">💶 {{ w.price === 0 ? 'Gratuït' : (w.price + ' €') }}</p>
+      }
+      @if (w.difficulty) {
+        <p class="text-sm text-gray-500">📊 {{ w.difficulty }}</p>
+      }
       <button
         (click)="toggleSignup(w)"
         class="w-full mt-2"
@@ -41,7 +47,15 @@
             <time class="text-xs text-gray-400 shrink-0 ml-2">{{ w.date | date:'d MMM' }}</time>
           </div>
           <p class="text-sm text-gray-500 mb-1">📍 {{ w.location }}</p>
-          <p class="text-sm text-gray-500 mb-3">👥 {{ w.capacity }} places</p>
+          <p class="text-sm text-gray-500">👥 {{ w.capacity }} places</p>
+          @if (w.price != null) {
+            <p class="text-sm text-gray-500">💶 {{ w.price === 0 ? 'Gratuït' : (w.price + ' €') }}</p>
+          }
+          @if (w.difficulty) {
+            <p class="text-sm text-gray-500 mb-3">📊 {{ w.difficulty }}</p>
+          } @else {
+            <p class="mb-3"></p>
+          }
           <button
             (click)="toggleSignup(w)"
             class="w-full text-sm"

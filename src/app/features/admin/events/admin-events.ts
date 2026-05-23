@@ -23,7 +23,7 @@ export class AdminEvents implements OnInit {
   }
 
   createNewEventAdmin() {
-    this.editing.set({ title: '', description: '', date: '', location: '', capacity: 20 });
+    this.editing.set({ title: '', description: '', date: '', location: '', capacity: 20, price: null, difficulty: null });
     this.isNew.set(true);
   }
 

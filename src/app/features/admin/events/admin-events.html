@@ -20,6 +20,16 @@
       <label class="sr-only" for="w-capacity">Aforament</label>
       <input id="w-capacity" [(ngModel)]="editing()!.capacity" name="capacity" type="number" placeholder="Aforament"
         class="input" />
+      <label class="sr-only" for="w-price">Preu (€)</label>
+      <input id="w-price" [(ngModel)]="editing()!.price" name="price" type="number" min="0"
+        placeholder="Preu en € (0 = gratuït)" class="input" />
+      <label class="sr-only" for="w-difficulty">Nivell</label>
+      <select id="w-difficulty" [(ngModel)]="editing()!.difficulty" name="difficulty" class="input">
+        <option [ngValue]="null">Nivell (opcional)</option>
+        <option value="Principiant">Principiant</option>
+        <option value="Regular">Regular</option>
+        <option value="Avançat">Avançat</option>
+      </select>
       <label class="sr-only" for="w-desc">Descripció</label>
       <textarea id="w-desc" [(ngModel)]="editing()!.description" name="description" placeholder="Descripció"
         class="input md:col-span-2"></textarea>
