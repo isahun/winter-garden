@@ -2,8 +2,11 @@
   <h1 class="text-3xl font-semibold mb-6">Tallers i esdeveniments</h1>
 
   <div class="hidden md:flex gap-6">
+    <div class="flex-1 min-w-0">
+      <div id="calendar"></div>
+    </div>
     @if (selectedWorkshop(); as w) {
-    <aside class="w-72 shrink-0 border rounded-xl p-5 space-y-3 self-start sticky top-4">
+    <aside class="w-72 shrink-0 border rounded-xl p-5 space-y-3 self-start sticky top-4 mt-17">
       <button (click)="closePanel()" class="text-sm text-gray-400 hover:text-gray-600">← Tancar</button>
       <h2 class="text-lg font-semibold">{{ w.title }}</h2>
       <p class="text-sm text-gray-600">{{ w.description }}</p>
@@ -18,9 +21,6 @@
       </button>
     </aside>
     }
-    <div class="flex-1 min-w-0">
-      <div id="calendar"></div>
-    </div>
   </div>
 
   <div class="block md:hidden">
