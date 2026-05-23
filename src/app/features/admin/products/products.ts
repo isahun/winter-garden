@@ -40,7 +40,7 @@ export class Products implements OnInit {
     this.editing.set(null);
   }
 
-  async uploadImage(event: Event) {
+  async uploadImage(event: Event, index: number) {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
     this.uploading.set(true);
@@ -56,12 +56,22 @@ export class Products implements OnInit {
       '/upload/',
       '/upload/w_800,h_800,c_pad,b_white,f_auto,q_auto/',
     );
-    this.editing.update((p) => (p ? { ...p, images: [url] } : p));
+    this.editing.update((p) => {
+      if (!p) return p;
+      const images = [...(p.images ?? [])];
+      images[index] = url;
+      return { ...p, images };
+    });
     this.uploading.set(false);
   }
 
-    removeImage() {
-    this.editing.update(p => (p ? { ...p, images: [] } : p));
+  removeImage(index: number) {
+    this.editing.update(p => {
+      if (!p) return p;
+      const images = [...(p.images ?? [])];
+      images.splice(index, 1);
+      return { ...p, images };
+    });
   }
 
   async saveProductAdmin() {

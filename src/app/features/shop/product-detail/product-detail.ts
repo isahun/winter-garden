@@ -25,6 +25,7 @@ export class ProductDetail {
   added = signal(false);
   related = signal<Product[]>([]);
   lightboxOpen = signal(false);
+  activeImage = signal(0);
 
   constructor() {
     effect(async () => {
@@ -32,6 +33,7 @@ export class ProductDetail {
       const { data } = await this.productService.getProductById(id);
       this.product.set(data);
       this.related.set([]);
+      this.activeImage.set(0);
       if (data?.category_id) {
         const { data: rel } = await this.productService.getRelatedProducts(data.category_id, data.id);
         this.related.set(rel ?? []);
