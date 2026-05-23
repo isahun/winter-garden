@@ -1,4 +1,45 @@
-<div class="container mx-auto px-4 py-8">
+<section class="container mx-auto px-4 py-8">
   <h1 class="text-3xl font-semibold mb-6">Les nostres botigues</h1>
-  <div id="map" class="w-full h-96 rounded-lg shadow"></div>
-</div>
+
+  <div class="grid grid-cols-1 md:grid-cols-[1fr_360px] gap-6 items-start">
+    <div id="map" class="w-full h-[500px] rounded-xl shadow sticky top-4"></div>
+
+    <ul class="space-y-3 list-none md:max-h-[500px] md:overflow-y-auto md:pr-1">
+      @for (store of stores(); track store.id) {
+        <li
+          [id]="'store-' + store.id"
+          (click)="selectStore(store.id)"
+          [class]="selectedStoreId() === store.id
+            ? 'p-4 border rounded-xl cursor-pointer transition ring-2 ring-green-600 bg-green-50'
+            : 'p-4 border rounded-xl cursor-pointer transition hover:shadow-md'"
+        >
+          <h2 class="font-semibold text-base mb-2">{{ store.name }}</h2>
+          <dl class="space-y-1 text-sm text-gray-600">
+            <div class="flex gap-2">
+              <dt aria-hidden="true">📍</dt>
+              <dd>{{ store.address }}</dd>
+            </div>
+            @if (store.phone) {
+              <div class="flex gap-2">
+                <dt aria-hidden="true">📞</dt>
+                <dd><a [href]="'tel:' + store.phone" class="hover:text-green-700">{{ store.phone }}</a></dd>
+              </div>
+            }
+            @if (store.schedule) {
+              <div class="flex gap-2">
+                <dt aria-hidden="true">🕐</dt>
+                <dd>{{ store.schedule }}</dd>
+              </div>
+            }
+            @if (store.email) {
+              <div class="flex gap-2">
+                <dt aria-hidden="true">✉️</dt>
+                <dd><a [href]="'mailto:' + store.email" class="underline hover:text-green-700" (click)="$event.stopPropagation()">{{ store.email }}</a></dd>
+              </div>
+            }
+          </dl>
+        </li>
+      }
+    </ul>
+  </div>
+</section>
