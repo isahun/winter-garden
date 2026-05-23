@@ -23,7 +23,7 @@
       <select id="p-category" [(ngModel)]="editing()!.category_id" name="category_id" class="input">
         <option [ngValue]="null">Sense categoria</option>
         @for (cat of categories(); track cat.id) {
-          <option [value]="cat.id">{{ cat.name }}</option>
+        <option [value]="cat.id">{{ cat.name }}</option>
         }
       </select>
       <label class="sr-only" for="p-desc">Descripció</label>
@@ -68,8 +68,13 @@
       </thead>
       <tbody class="divide-y">
         @for (product of products(); track product.id) {
-        <tr>
-          <td class="py-3">{{ product.name }}</td>
+        <tr [class.opacity-50]="product.stock === 0">
+          <td class="py-3">
+            {{ product.name }}
+            @if (product.stock === 0) {
+            <span class="ml-2 text-xs text-red-500 font-medium">Sense estoc</span>
+            }
+          </td>
           <td class="py-3">{{ product.price }}€</td>
           <td class="py-3">{{ product.stock }}</td>
           <td class="py-3 flex gap-2">
