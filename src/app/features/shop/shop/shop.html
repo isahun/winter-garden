@@ -4,9 +4,9 @@
   <search class="flex gap-4 mb-6">
     <label for="search-input" class="sr-only">Cercar productes</label>
     <input id="search-input" type="search" placeholder="Cercar productes..."
-      (input)="search.set($any($event.target).value)" class="input flex-1" />
+      (input)="setSearch($any($event.target).value)" class="input flex-1" />
     <label for="category-select" class="sr-only">Filtrar per categoria</label>
-    <select id="category-select" (change)="selectedCategory.set($any($event.target).value)" class="input">
+    <select id="category-select" (change)="setCategory($any($event.target).value)" class="input">
       <option value="">Totes les categories</option>
       <option value="jardins-fets">Jardins</option>
       <option value="elements-solts">Elements</option>
@@ -15,7 +15,7 @@
   </search>
 
   <ul class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 list-none">
-    @for (product of filteredProducts(); track product.id) {
+    @for (product of paginatedProducts(); track product.id) {
     <li class="relative">
       <a [routerLink]="['/shop', product.id]" class="card hover:shadow-md transition block">
         @if (auth.isLoggedIn()) {
@@ -36,4 +36,18 @@
     <li class="col-span-full text-center text-gray-500">Cap producte trobat.</li>
     }
   </ul>
+
+  @if (totalPages() > 1) {
+  <nav class="flex items-center justify-center gap-4 mt-8" aria-label="Paginació">
+    <button (click)="currentPage.set(currentPage() - 1)" [disabled]="currentPage() === 1"
+      class="btn-secondary px-4 py-2 disabled:opacity-40">
+      ← Anterior
+    </button>
+    <span class="text-sm text-gray-600">Pàgina {{ currentPage() }} de {{ totalPages() }}</span>
+    <button (click)="currentPage.set(currentPage() + 1)" [disabled]="currentPage() === totalPages()"
+      class="btn-secondary px-4 py-2 disabled:opacity-40">
+      Següent →
+    </button>
+  </nav>
+  }
 </section>
