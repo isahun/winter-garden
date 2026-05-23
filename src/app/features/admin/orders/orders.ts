@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+﻿import { Component, OnInit, inject, signal } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SupabaseService } from '../../../core/supabase.service';
@@ -16,7 +16,7 @@ export class AdminOrders implements OnInit {
   async ngOnInit() {
     const { data } = await this.supabase
       .from('orders')
-      .select('*, order_items(*, products(name))')
+      .select('*, profiles(email), order_items(*, products(name))')
       .order('created_at', { ascending: false });
     this.orders.set(data ?? []);
   }

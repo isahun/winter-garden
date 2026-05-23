@@ -16,4 +16,5 @@ export interface Order {
   total: number;
   created_at: string;
   order_items?: OrderItem[];
+  profiles?: { email: string };
 }
