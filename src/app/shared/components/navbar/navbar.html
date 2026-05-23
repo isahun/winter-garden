@@ -1,57 +1,114 @@
-<nav class="border-b px-6 py-4" aria-label="Navegació principal">
-  <div class="flex items-center justify-between">
-    <a routerLink="/" class="font-bold text-lg">Secret Garden</a>
+<!-- Top navbar -->
+<nav class="navbar-glass sticky top-0 z-50 px-5 md:px-16 py-3" aria-label="Navegació principal">
+  <div class="flex items-center justify-between h-12">
 
-    <button
-      class="block md:hidden text-2xl"
-      (click)="menuOpen.set(!menuOpen())"
-      [attr.aria-expanded]="menuOpen()"
-      aria-controls="mobile-menu"
-      aria-label="Menú"
-    >
-      {{ menuOpen() ? '✕' : '☰' }}
-    </button>
+    <a routerLink="/" class="italic text-xl tracking-tight text-primary"
+       style="font-family: var(--font-display)">
+      Secret Garden
+    </a>
 
-    <ul class="hidden md:flex items-center gap-4 list-none">
+    <!-- Desktop: links -->
+    <ul class="hidden md:flex items-center gap-8 list-none">
       <ng-container [ngTemplateOutlet]="navLinks" />
     </ul>
+
+    <!-- Mòbil: icona carret (usuaris) o res (admin) -->
+    @if (!auth.isAdmin()) {
+      <a routerLink="/cart" class="md:hidden relative p-2 text-primary" aria-label="Carret">
+        <span class="text-xl">🛒</span>
+        @if (cart.count() > 0) {
+          <span class="absolute top-0 right-0 bg-primary text-white text-[10px] font-semibold
+                        rounded-full w-4 h-4 flex items-center justify-center leading-none">
+            {{ cart.count() }}
+          </span>
+        }
+      </a>
+    }
+
   </div>
-
-  @if (menuOpen()) {
-    <ul id="mobile-menu" class="flex flex-col gap-3 pt-3 md:hidden list-none">
-      <ng-container [ngTemplateOutlet]="navLinks" />
-    </ul>
-  }
 </nav>
 
+<!-- Bottom nav (mòbil, usuaris no admin) -->
+@if (!auth.isAdmin()) {
+  <nav class="bottom-nav md:hidden" aria-label="Navegació ràpida">
+    <a routerLink="/shop" routerLinkActive="active" class="bottom-nav-item"
+       [routerLinkActiveOptions]="{ exact: false }">
+      <span aria-hidden="true">🌿</span>
+      <span>Catàleg</span>
+    </a>
+    <a routerLink="/events" routerLinkActive="active" class="bottom-nav-item">
+      <span aria-hidden="true">🌸</span>
+      <span>Tallers</span>
+    </a>
+    <a routerLink="/stores" routerLinkActive="active" class="bottom-nav-item">
+      <span aria-hidden="true">📍</span>
+      <span>Botigues</span>
+    </a>
+    <a routerLink="/cart" routerLinkActive="active" class="bottom-nav-item relative">
+      <span class="relative" aria-hidden="true">
+        🛒
+        @if (cart.count() > 0) {
+          <span class="absolute -top-1 -right-1 bg-primary text-white text-[9px] font-semibold
+                        rounded-full w-3.5 h-3.5 flex items-center justify-center leading-none">
+            {{ cart.count() }}
+          </span>
+        }
+      </span>
+      <span>Carret</span>
+    </a>
+    @if (auth.isLoggedIn()) {
+      <a routerLink="/account" routerLinkActive="active" class="bottom-nav-item">
+        <span aria-hidden="true">👤</span>
+        <span>Compte</span>
+      </a>
+    } @else {
+      <a routerLink="/auth/login" class="bottom-nav-item">
+        <span aria-hidden="true">→</span>
+        <span>Entrar</span>
+      </a>
+    }
+  </nav>
+}
+
+<!-- Desktop: links template -->
 <ng-template #navLinks>
   @if (auth.isAdmin()) {
-    <li><a routerLink="/admin/dashboard" (click)="menuOpen.set(false)">Dashboard</a></li>
-    <li><a routerLink="/admin/products" (click)="menuOpen.set(false)">Productes</a></li>
-    <li><a routerLink="/admin/orders" (click)="menuOpen.set(false)">Comandes</a></li>
-    <li><a routerLink="/admin/events" (click)="menuOpen.set(false)">Tallers</a></li>
-    <li><button (click)="auth.logout(); menuOpen.set(false)">Sortir</button></li>
+    <li><a routerLink="/admin/dashboard" routerLinkActive="text-primary font-semibold"
+           class="text-sm text-muted hover:text-primary transition-colors duration-200">Dashboard</a></li>
+    <li><a routerLink="/admin/products" routerLinkActive="text-primary font-semibold"
+           class="text-sm text-muted hover:text-primary transition-colors duration-200">Productes</a></li>
+    <li><a routerLink="/admin/orders" routerLinkActive="text-primary font-semibold"
+           class="text-sm text-muted hover:text-primary transition-colors duration-200">Comandes</a></li>
+    <li><a routerLink="/admin/events" routerLinkActive="text-primary font-semibold"
+           class="text-sm text-muted hover:text-primary transition-colors duration-200">Tallers</a></li>
+    <li><button (click)="auth.logout()"
+                class="text-sm text-muted hover:text-primary transition-colors duration-200 cursor-pointer">Sortir</button></li>
   } @else {
-    <li><a routerLink="/shop" (click)="menuOpen.set(false)">Catàleg</a></li>
-    <li><a routerLink="/events" (click)="menuOpen.set(false)">Tallers</a></li>
-    <li><a routerLink="/stores" (click)="menuOpen.set(false)">Botigues</a></li>
-    <li><a routerLink="/faq" (click)="menuOpen.set(false)">FAQ</a></li>
+    <li><a routerLink="/shop" routerLinkActive="text-primary font-semibold"
+           class="text-sm text-muted hover:text-primary transition-colors duration-200">Catàleg</a></li>
+    <li><a routerLink="/events" routerLinkActive="text-primary font-semibold"
+           class="text-sm text-muted hover:text-primary transition-colors duration-200">Tallers</a></li>
+    <li><a routerLink="/stores" routerLinkActive="text-primary font-semibold"
+           class="text-sm text-muted hover:text-primary transition-colors duration-200">Botigues</a></li>
+    <li><a routerLink="/faq" routerLinkActive="text-primary font-semibold"
+           class="text-sm text-muted hover:text-primary transition-colors duration-200">FAQ</a></li>
     <li>
-      <a routerLink="/cart" (click)="menuOpen.set(false)" class="relative">
+      <a routerLink="/cart" class="text-sm text-muted hover:text-primary transition-colors duration-200 relative">
         Carret
         @if (cart.count() > 0) {
-          <span class="absolute -top-2 -right-3 bg-green-700 text-white text-xs rounded-full px-1.5">
+          <span class="absolute -top-2 -right-3 bg-primary text-white text-xs rounded-full px-1.5 leading-tight">
             {{ cart.count() }}
           </span>
         }
       </a>
     </li>
     @if (auth.isLoggedIn()) {
-      <li><a routerLink="/account" (click)="menuOpen.set(false)">El meu compte</a></li>
-      <li><button (click)="auth.logout(); menuOpen.set(false)">Sortir</button></li>
+      <li><a routerLink="/account" routerLinkActive="text-primary font-semibold"
+             class="text-sm text-muted hover:text-primary transition-colors duration-200">El meu compte</a></li>
+      <li><button (click)="auth.logout()"
+                  class="text-sm text-muted hover:text-primary transition-colors duration-200 cursor-pointer">Sortir</button></li>
     } @else {
-      <li><a routerLink="/auth/login" (click)="menuOpen.set(false)">Entrar</a></li>
-      <li><a routerLink="/auth/register" (click)="menuOpen.set(false)">Registrar-me</a></li>
+      <li><a routerLink="/auth/login" class="btn-primary py-2 px-5 text-xs">Entrar</a></li>
     }
   }
 </ng-template>
