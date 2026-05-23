@@ -9,6 +9,7 @@ export interface Workshop {
   capacity: number;
   price: number | null;
   difficulty: WorkshopDifficulty | null;
+  store_id: number | null;
   image_url: string | null;
   created_by: string | null;
   created_at: string;
