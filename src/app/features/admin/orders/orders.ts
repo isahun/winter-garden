@@ -5,11 +5,11 @@ import { SupabaseService } from '../../../core/supabase.service';
 import { Order } from '../../../core/models';
 
 @Component({
-  selector: 'app-orders',
+  selector: 'app-admin-orders',
   imports: [CurrencyPipe, DatePipe, FormsModule],
   templateUrl: './orders.html',
 })
-export class Orders implements OnInit {
+export class AdminOrders implements OnInit {
   private supabase = inject(SupabaseService).client;
   orders = signal<Order[]>([]);
 
