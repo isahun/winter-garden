@@ -11,4 +11,5 @@ export interface Product {
   size: string | null;
   created_at: string;
   categories?: Category;
+  featured?: boolean;
 }

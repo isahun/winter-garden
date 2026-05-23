@@ -1,15 +1,20 @@
-import { Component, inject, afterNextRender, ElementRef } from '@angular/core';
+import { Component, inject, afterNextRender, ElementRef, signal } from '@angular/core';
 import { SupabaseService } from '../../../core/supabase.service';
+import { CurrencyPipe } from '@angular/common';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [],
+  imports: [CurrencyPipe],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
 export class Dashboard {
   private supabase = inject(SupabaseService).client;
   private element = inject(ElementRef);
+
+  totalRevenue = signal(0);
+  totalOrders = signal(0);
+  activeProducts = signal(0);
 
   constructor() {
     afterNextRender(async () => {
@@ -19,6 +24,20 @@ export class Dashboard {
       const { data: orders } = await this.supabase
         .from('orders')
         .select('total, status, created_at');
+
+      this.totalOrders.set((orders ?? []).length);
+      this.totalRevenue.set(
+        (orders ?? [])
+          .filter((order) => order.status !== 'cancelled')
+          .reduce((sum, order) => sum + order.total, 0),
+      );
+
+      const { count } = await this.supabase
+        .from('products')
+        .select('*', { count: 'exact', head: true })
+        .gt('stock', 0);
+
+      this.activeProducts.set(count ?? 0);
 
       const monthly = Array(12).fill(0);
       (orders ?? []).forEach((order) => {

@@ -1,23 +1,29 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { ProductService } from '../../../core/services/product.service';
-import { Product } from '../../../core/models';
+import { Product, Category } from '../../../core/models';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-products',
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink],
   templateUrl: './products.html',
 })
 export class Products implements OnInit {
   private productService = inject(ProductService);
 
   products = signal<Product[]>([]);
+  categories = signal<Category[]>([]);
   editing = signal<Partial<Product> | null>(null);
   isNew = signal(false);
+  uploading = signal(false);
 
   async ngOnInit() {
     const { data } = await this.productService.getAllProducts();
     this.products.set(data ?? []);
+    const { data: cats } = await this.productService.getCategories();
+    this.categories.set(cats ?? []);
   }
 
   createProductAdmin() {
@@ -34,13 +40,48 @@ export class Products implements OnInit {
     this.editing.set(null);
   }
 
+  async uploadImage(event: Event, index: number) {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    this.uploading.set(true);
+    const form = new FormData();
+    form.append('file', file);
+    form.append('upload_preset', environment.cloudinaryUploadPreset);
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${environment.cloudinaryCloudName}/image/upload`, {
+      method: 'POST',
+      body: form,
+    });
+    const json = await res.json();
+    const url = (json.secure_url as string).replace(
+      '/upload/',
+      '/upload/w_800,h_800,c_pad,b_white,f_auto,q_auto/',
+    );
+    this.editing.update((p) => {
+      if (!p) return p;
+      const images = [...(p.images ?? [])];
+      images[index] = url;
+      return { ...p, images };
+    });
+    this.uploading.set(false);
+  }
+
+  removeImage(index: number) {
+    this.editing.update(p => {
+      if (!p) return p;
+      const images = [...(p.images ?? [])];
+      images.splice(index, 1);
+      return { ...p, images };
+    });
+  }
+
   async saveProductAdmin() {
     const data = this.editing();
     if (!data) return;
+    const { categories, created_at, ...payload } = data as Product;
     if (this.isNew()) {
-      await this.productService.createProduct(data);
+      await this.productService.createProduct(payload);
     } else {
-      await this.productService.updateProduct(data.id!, data);
+      await this.productService.updateProduct(payload.id!, payload);
     }
     this.editing.set(null);
     await this.ngOnInit();

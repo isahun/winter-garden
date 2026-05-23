@@ -1,15 +1,16 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { SupabaseService } from '../../../core/supabase.service';
 import { AuthService } from '../../../core/auth/auth.service';
 import { Order } from '../../../core/models';
 @Component({
-  selector: 'app-orders',
-  imports: [CurrencyPipe, DatePipe],
+  selector: 'app-account-orders',
+  imports: [CurrencyPipe, DatePipe, RouterLink],
   templateUrl: './orders.html',
   styleUrl: './orders.css',
 })
-export class Orders implements OnInit {
+export class AccountOrders implements OnInit {
   private supabase = inject(SupabaseService).client;
   private auth = inject(AuthService);
 

@@ -1,4 +1,4 @@
-<section class="container mx-auto px-4 py-8">
+﻿<section class="container mx-auto px-4 py-8">
   <h1 class="text-3xl font-semibold mb-6">Gestió de comandes</h1>
   <div class="overflow-x-auto">
     <table class="w-full text-sm">
@@ -10,6 +10,7 @@
           <th scope="col" class="pb-3">#</th>
           <th scope="col" class="pb-3">Data</th>
           <th scope="col" class="pb-3">Total</th>
+          <th scope="col" class="pb-3">Usuari</th>
           <th scope="col" class="pb-3">Estat</th>
         </tr>
       </thead>
@@ -23,6 +24,7 @@
             >
           </td>
           <td class="py-3">{{ order.total | currency:'EUR' }}</td>
+          <td class="py-3">{{ order.profiles?.email }}</td>
           <td class="py-3">
             <label [for]="'status-' + order.id" class="sr-only"
               >Estat comanda #{{ order.id }}</label

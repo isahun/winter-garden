@@ -1,4 +1,4 @@
-import { Routes } from '@angular/router';
+﻿import { Routes } from '@angular/router';
 import { authGuard } from './core/auth/auth.guard';
 import { adminGuard } from './core/auth/admin.guard';
 
@@ -56,6 +56,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/stores/stores').then((module) => module.Stores),
       },
       {
+        path: 'faq',
+        loadComponent: () => import('./features/faq/faq').then((module) => module.Faq),
+      },
+      {
         path: 'account',
         canActivate: [authGuard],
         children: [
@@ -67,7 +71,7 @@ export const routes: Routes = [
           {
             path: 'orders',
             loadComponent: () =>
-              import('./features/account/orders/orders').then((module) => module.Orders),
+              import('./features/account/orders/orders').then((module) => module.AccountOrders),
           },
           {
             path: 'favorites',
@@ -98,7 +102,7 @@ export const routes: Routes = [
           {
             path: 'orders',
             loadComponent: () =>
-              import('./features/admin/orders/orders').then((module) => module.Orders),
+              import('./features/admin/orders/orders').then((module) => module.AdminOrders),
           },
           {
             path: 'events',

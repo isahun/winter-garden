@@ -16,9 +16,12 @@ export class Shop implements OnInit {
   favorites = inject(FavoritesService);
   auth = inject(AuthService);
 
+  readonly PAGE_SIZE = 9;
+
   products = signal<Product[]>([]);
   search = signal('');
   selectedCategory = signal('');
+  currentPage = signal(1);
 
   filteredProducts = computed(() => {
     const searchTerm = this.search().toLowerCase();
@@ -28,6 +31,23 @@ export class Shop implements OnInit {
         (!this.selectedCategory() || product.categories?.slug === this.selectedCategory()),
     );
   });
+
+  paginatedProducts = computed(() => {
+    const start = (this.currentPage() - 1) * this.PAGE_SIZE;
+    return this.filteredProducts().slice(start, start + this.PAGE_SIZE);
+  });
+
+  totalPages = computed(() => Math.ceil(this.filteredProducts().length / this.PAGE_SIZE));
+
+  setSearch(value: string) {
+    this.search.set(value);
+    this.currentPage.set(1);
+  }
+
+  setCategory(value: string) {
+    this.selectedCategory.set(value);
+    this.currentPage.set(1);
+  }
 
   async ngOnInit() {
     const { data } = await this.productService.getAllProducts();
