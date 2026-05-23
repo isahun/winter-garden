@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { SupabaseService } from '../../../core/supabase.service';
-import { Workshop } from '../../../core/models';
+import { Workshop, Store } from '../../../core/models';
 import { RouterLink } from '@angular/router';
 
 @Component({
@@ -14,16 +14,21 @@ export class AdminEvents implements OnInit {
   private supabase = inject(SupabaseService).client;
 
   workshops = signal<Workshop[]>([]);
+  stores = signal<Store[]>([]);
   editing = signal<Partial<Workshop> | null>(null);
   isNew = signal(false);
 
   async ngOnInit() {
-    const { data } = await this.supabase.from('workshops').select('*').order('date');
-    this.workshops.set(data ?? []);
+    const [{ data: ws }, { data: st }] = await Promise.all([
+      this.supabase.from('workshops').select('*').order('date'),
+      this.supabase.from('stores').select('id, name'),
+    ]);
+    this.workshops.set(ws ?? []);
+    this.stores.set(st ?? []);
   }
 
   createNewEventAdmin() {
-    this.editing.set({ title: '', description: '', date: '', location: '', capacity: 20, price: null, difficulty: null });
+    this.editing.set({ title: '', description: '', date: '', location: '', capacity: 20, price: null, difficulty: null, store_id: null });
     this.isNew.set(true);
   }
 
@@ -31,6 +36,7 @@ export class AdminEvents implements OnInit {
     this.editing.set({ ...w });
     this.isNew.set(false);
   }
+
   cancelEditAdmin() {
     this.editing.set(null);
   }

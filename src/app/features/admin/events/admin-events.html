@@ -20,6 +20,13 @@
       <label class="sr-only" for="w-capacity">Aforament</label>
       <input id="w-capacity" [(ngModel)]="editing()!.capacity" name="capacity" type="number" placeholder="Aforament"
         class="input" />
+      <label class="sr-only" for="w-store">Botiga</label>
+      <select id="w-store" [(ngModel)]="editing()!.store_id" name="store_id" class="input">
+        <option [ngValue]="null">Botiga (opcional)</option>
+        @for (s of stores(); track s.id) {
+          <option [ngValue]="s.id">{{ s.name }}</option>
+        }
+      </select>
       <label class="sr-only" for="w-price">Preu (€)</label>
       <input id="w-price" [(ngModel)]="editing()!.price" name="price" type="number" min="0"
         placeholder="Preu en € (0 = gratuït)" class="input" />
