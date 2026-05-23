@@ -1,4 +1,4 @@
-export type WorkshopDifficulty = 'Principiant' | 'Regular' | 'Avançat';
+export type WorkshopDifficulty = 'Principiant' | 'Regular' | 'Expert';
 
 export interface Workshop {
   id: number;
