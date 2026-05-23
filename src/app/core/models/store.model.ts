@@ -6,4 +6,5 @@ export interface Store {
   lng: number;
   schedule: string | null;
   phone: string | null;
+  email: string | null;
 }
