@@ -2,8 +2,10 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { SupabaseService } from '../../../core/supabase.service';
-import { Workshop, Store } from '../../../core/models';
+import { Workshop } from '../../../core/models';
 import { RouterLink } from '@angular/router';
+
+type StoreOption = { id: number; name: string };
 
 @Component({
   selector: 'app-admin-events',
@@ -14,7 +16,7 @@ export class AdminEvents implements OnInit {
   private supabase = inject(SupabaseService).client;
 
   workshops = signal<Workshop[]>([]);
-  stores = signal<Store[]>([]);
+  stores = signal<StoreOption[]>([]);
   editing = signal<Partial<Workshop> | null>(null);
   isNew = signal(false);
 
