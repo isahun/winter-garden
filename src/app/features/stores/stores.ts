@@ -1,4 +1,5 @@
 import { Component, inject, signal, afterNextRender } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { SupabaseService } from '../../core/supabase.service';
 import { Store } from '../../core/models';
 import type { Map as LeafletMap, Marker } from 'leaflet';
@@ -11,6 +12,7 @@ import type { Map as LeafletMap, Marker } from 'leaflet';
 })
 export class Stores {
   private supabase = inject(SupabaseService).client;
+  private route = inject(ActivatedRoute);
 
   stores = signal<Store[]>([]);
   selectedStoreId = signal<number | null>(null);
@@ -42,6 +44,9 @@ export class Stores {
       });
 
       map.on('popupclose', () => this.selectedStoreId.set(null));
+
+      const storeParam = this.route.snapshot.queryParamMap.get('store');
+      if (storeParam) this.selectStore(Number(storeParam));
     });
   }
 

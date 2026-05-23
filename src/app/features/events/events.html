@@ -10,8 +10,21 @@
       <button (click)="closePanel()" class="text-sm text-gray-400 hover:text-gray-600">← Tancar</button>
       <h2 class="text-lg font-semibold">{{ w.title }}</h2>
       <p class="text-sm text-gray-600">{{ w.description }}</p>
-      <p class="text-sm text-gray-500">📍 {{ w.location }}</p>
+      @if (w.store_id) {
+        <button (click)="goToStore(w.store_id)"
+                class="text-sm text-gray-500 hover:text-primary hover:underline text-left transition-colors">
+          📍 {{ w.location }}
+        </button>
+      } @else {
+        <p class="text-sm text-gray-500">📍 {{ w.location }}</p>
+      }
       <p class="text-sm text-gray-500">👥 Aforament: {{ w.capacity }}</p>
+      @if (w.price != null) {
+        <p class="text-sm text-gray-500">💶 {{ w.price === 0 ? 'Gratuït' : (w.price + ' €') }}</p>
+      }
+      @if (w.difficulty) {
+        <p class="text-sm text-gray-500">📊 {{ w.difficulty }}</p>
+      }
       <button
         (click)="toggleSignup(w)"
         class="w-full mt-2"
@@ -40,8 +53,23 @@
             <h3 class="font-medium">{{ w.title }}</h3>
             <time class="text-xs text-gray-400 shrink-0 ml-2">{{ w.date | date:'d MMM' }}</time>
           </div>
-          <p class="text-sm text-gray-500 mb-1">📍 {{ w.location }}</p>
-          <p class="text-sm text-gray-500 mb-3">👥 {{ w.capacity }} places</p>
+          @if (w.store_id) {
+            <button (click)="goToStore(w.store_id)"
+                    class="text-sm text-gray-500 hover:text-primary hover:underline text-left mb-1 transition-colors">
+              📍 {{ w.location }}
+            </button>
+          } @else {
+            <p class="text-sm text-gray-500 mb-1">📍 {{ w.location }}</p>
+          }
+          <p class="text-sm text-gray-500">👥 {{ w.capacity }} places</p>
+          @if (w.price != null) {
+            <p class="text-sm text-gray-500">💶 {{ w.price === 0 ? 'Gratuït' : (w.price + ' €') }}</p>
+          }
+          @if (w.difficulty) {
+            <p class="text-sm text-gray-500 mb-3">📊 {{ w.difficulty }}</p>
+          } @else {
+            <p class="mb-3"></p>
+          }
           <button
             (click)="toggleSignup(w)"
             class="w-full text-sm"

@@ -1,3 +1,5 @@
+export type WorkshopDifficulty = 'Principiant' | 'Regular' | 'Expert';
+
 export interface Workshop {
   id: number;
   title: string;
@@ -5,6 +7,9 @@ export interface Workshop {
   date: string;
   location: string | null;
   capacity: number;
+  price: number | null;
+  difficulty: WorkshopDifficulty | null;
+  store_id: number | null;
   image_url: string | null;
   created_by: string | null;
   created_at: string;
