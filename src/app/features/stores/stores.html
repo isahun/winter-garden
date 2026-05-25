@@ -2,9 +2,9 @@
   <h1 class="text-3xl font-semibold mb-6">Les nostres botigues</h1>
 
   <div class="grid grid-cols-1 md:grid-cols-[1fr_360px] gap-6 items-start">
-    <div id="map" class="w-full h-[500px] rounded-xl shadow sticky top-4"></div>
+    <div id="map" class="w-full h-125 rounded-xl shadow sticky top-4"></div>
 
-    <ul class="space-y-3 list-none md:max-h-[500px] md:overflow-y-auto md:pr-1">
+    <ul class="space-y-3 list-none md:max-h-125 md:overflow-y-auto md:pr-1">
       @for (store of stores(); track store.id) {
         <li
           [id]="'store-' + store.id"
