@@ -1,4 +1,4 @@
-# Secret Garden — Diagrames tècnics
+# Jardí d'hivern — Diagrames tècnics
 
 > Tots els diagrames en format Mermaid. Es renderitzen a GitHub, Linear i VSCode (extensió Mermaid Preview).
 
@@ -15,28 +15,35 @@ graph TB
         GRD["Guards<br/>auth · role"]
     end
 
+    subgraph SSR["Angular SSR · Express"]
+        API_PAY["POST /api/payment-intent"]
+        API_CHAT["POST /api/chatbot<br/>(streaming)"]
+    end
+
     subgraph Supabase["Supabase · Backend"]
         AUTH["Auth Service<br/>JWT + RLS"]
         DB[("PostgreSQL<br/>products · orders<br/>workshops · stores")]
         STR["Storage<br/>product images"]
-        EFN["Edge Functions<br/>Stripe · Claude AI"]
     end
 
     subgraph External["Serveis externs"]
         STRIPE["Stripe API<br/>pagaments"]
-        CLAUDE["Claude API<br/>chatbot IA"]
+        GEMINI["Gemini API<br/>gemini-2.5-flash"]
     end
 
     UI --> SVC
     SVC --> INT
     INT --> AUTH
     INT --> DB
-    SVC --> EFN
     SVC --> STR
-    EFN --> STRIPE
-    EFN --> CLAUDE
+    SVC --> API_PAY
+    SVC --> API_CHAT
+    API_PAY --> STRIPE
+    API_CHAT --> DB
+    API_CHAT --> GEMINI
 
     style Client fill:#f0fdf4,stroke:#16a34a
+    style SSR fill:#fdf4ff,stroke:#9333ea
     style Supabase fill:#eff6ff,stroke:#3b82f6
     style External fill:#fef9c3,stroke:#ca8a04
 ```
@@ -136,10 +143,8 @@ flowchart TD
     G -- Si --> C
     G -- No --> H[Veure carret]
     H --> I{Esta loguejat?}
-    I -- No --> J{Vol compte?}
-    J -- Si --> K[Registre]
-    J -- No --> L[Checkout com a guest]
-    K --> L
+    I -- No --> K[Login / Registre]
+    K --> L[Checkout]
     I -- Si --> L
     L --> M[Formulari Stripe]
     M --> N{Pagament OK?}
@@ -158,6 +163,8 @@ flowchart TD
     B --> W[Veure mapa de botigues]
     W --> X[Clic al marcador]
     X --> Y[Popup info botiga]
+
+    B --> Z[FAQ]
 ```
 
 ---
@@ -238,49 +245,48 @@ sequenceDiagram
 sequenceDiagram
     actor User
     participant Angular
-    participant EdgeFn as EdgeFn-Supabase
+    participant SSR as Express SSR<br/>/api/payment-intent
     participant Stripe
-    participant DB as PostgreSQL
+    participant DB as Supabase PostgreSQL
 
     User->>Angular: Confirma comanda
-    Angular->>EdgeFn: POST /create-payment-intent amb items i total
-    EdgeFn->>Stripe: createPaymentIntent(amount, currency)
-    Stripe-->>EdgeFn: client_secret
-    EdgeFn-->>Angular: client_secret
+    Angular->>SSR: POST /api/payment-intent { amount }
+    SSR->>Stripe: paymentIntents.create(amount, EUR)
+    Stripe-->>SSR: client_secret
+    SSR-->>Angular: client_secret
     Angular->>Stripe: stripe.confirmPayment(client_secret)
-    Stripe-->>Angular: status
+    Note over Stripe,Angular: Redirecció a /account/orders
 
     alt Pagament exitos
-        Angular->>EdgeFn: POST /confirm-order
-        EdgeFn->>DB: INSERT INTO orders + order_items
-        EdgeFn-->>Angular: order_id
-        Angular-->>User: Pagina de confirmacio
+        Angular->>DB: INSERT INTO orders (user_id, total, status)
+        Angular-->>User: Pagina de confirmacio a /account/orders
     else Pagament fallit
-        Angular-->>User: Missatge d'error
+        Angular-->>User: Missatge d'error inline
         User->>Angular: Reintenta
     end
 ```
 
 ---
 
-## 7. Flux del chatbot IA (Claude API)
+## 7. Flux del chatbot IA (Gemini API)
 
 ```mermaid
 sequenceDiagram
     actor User
     participant Widget as ChatbotWidget
-    participant EdgeFn as EdgeFn-Supabase
-    participant Claude as ClaudeAPI
-    participant DB as PostgreSQL
+    participant SSR as Express SSR<br/>/api/chatbot
+    participant DB as Supabase PostgreSQL
+    participant Gemini as Gemini API<br/>gemini-2.5-flash
 
     User->>Widget: Tinc un raco de 30x30cm amb poca llum
-    Widget->>EdgeFn: POST /ai-chat amb message
-    EdgeFn->>DB: SELECT productes actius per context
-    DB-->>EdgeFn: Llista de productes
-    EdgeFn->>Claude: Messages amb context de productes
-    Claude-->>EdgeFn: Recomanacio amb productes concrets
-    EdgeFn-->>Widget: response i recommended_product_ids
-    Widget-->>User: Resposta + links als productes recomanats
+    Widget->>SSR: POST /api/chatbot { message }
+    SSR->>DB: SELECT name, description, price FROM products LIMIT 20
+    DB-->>SSR: Llista de productes
+    SSR->>Gemini: generateContentStream amb systemInstruction + productes
+    Note over SSR,Gemini: Streaming de text (Transfer-Encoding: chunked)
+    Gemini-->>SSR: chunks de text
+    SSR-->>Widget: stream de text
+    Widget-->>User: Resposta renderitzada progressivament
 ```
 
 ---
@@ -303,11 +309,14 @@ graph LR
     LAYOUT --> CHECKOUT["/checkout<br/>authGuard"]
     LAYOUT --> EVENTS["/events Calendari"]
     LAYOUT --> STORES["/stores Mapa"]
+    LAYOUT --> FAQ["/faq Preguntes freqüents"]
     LAYOUT --> ACCOUNT["/account<br/>authGuard"]
     LAYOUT --> ADMIN["/admin<br/>authGuard + adminGuard"]
 
     ACCOUNT --> ACC_ROOT["/account Perfil"]
     ACCOUNT --> ACC_ORD["/account/orders"]
+    ACCOUNT --> ACC_FAV["/account/favorites"]
+    ACCOUNT --> ACC_WRK["/account/workshops"]
 
     ADMIN --> DASH["/admin/dashboard"]
     ADMIN --> PROD["/admin/products"]
