@@ -4,7 +4,7 @@
 
 Projecte final de Bootcamp Frontend — Angular 22 · Supabase · Stripe · Gemini AI
 
-**[Demo en viu](#)** <!-- canviar x URL d Railway un cop hagi fet el deploy -->
+**[Demo en viu](#)** <!-- canviar x URL d Railway quan hagi fet el deploy -->
 
 ---
 
