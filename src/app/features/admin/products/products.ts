@@ -2,8 +2,8 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ProductService } from '../../../core/services/product.service';
+import { ImageService } from '../../../core/services/image.service';
 import { Product, Category } from '../../../core/models';
-import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-products',
@@ -12,6 +12,7 @@ import { environment } from '../../../../environments/environment';
 })
 export class Products implements OnInit {
   private productService = inject(ProductService);
+  private imageService = inject(ImageService);
 
   products = signal<Product[]>([]);
   categories = signal<Category[]>([]);
@@ -44,18 +45,7 @@ export class Products implements OnInit {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
     this.uploading.set(true);
-    const form = new FormData();
-    form.append('file', file);
-    form.append('upload_preset', environment.cloudinaryUploadPreset);
-    const res = await fetch(`https://api.cloudinary.com/v1_1/${environment.cloudinaryCloudName}/image/upload`, {
-      method: 'POST',
-      body: form,
-    });
-    const json = await res.json();
-    const url = (json.secure_url as string).replace(
-      '/upload/',
-      '/upload/w_800,h_800,c_pad,b_white,f_auto,q_auto/',
-    );
+    const url = await this.imageService.uploadToCloudinary(file);
     this.editing.update((p) => {
       if (!p) return p;
       const images = [...(p.images ?? [])];
