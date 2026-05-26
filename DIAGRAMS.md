@@ -22,7 +22,7 @@ graph TB
 
     subgraph Supabase["Supabase · Backend"]
         AUTH["Auth Service<br/>JWT + RLS"]
-        DB[("PostgreSQL<br/>products · orders<br/>workshops · stores")]
+        DB[("PostgreSQL<br/>products · orders · favorites<br/>workshops · stores")]
         STR["Storage<br/>product images"]
     end
 
@@ -32,11 +32,14 @@ graph TB
     end
 
     UI --> SVC
+    UI --> GRD
+    GRD --> AUTH
+    SVC --> AUTH
+    SVC --> DB
+    SVC --> STR
     SVC --> INT
     INT --> AUTH
-    INT --> DB
-    SVC --> STR
-    SVC --> API_PAY
+    INT --> API_PAY
     SVC --> API_CHAT
     API_PAY --> STRIPE
     API_CHAT --> DB
@@ -56,75 +59,89 @@ graph TB
 erDiagram
     profiles {
         uuid id PK
-        uuid user_id FK
-        varchar role
-        varchar name
-        varchar avatar_url
+        text role
+        text name
+        text avatar_url
+        timestamptz created_at
     }
     categories {
-        uuid id PK
-        varchar name
-        varchar slug
+        int id PK
+        text name
+        text slug
     }
     products {
-        uuid id PK
-        varchar name
+        int id PK
+        text name
         text description
-        decimal price
+        numeric price
         int stock
-        uuid category_id FK
-        text images
-        varchar size
-        boolean active
+        int category_id FK
+        text[] images
+        text size
+        boolean featured
+        timestamptz created_at
     }
     orders {
-        uuid id PK
+        int id PK
         uuid user_id FK
-        varchar status
-        decimal total
-        varchar shipping_address
-        timestamp created_at
+        text status
+        numeric total
+        timestamptz created_at
     }
     order_items {
-        uuid id PK
-        uuid order_id FK
-        uuid product_id FK
+        int id PK
+        int order_id FK
+        int product_id FK
         int quantity
-        decimal unit_price
+        numeric unit_price
     }
     workshops {
-        uuid id PK
-        varchar title
+        int id PK
+        text title
         text description
-        timestamp date
-        varchar location
+        timestamptz date
+        text location
         int capacity
-        varchar image_url
+        text image_url
         uuid created_by FK
+        numeric price
+        text difficulty
+        int store_id FK
+        timestamptz created_at
     }
     workshop_signups {
-        uuid id PK
-        uuid workshop_id FK
+        int id PK
+        int workshop_id FK
         uuid user_id FK
-        timestamp created_at
+        timestamptz created_at
     }
     stores {
-        uuid id PK
-        varchar name
-        varchar address
-        decimal lat
-        decimal lng
-        varchar schedule
-        varchar phone
+        int id PK
+        text name
+        text address
+        numeric lat
+        numeric lng
+        text schedule
+        text phone
+        text email
+    }
+    favorites {
+        int id PK
+        uuid user_id FK
+        int product_id FK
+        timestamptz created_at
     }
 
     profiles ||--o{ orders : "places"
     profiles ||--o{ workshop_signups : "signs up for"
     profiles ||--o{ workshops : "creates"
+    profiles ||--o{ favorites : "saves"
     categories ||--o{ products : "contains"
     orders ||--o{ order_items : "includes"
     products ||--o{ order_items : "appears in"
+    products ||--o{ favorites : "saved in"
     workshops ||--o{ workshop_signups : "receives"
+    stores ||--o{ workshops : "hosts"
 ```
 
 ---
@@ -139,6 +156,9 @@ flowchart TD
     D --> C
     C --> E[Detall de producte]
     E --> F[Afegir al carret]
+    E --> E2{Esta loguejat?}
+    E2 -- Si --> E3[Guardar a favorits]
+    E2 -- No --> K
     F --> G{Continua comprant?}
     G -- Si --> C
     G -- No --> H[Veure carret]
@@ -181,7 +201,6 @@ flowchart TD
     D --> F[Gestio de productes]
     D --> G[Gestio de comandes]
     D --> H["Gestio de tallers<br/>des del calendari"]
-    D --> I["Gestio de botigues<br/>des del mapa"]
 
     F --> F1[Crear producte]
     F --> F2[Editar producte]
@@ -196,14 +215,8 @@ flowchart TD
     H --> H2["Editar taller<br/>clic sobre l'event"]
     H --> H3[Eliminar taller]
 
-    I --> I1["Afegir marcador<br/>al mapa"]
-    I --> I2["Editar info botiga<br/>clic sobre marcador"]
-    I --> I3[Eliminar botiga]
-
     E --> E1[Vendes per mes]
-    E --> E2[Productes mes venuts]
-    E --> E3[Estat de comandes]
-    E --> E4[Inscripcions a tallers]
+    E --> E2[Estat de comandes]
 ```
 
 ---
@@ -229,9 +242,8 @@ sequenceDiagram
     Note over Angular,SupabaseDB: Peticions posteriors autenticades
 
     User->>Angular: Accedeix a recurs protegit
-    Angular->>AuthInterceptor: HTTP request
-    AuthInterceptor->>AuthInterceptor: Afegeix JWT a la capcalera
-    AuthInterceptor->>SupabaseDB: GET /recurs amb Authorization Bearer
+    Angular->>Angular: authGuard comprova sessio activa
+    Angular->>SupabaseDB: Crida via Supabase JS client
     SupabaseDB->>SupabaseDB: Comprova RLS Policy
     SupabaseDB-->>Angular: Dades filtrades per rol
     Angular-->>User: Mostra dades
