@@ -8,6 +8,9 @@ export interface Workshop {
   image_url: string | null;
   created_by: string | null;
   created_at: string;
+  price: number | null;
+  difficulty: 'Principiant' | 'Regular' | 'Expert' | null;
+  store_id: number | null;
 }
 
 export interface WorkshopSignup {
