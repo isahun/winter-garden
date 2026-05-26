@@ -1,7 +1,5 @@
 @import "tailwindcss";
 
-/* ─── Tokens de disseny ──────────────────────────────────────────────────── */
-
 @theme {
   --color-bg:                #FCF9F4;
   --color-surface:           #FCF9F4;
@@ -21,14 +19,10 @@
   --font-sans:    'Manrope', system-ui, sans-serif;
 }
 
-/* ─── Animacions ─────────────────────────────────────────────────────────── */
-
 @keyframes subtle-float {
   0%, 100% { transform: translateY(0); }
   50%       { transform: translateY(-8px); }
 }
-
-/* ─── Base global ────────────────────────────────────────────────────────── */
 
 @layer base {
   body {
@@ -61,11 +55,8 @@
   }
 }
 
-/* ─── Components reutilitzables ──────────────────────────────────────────── */
-
 @layer components {
 
-  /* Botó principal — píndola fosca amb glow suau */
   .btn-primary {
     display: inline-flex;
     align-items: center;
@@ -100,7 +91,6 @@
     cursor: not-allowed;
   }
 
-  /* Botó secundari — píndola transparent amb vora */
   .btn-secondary,
   .btn-ghost {
     display: inline-flex;
@@ -138,7 +128,6 @@
     cursor: not-allowed;
   }
 
-  /* Card — superfície blanca molt rodona */
   .card {
     background-color: #fff;
     border-radius: 1.5rem;
@@ -152,7 +141,6 @@
     transform: translateY(-4px);
   }
 
-  /* Input */
   .input {
     width: 100%;
     background-color: var(--color-surface);
@@ -179,7 +167,6 @@
     cursor: pointer;
   }
 
-  /* Glassmorphism per al navbar */
   .navbar-glass {
     background-color: color-mix(in srgb, var(--color-surface) 80%, transparent);
     backdrop-filter: blur(12px);
@@ -188,7 +175,6 @@
     border-bottom: 1px solid color-mix(in srgb, var(--color-border) 40%, transparent);
   }
 
-  /* Bottom nav mòbil */
   .bottom-nav {
     position: fixed;
     bottom: 0;
@@ -228,7 +214,6 @@
     background-color: color-mix(in srgb, var(--color-primary-light) 20%, transparent);
   }
 
-  /* Separador decoratiu amb 🌿 */
   .vine-divider {
     height: 1px;
     background: linear-gradient(90deg, transparent, var(--color-border), transparent);
@@ -247,23 +232,18 @@
     font-size: 0.875rem;
   }
 
-  /* Gradient hero */
   .hero-gradient {
     background: linear-gradient(to bottom, rgba(0, 52, 52, 0.45), var(--color-bg));
   }
 
-  /* Glow màgic */
   .magical-glow {
     box-shadow: 0 4px 20px rgba(0, 77, 77, 0.06), 0 0 20px rgba(148, 209, 209, 0.14);
   }
 
-  /* Animació flotant per a elements hero */
   .animate-float {
     animation: subtle-float 6s ease-in-out infinite;
   }
 }
-
-/* ─── FullCalendar overrides ─────────────────────────────────────────────── */
 
 .fc-daygrid-event {
   white-space: normal !important;
