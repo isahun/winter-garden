@@ -1,0 +1,40 @@
+<button (click)="open.set(!open())" aria-label="Obre l'assessora de jardins"
+  class="fixed bottom-6 right-6 bg-green-700 text-white rounded-full w-14 h-14 text-2xl shadow-lg z-50 hover:cursor-pointer">
+  🌿
+</button>
+
+@if (open()) {
+<div class="fixed bottom-24 right-6 w-80 bg-white border rounded-xl shadow-xl z-50 flex flex-col" role="dialog"
+  aria-label="Assessora de jardins">
+  <div class="p-3 border-b font-semibold text-green-800">Assessora de jardins 🌿</div>
+
+  <div class="overflow-y-auto p-3 space-y-2 max-h-72">
+    @for (msg of chatMessages(); track msg.id) {
+    <div [class.text-right]="msg.isUser" [class.text-left]="!msg.isUser">
+      <span [class]="msg.isUser
+          ? 'bg-green-100 p-2 rounded-lg inline-block max-w-[80%] text-sm'
+          : 'bg-gray-100 p-2 rounded-lg inline-block max-w-[80%] text-sm'">{{ msg.text }}</span>
+    </div>
+    }
+    @if (aiResponse.isLoading()) {
+    <div class="text-left">
+      <span class="bg-gray-100 p-2 rounded-lg inline-block max-w-[80%] text-sm animate-pulse">
+        {{ aiResponse.value() || '...' }}
+      </span>
+    </div>
+    } @else if (aiResponse.error()) {
+    <p class="text-red-500 text-sm p-2">{{ $any(aiResponse.error()).message }}</p>
+    }
+  </div>
+
+  <div class="p-3 border-t flex gap-2">
+    <label for="chatbot-input" class="sr-only">Missatge</label>
+    <input id="chatbot-input" [(ngModel)]="userPrompt" (keyup.enter)="sendMessage()"
+      placeholder="Escriu el teu missatge..." class="input flex-1 text-sm" />
+    <button (click)="sendMessage()" [disabled]="!userPrompt.trim() || aiResponse.isLoading()"
+      class="btn-primary text-sm px-3">
+      Enviar
+    </button>
+  </div>
+</div>
+}

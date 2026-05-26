@@ -1,0 +1,31 @@
+<div class="min-h-screen flex items-center justify-center">
+  <div class="w-full max-w-sm">
+    <div class="flex gap-4 mb-6 text-sm">
+      <a routerLink="/" class="text-gray-500 hover:underline">← Inici</a>
+      <a routerLink="/shop" class="text-gray-500 hover:underline">Catàleg</a>
+    </div>
+  <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
+    <h1 class="text-2xl font-semibold">Crear compte</h1>
+
+    @if (error()) {
+      <p class="text-red-600 text-sm">{{ error() }}</p>
+    }
+
+    <input formControlName="name" type="text" placeholder="Nom" class="input w-full" />
+    <input formControlName="email" type="email" placeholder="Email" class="input w-full" />
+    <input formControlName="password" type="password" placeholder="Contrasenya (mínim 6 car.)" class="input w-full" />
+
+    @if (form.get('password')?.invalid && form.get('password')?.touched) {
+      <p class="text-red-500 text-xs">Mínim 6 caràcters</p>
+    }
+
+    <button type="submit" [disabled]="loading()" class="btn-primary w-full">
+      {{ loading() ? 'Carregant...' : 'Crear compte' }}
+    </button>
+
+    <p class="text-sm text-center">
+      Ja tens compte? <a routerLink="/auth/login" class="underline">Inicia sessió</a>
+    </p>
+  </form>
+  </div>
+</div>

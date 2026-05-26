@@ -1,0 +1,54 @@
+<section class="container mx-auto px-4 py-8">
+  <header class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-semibold">Gestió de tallers</h1>
+    <div class="flex items-center gap-4">
+      <a routerLink="/events" class="text-sm text-gray-500 hover:underline">→ Veure tallers</a>
+      <button (click)="createNewEventAdmin()" class="btn-primary">+ Nou taller</button>
+    </div>
+  </header>
+
+  @if (editing()) {
+  <section class="card p-6 mb-6" aria-label="{{ isNew() ? 'Formulari nou taller' : 'Formulari editar taller' }}">
+    <h2 class="font-semibold mb-4">{{ isNew() ? 'Nou taller' : 'Editar taller' }}</h2>
+    <form class="grid md:grid-cols-2 gap-4">
+      <label class="sr-only" for="w-title">Títol</label>
+      <input id="w-title" [(ngModel)]="editing()!.title" name="title" placeholder="Títol" class="input" />
+      <label class="sr-only" for="w-date">Data i hora</label>
+      <input id="w-date" [(ngModel)]="editing()!.date" name="date" type="datetime-local" class="input" />
+      <label class="sr-only" for="w-location">Lloc</label>
+      <input id="w-location" [(ngModel)]="editing()!.location" name="location" placeholder="Lloc" class="input" />
+      <label class="sr-only" for="w-capacity">Aforament</label>
+      <input id="w-capacity" [(ngModel)]="editing()!.capacity" name="capacity" type="number" placeholder="Aforament"
+        class="input" />
+      <label class="sr-only" for="w-desc">Descripció</label>
+      <textarea id="w-desc" [(ngModel)]="editing()!.description" name="description" placeholder="Descripció"
+        class="input md:col-span-2"></textarea>
+      <div class="flex gap-3 md:col-span-2">
+        <button type="button" (click)="saveEventAdmin()" class="btn-primary">Guardar</button>
+        <button type="button" (click)="cancelEditAdmin()" class="btn-secondary">Cancel·lar</button>
+      </div>
+    </form>
+  </section>
+  }
+
+  <ul class="space-y-3 list-none">
+    @for (w of workshops(); track w.id) {
+    <li class="border rounded-lg p-4 flex justify-between items-center">
+      <div>
+        <h2 class="font-medium">{{ w.title }}</h2>
+        <p class="text-sm text-gray-500">
+          <time [attr.datetime]="w.date">{{ w.date | date:'dd/MM/yyyy HH:mm' }}</time>
+          · {{ w.location }}
+        </p>
+      </div>
+      <div class="flex gap-2">
+        <button (click)="editEventAdmin(w)" class="text-blue-600 hover:underline text-sm">Editar</button>
+        <button (click)="deleteEventAdmin(w.id)" class="text-red-500 hover:underline text-sm"
+          [attr.aria-label]="'Eliminar taller ' + w.title">
+          Eliminar
+        </button>
+      </div>
+    </li>
+    }
+  </ul>
+</section>

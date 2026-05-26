@@ -1,0 +1,33 @@
+<section class="container mx-auto px-4 py-8">
+  <h1 class="text-3xl font-semibold mb-8">Dashboard</h1>
+  <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+    <div class="card p-6 text-center">
+      <dl>
+        <dd class="text-3xl font-bold text-green-700">{{ totalRevenue() | currency:'EUR':'symbol':'1.0-0' }}</dd>
+        <dt class="text-sm text-gray-500 mt-1">Total vendes</dt>
+      </dl>
+    </div>
+    <div class="card p-6 text-center">
+      <dl>
+        <dd class="text-3xl font-bold text-green-700">{{ totalOrders() }}</dd>
+        <dt class="text-sm text-gray-500 mt-1">Comandes</dt>
+      </dl>
+    </div>
+    <div class="card p-6 text-center col-span-2 md:col-span-1">
+      <dl>
+        <dd class="text-3xl font-bold text-green-700">{{ activeProducts() }}</dd>
+        <dt class="text-sm text-gray-500 mt-1">Productes en estoc</dt>
+      </dl>
+    </div>
+  </div>
+  <div class="grid md:grid-cols-2 gap-8">
+    <article class="card p-6">
+      <h2 class="font-semibold mb-4">Vendes per mes</h2>
+      <canvas id="sales-chart" aria-label="Gràfica de vendes per mes" role="img"></canvas>
+    </article>
+    <article class="card p-6">
+      <h2 class="font-semibold mb-4">Estat de comandes</h2>
+      <canvas id="status-chart" aria-label="Gràfica d'estats de comandes" role="img"></canvas>
+    </article>
+  </div>
+</section>

@@ -1,0 +1,103 @@
+<section class="container mx-auto px-4 py-8">
+  <header class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-semibold">Gestió de productes</h1>
+    <div class="flex items-center gap-4">
+      <a routerLink="/shop" class="text-sm text-gray-500 hover:underline">→ Veure catàleg</a>
+      <button (click)="createProductAdmin()" class="btn-primary">+ Nou producte</button>
+    </div>
+  </header>
+
+  @if (editing()) {
+  <section class="card p-6 mb-6" aria-label="{{ isNew() ? 'Formulari nou producte' : 'Formulari editar producte' }}">
+    <h2 class="font-semibold mb-4">{{ isNew() ? 'Nou producte' : 'Editar producte' }}</h2>
+    <form class="grid md:grid-cols-2 gap-4">
+      <label class="sr-only" for="p-name">Nom</label>
+      <input id="p-name" [(ngModel)]="editing()!.name" name="name" placeholder="Nom" class="input" />
+      <label class="sr-only" for="p-price">Preu</label>
+      <input id="p-price" [(ngModel)]="editing()!.price" name="price" type="number" placeholder="Preu" class="input" />
+      <label class="sr-only" for="p-stock">Estoc</label>
+      <input id="p-stock" [(ngModel)]="editing()!.stock" name="stock" type="number" placeholder="Estoc" class="input" />
+      <label class="sr-only" for="p-size">Mida</label>
+      <input id="p-size" [(ngModel)]="editing()!.size" name="size" placeholder="Mida (opcional)" class="input" />
+      <label class="sr-only" for="p-category">Categoria</label>
+      <select id="p-category" [(ngModel)]="editing()!.category_id" name="category_id" class="input">
+        <option [ngValue]="null">Sense categoria</option>
+        @for (cat of categories(); track cat.id) {
+        <option [value]="cat.id">{{ cat.name }}</option>
+        }
+      </select>
+      <label class="sr-only" for="p-desc">Descripció</label>
+      <textarea id="p-desc" [(ngModel)]="editing()!.description" name="description" placeholder="Descripció"
+        class="input md:col-span-2"></textarea>
+      <div class="md:col-span-2 space-y-2">
+        <p class="text-sm text-gray-600">Imatges del producte (màx. 3)</p>
+        <div class="grid grid-cols-3 gap-3">
+          @for (i of [0, 1, 2]; track i) {
+          <div class="space-y-1">
+            @if (editing()!.images?.[i]) {
+            <img [src]="editing()!.images![i]" alt="Previsualització" class="w-full aspect-square object-cover rounded" />
+            <button type="button" (click)="removeImage(i)" class="text-red-500 text-xs hover:underline w-full">
+              Eliminar
+            </button>
+            } @else {
+            <label [for]="'p-image-' + i"
+              class="flex items-center justify-center w-full aspect-square border-2 border-dashed rounded text-gray-300 text-3xl cursor-pointer hover:border-gray-400">
+              +
+            </label>
+            <input [id]="'p-image-' + i" type="file" accept="image/*" (change)="uploadImage($event, i)"
+              class="sr-only" [disabled]="uploading()" />
+            }
+          </div>
+          }
+        </div>
+        @if (uploading()) {
+        <p class="text-sm text-gray-500">Pujant imatge...</p>
+        }
+      </div>
+      <div class="flex gap-3 md:col-span-2">
+        <button type="button" (click)="saveProductAdmin()" class="btn-primary">Guardar</button>
+        <button type="button" (click)="cancelEditAdmin()" class="btn-secondary">Cancel·lar</button>
+      </div>
+    </form>
+  </section>
+  }
+
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <caption class="sr-only">
+        Llista de productes
+      </caption>
+      <thead class="border-b">
+        <tr class="text-left">
+          <th scope="col" class="pb-3">Nom</th>
+          <th scope="col" class="pb-3">Preu</th>
+          <th scope="col" class="pb-3">Estoc</th>
+          <th scope="col" class="pb-3">Accions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y">
+        @for (product of products(); track product.id) {
+        <tr [class.opacity-50]="product.stock === 0">
+          <td class="py-3">
+            {{ product.name }}
+            @if (product.stock === 0) {
+            <span class="ml-2 text-xs text-red-500 font-medium">Sense estoc</span>
+            }
+          </td>
+          <td class="py-3">{{ product.price }}€</td>
+          <td class="py-3">{{ product.stock }}</td>
+          <td class="py-3 flex gap-2">
+            <button (click)="openEditAdmin(product)" class="text-blue-600 hover:underline text-sm">
+              Editar
+            </button>
+            <button (click)="deleteProductAdmin(product.id)" class="text-red-500 hover:underline text-sm"
+              [attr.aria-label]="'Eliminar ' + product.name">
+              Eliminar
+            </button>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</section>

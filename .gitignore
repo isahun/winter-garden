@@ -44,6 +44,16 @@ __screenshots__/
 Thumbs.db
 
 briefing.md
+NOTES.md
 DIAGRAMS.md
 ROADMAP.md
 WIREFRAMES.md
+instruccions_rubrica.md
+
+# environment
+src/environments/environment.ts
+src/environments/environment.development.ts
+.env
+ia.md
+
+/diagrams

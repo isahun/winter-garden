@@ -1,0 +1,15 @@
+<div class="container mx-auto px-4 py-8 max-w-md">
+  <h1 class="text-2xl font-semibold mb-6">Finalitzar compra</h1>
+
+  <div class="card p-6 mb-6">
+    <p class="text-lg">Total: <strong>{{ total() | currency:'EUR' }}</strong></p>
+  </div>
+
+  @if (error()) {
+  <p class="text-red-600 mb-4">{{ error() }}</p>
+  }
+
+  <button (click)="pay()" [disabled]="loading()" class="btn-primary w-full">
+    {{ loading() ? 'Processant...' : 'Pagar ara' }}
+  </button>
+</div>

@@ -1,0 +1,57 @@
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-3xl font-semibold mb-6">Tallers i esdeveniments</h1>
+
+  <div class="hidden md:flex gap-6">
+    <div class="flex-1 min-w-0">
+      <div id="calendar"></div>
+    </div>
+    @if (selectedWorkshop(); as w) {
+    <aside class="w-72 shrink-0 border rounded-xl p-5 space-y-3 self-start sticky top-4 mt-17">
+      <button (click)="closePanel()" class="text-sm text-gray-400 hover:text-gray-600">← Tancar</button>
+      <h2 class="text-lg font-semibold">{{ w.title }}</h2>
+      <p class="text-sm text-gray-600">{{ w.description }}</p>
+      <p class="text-sm text-gray-500">📍 {{ w.location }}</p>
+      <p class="text-sm text-gray-500">👥 Aforament: {{ w.capacity }}</p>
+      <button
+        (click)="toggleSignup(w)"
+        class="w-full mt-2"
+        [class]="isSignedUp(w.id) ? 'btn-secondary' : 'btn-primary'"
+      >
+        {{ isSignedUp(w.id) ? 'Cancel·lar inscripció' : "Inscriure'm" }}
+      </button>
+    </aside>
+    }
+  </div>
+
+  <div class="block md:hidden">
+    <div class="flex items-center justify-between mb-4">
+      <button (click)="prevMonth()" class="p-2 rounded-full hover:bg-gray-100 text-xl">←</button>
+      <span class="font-medium capitalize">{{ monthLabel() }}</span>
+      <button (click)="nextMonth()" class="p-2 rounded-full hover:bg-gray-100 text-xl">→</button>
+    </div>
+
+    @if (workshopsForMonth().length === 0) {
+      <p class="text-center text-gray-500 py-10">Cap taller aquest mes.</p>
+    } @else {
+      <ul class="space-y-3 list-none">
+        @for (w of workshopsForMonth(); track w.id) {
+        <li class="border rounded-xl p-4">
+          <div class="flex justify-between items-start mb-1">
+            <h3 class="font-medium">{{ w.title }}</h3>
+            <time class="text-xs text-gray-400 shrink-0 ml-2">{{ w.date | date:'d MMM' }}</time>
+          </div>
+          <p class="text-sm text-gray-500 mb-1">📍 {{ w.location }}</p>
+          <p class="text-sm text-gray-500 mb-3">👥 {{ w.capacity }} places</p>
+          <button
+            (click)="toggleSignup(w)"
+            class="w-full text-sm"
+            [class]="isSignedUp(w.id) ? 'btn-secondary' : 'btn-primary'"
+          >
+            {{ isSignedUp(w.id) ? 'Cancel·lar inscripció' : "Inscriure'm" }}
+          </button>
+        </li>
+        }
+      </ul>
+    }
+  </div>
+</div>

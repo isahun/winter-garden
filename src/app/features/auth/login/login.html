@@ -1,0 +1,35 @@
+<div class="min-h-screen flex items-center justify-center">
+  <div class="w-full max-w-sm">
+    <div class="flex gap-4 mb-6 text-sm">
+      <a routerLink="/" class="text-gray-500 hover:underline">← Inici</a>
+      <a routerLink="/shop" class="text-gray-500 hover:underline">Catàleg</a>
+    </div>
+  <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
+    <h1 class="text-2xl font-semibold">Iniciar sessió</h1>
+
+    @if (error()) {
+    <p class="text-red-600 text-sm">{{ error() }}</p>
+    }
+
+    <input formControlName="email" type="email" placeholder="Email" class="input w-full" />
+    <input formControlName="password" type="password" placeholder="Contrasenya" class="input w-full" />
+
+    <button type="submit" [disabled]="loading()" class="btn-primary w-full">
+      {{ loading() ? 'Carregant...' : 'Entrar' }}
+    </button>
+
+    <div class="relative my-2">
+      <div class="absolute inset-0 flex items-center"><span class="w-full border-t"></span></div>
+      <div class="relative flex justify-center text-xs text-gray-400"><span class="bg-white px-2">o</span></div>
+    </div>
+
+    <button type="button" (click)="loginWithGoogle()" class="btn-secondary w-full">
+      Continua amb Google
+    </button>
+
+    <p class="text-sm text-center">
+      No tens compte? <a routerLink="/auth/register" class="underline">Registra't</a>
+    </p>
+  </form>
+  </div>
+</div>
