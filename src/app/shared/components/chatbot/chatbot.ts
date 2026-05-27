@@ -71,11 +71,11 @@ export class Chatbot {
   constructor() {
     effect(() => {
       const isLoading = this.aiResponse.isLoading();
-      const val = this.aiResponse.value();
-      if (!isLoading && val) {
+      const value = this.aiResponse.value();
+      if (!isLoading && value) {
         this.chatMessages.update((msgs) => [
           ...msgs,
-          { id: `ai-${Date.now()}`, text: val, isUser: false },
+          { id: `ai-${Date.now()}`, text: value, isUser: false },
         ]);
         untracked(() => this.currentAiPrompt.set(''));
       }

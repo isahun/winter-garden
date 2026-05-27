@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 @Injectable({ providedIn: 'root' })
 export class ChatService {
   async streamResponse(prompt: string): Promise<ReadableStreamDefaultReader<Uint8Array> | undefined> {
-    console.log(`Petició de streaming per al prompt: "${prompt}"`);
     try {
       const response = await fetch('/api/chatbot', {
         method: 'POST',
