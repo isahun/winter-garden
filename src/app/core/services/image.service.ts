@@ -11,8 +11,8 @@ export class ImageService {
       `https://api.cloudinary.com/v1_1/${environment.cloudinaryCloudName}/image/upload`,
       { method: 'POST', body: form },
     );
-    const json = await res.json();
-    return (json.secure_url as string).replace(
+    const json = await res.json() as { secure_url: string };
+    return json.secure_url.replace(
       '/upload/',
       '/upload/w_800,h_800,c_pad,b_white,f_auto,q_auto/',
     );

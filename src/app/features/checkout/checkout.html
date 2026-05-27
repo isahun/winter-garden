@@ -5,11 +5,17 @@
     <p class="text-lg">Total: <strong>{{ total() | currency:'EUR' }}</strong></p>
   </div>
 
+  <div id="payment-element" class="mb-6 min-h-[100px]">
+    @if (!ready()) {
+    <p class="text-gray-400 text-sm animate-pulse">Carregant formulari...</p>
+    }
+  </div>
+
   @if (error()) {
-  <p class="text-red-600 mb-4">{{ error() }}</p>
+  <p class="text-red-600 mb-4 text-sm">{{ error() }}</p>
   }
 
-  <button (click)="pay()" [disabled]="loading()" class="btn-primary w-full">
-    {{ loading() ? 'Processant...' : 'Pagar ara' }}
+  <button (click)="pay()" [disabled]="!ready() || paying()" class="btn-primary w-full">
+    {{ paying() ? 'Processant...' : 'Pagar ara' }}
   </button>
 </div>

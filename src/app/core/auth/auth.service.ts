@@ -1,4 +1,5 @@
-import { Injectable, signal, computed, inject } from '@angular/core';
+import { Injectable, signal, computed, inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { Session } from '@supabase/supabase-js';
 import { SupabaseService } from '../supabase.service';
@@ -10,6 +11,7 @@ export class AuthService {
   private readonly supabase = inject(SupabaseService).client;
   private readonly router = inject(Router);
   private readonly cart = inject(CartService);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   private _session = signal<Session | null>(null);
 
@@ -64,6 +66,7 @@ export class AuthService {
   }
 
   async loginWithGoogle() {
+    if (!this.isBrowser) return;
     await this.supabase.auth.signInWithOAuth({
       provider: 'google',
       options: { redirectTo: window.location.origin },

@@ -31,6 +31,7 @@
             >
             <select
               [id]="'status-' + order.id"
+              [name]="'status-' + order.id"
               [value]="order.status"
               (change)="updateStatusAdmin(order.id, $any($event.target).value)"
               class="input text-sm py-1"

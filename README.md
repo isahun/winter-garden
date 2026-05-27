@@ -96,6 +96,16 @@ Projecte final de Bootcamp Frontend — Angular 22 · Supabase · Stripe · Gemi
 | Usuari | user@test.com | test123 |
 | Admin | admin@test.com | test123 |
 
+### Targetes de prova Stripe
+
+L'entorn de test de Stripe no cobra diners reals. Fes servir aquestes dades al formulari de checkout:
+
+| Cas | Número de targeta | Caducitat | CVC |
+|-----|-------------------|-----------|-----|
+| Pagament correcte | `4242 4242 4242 4242` | Qualsevol data futura | Qualsevol 3 dígits |
+| Targeta rebutjada | `4000 0000 0000 0002` | Qualsevol data futura | Qualsevol 3 dígits |
+| Fons insuficients | `4000 0000 0000 9995` | Qualsevol data futura | Qualsevol 3 dígits |
+
 ---
 
 ## Posada en marxa
