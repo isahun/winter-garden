@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
-import { SupabaseService } from '../../../core/supabase.service';
+import { WorkshopService } from '../../../core/services/workshop.service';
 import { Workshop } from '../../../core/models';
 import { RouterLink } from '@angular/router';
 
@@ -11,14 +11,14 @@ import { RouterLink } from '@angular/router';
   templateUrl: './admin-events.html',
 })
 export class AdminEvents implements OnInit {
-  private supabase = inject(SupabaseService).client;
+  private workshopService = inject(WorkshopService);
 
   workshops = signal<Workshop[]>([]);
   editing = signal<Partial<Workshop> | null>(null);
   isNew = signal(false);
 
   async ngOnInit() {
-    const { data } = await this.supabase.from('workshops').select('*').order('date');
+    const { data } = await this.workshopService.getAllWorkshops();
     this.workshops.set(data ?? []);
   }
 
@@ -31,6 +31,7 @@ export class AdminEvents implements OnInit {
     this.editing.set({ ...w });
     this.isNew.set(false);
   }
+
   cancelEditAdmin() {
     this.editing.set(null);
   }
@@ -39,9 +40,9 @@ export class AdminEvents implements OnInit {
     const data = this.editing();
     if (!data) return;
     if (this.isNew()) {
-      await this.supabase.from('workshops').insert(data);
+      await this.workshopService.createWorkshop(data);
     } else {
-      await this.supabase.from('workshops').update(data).eq('id', data.id!);
+      await this.workshopService.updateWorkshop(data.id!, data);
     }
     this.editing.set(null);
     await this.ngOnInit();
@@ -49,7 +50,7 @@ export class AdminEvents implements OnInit {
 
   async deleteEventAdmin(id: number) {
     if (!confirm('Eliminar aquest taller?')) return;
-    await this.supabase.from('workshops').delete().eq('id', id);
+    await this.workshopService.deleteWorkshop(id);
     await this.ngOnInit();
   }
 }
