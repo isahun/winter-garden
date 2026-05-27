@@ -1,5 +1,5 @@
 import { Component, inject, afterNextRender, ElementRef, signal } from '@angular/core';
-import { SupabaseService } from '../../../core/supabase.service';
+import { DashboardService } from '../../../core/services/dashboard.service';
 import { CurrencyPipe } from '@angular/common';
 
 @Component({
@@ -9,7 +9,7 @@ import { CurrencyPipe } from '@angular/common';
   styleUrl: './dashboard.css',
 })
 export class Dashboard {
-  private supabase = inject(SupabaseService).client;
+  private dashboardService = inject(DashboardService);
   private element = inject(ElementRef);
 
   totalRevenue = signal(0);
@@ -21,33 +21,28 @@ export class Dashboard {
       const { Chart, registerables } = await import('chart.js');
       Chart.register(...registerables);
 
-      const { data: orders } = await this.supabase
-        .from('orders')
-        .select('total, status, created_at');
+      const { data: orders } = await this.dashboardService.getOrderStats();
+      const { count } = await this.dashboardService.getActiveProductsCount();
 
       this.totalOrders.set((orders ?? []).length);
       this.totalRevenue.set(
         (orders ?? [])
-          .filter((order) => order.status !== 'cancelled')
-          .reduce((sum, order) => sum + order.total, 0),
+          .filter((o) => o.status !== 'cancelled')
+          .reduce((sum, o) => sum + o.total, 0),
       );
 
-      const { count } = await this.supabase
-        .from('products')
-        .select('*', { count: 'exact', head: true })
-        .gt('stock', 0);
+      this.activeProducts.set(count ?? 0);
 
       this.activeProducts.set(count ?? 0);
 
       const monthly = Array(12).fill(0);
-      (orders ?? []).forEach((order) => {
-        const month = new Date(order.created_at).getMonth();
-        monthly[month] += order.total;
+      (orders ?? []).forEach((o) => {
+        const month = new Date(o.created_at).getMonth();
+        monthly[month] += o.total;
       });
 
       const statusCount = { pending: 0, shipped: 0, completed: 0, cancelled: 0 };
-
-      (orders ?? []).forEach((order) => statusCount[order.status as keyof typeof statusCount]++);
+      (orders ?? []).forEach((o) => statusCount[o.status as keyof typeof statusCount]++);
 
       const salesCanvas = this.element.nativeElement.querySelector('#sales-chart');
       new Chart(salesCanvas, {
