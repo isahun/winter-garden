@@ -265,4 +265,4 @@ El projecte utilitza Angular SSR amb Node Express com a servidor únic:
 
 ## Llicència
 
-Projecte educatiu — Bootcamp Frontend 2024-2025. Tots els drets reservats.
+Projecte educatiu — Bootcamp Frontend 2025-2026. Tots els drets reservats.
