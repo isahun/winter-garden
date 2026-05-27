@@ -11,9 +11,11 @@ const CART_KEY = 'wg_cart';
 
 @Injectable({ providedIn: 'root' })
 export class CartService {
+  // isPlatformBrowser protegeix de crashar durant el SSR (Node no té localStorage)
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private _items = signal<CartItem[]>(this.loadFromStorage());
 
+  // asReadonly() exposa el signal sense el mètode .set() — components fills no poden modificar-lo directament
   readonly items = this._items.asReadonly();
   readonly total = computed(() =>
     this._items().reduce((sum, item) => sum + item.product.price * item.quantity, 0),
@@ -23,6 +25,7 @@ export class CartService {
   );
 
   constructor() {
+    // effect() s'executa cada vegada que _items canvia i sincronitza automàticament el cart a localStorage
     effect(() => {
       if (this.isBrowser) {
         localStorage.setItem(CART_KEY, JSON.stringify(this._items()));
@@ -31,6 +34,7 @@ export class CartService {
   }
 
   private loadFromStorage(): CartItem[] {
+    // Segon guard de SSR: loadFromStorage es crida des de la inicialització del signal, before isBrowser existeix
     if (!isPlatformBrowser(inject(PLATFORM_ID))) return [];
     try {
       const stored = localStorage.getItem(CART_KEY);

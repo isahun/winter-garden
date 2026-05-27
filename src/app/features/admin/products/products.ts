@@ -46,11 +46,11 @@ export class Products implements OnInit {
     if (!file) return;
     this.uploading.set(true);
     const url = await this.imageService.uploadToCloudinary(file);
-    this.editing.update((p) => {
-      if (!p) return p;
-      const images = [...(p.images ?? [])];
+    this.editing.update((product) => {
+      if (!product) return product;
+      const images = [...(product.images ?? [])];
       images[index] = url;
-      return { ...p, images };
+      return { ...product, images };
     });
     this.uploading.set(false);
   }

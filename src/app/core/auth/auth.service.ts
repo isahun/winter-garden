@@ -13,22 +13,27 @@ export class AuthService {
 
   private _session = signal<Session | null>(null);
 
+  // computed deriva automàticament del signal — es recalcula quan _session canvia
   readonly user = computed(() => this._session()?.user ?? null);
   readonly isLoggedIn = computed(() => !!this._session());
 
   private _role = signal<'user' | 'admin' | null>(null);
   readonly isAdmin = computed(() => this._role() === 'admin');
 
+  // Patró "deferred resolve": guardem la funció resolve fora de la Promise per cridar-la més tard
+  // Els guards fan `await auth.ready` per no prendre decisions d'accés abans que Supabase respongui
   private _resolveReady!: () => void;
   readonly ready = new Promise<void>(resolve => (this._resolveReady = resolve));
 
   constructor() {
+    // getSession llegeix la sessió guardada a localStorage (o cookie) — és la comprovació inicial en carregar
     this.supabase.auth.getSession().then(({ data }) => {
       this._session.set(data.session);
       if (data.session) this.loadRole(data.session.user.id);
-      this._resolveReady();
+      this._resolveReady(); // desbloqueja els guards que estaven esperant
     });
 
+    // onAuthStateChange escolta canvis en temps real: login, logout, refresc de token, OAuth redirect
     this.supabase.auth.onAuthStateChange((_, session) => {
       this._session.set(session);
       if (session) this.loadRole(session.user.id);
@@ -41,6 +46,7 @@ export class AuthService {
       .from('profiles')
       .select('role')
       .eq('id', userId)
+      // Pick<Profile, 'role'> restringeix el tipus retornat — TypeScript sap que data només té el camp role
       .single<Pick<Profile, 'role'>>();
     this._role.set(data?.role ?? 'user');
   }

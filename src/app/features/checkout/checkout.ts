@@ -31,13 +31,18 @@ export class Checkout implements OnInit {
     this.error.set('');
 
     try {
+      // firstValueFrom() converteix l'Observable de HttpClient en una Promise per poder usar await
+      // Stripe treballa en cèntims (enters) — multipliquem per 100 i arrodonir evita errors de float (p.ex. 9.99 * 100 = 998.99...)
       const { clientSecret } = await firstValueFrom(
         this.http.post<{ clientSecret: string }>('/api/payment-intent', {
           amount: Math.round(this.total() * 100),
         }),
       );
 
+      // loadStripe és async — carrega l'SDK de Stripe de forma lazy (no bloqueja el bundle inicial)
       const stripe = await loadStripe(environment.stripeKey);
+      // confirmPayment redirigeix l'usuari a Stripe Elements o processa el pagament inline;
+      // return_url rep el control quan el payment provider redirigeix de tornada a l'app
       const result = await stripe!.confirmPayment({
         clientSecret,
         confirmParams: { return_url: `${window.location.origin}/account/orders` },

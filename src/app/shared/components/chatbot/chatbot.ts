@@ -26,14 +26,20 @@ export class Chatbot {
     },
   ]);
   userPrompt = '';
+  // Canviar aquest signal dispara la crida a resource() — és el mecanisme per enviar un nou prompt
   private currentAiPrompt = signal('');
 
+  // resource() és l'API experimental d'Angular per gestionar dades asíncrones reactives
+  // La variant `stream` permet actualitzar progressivament un signal intern mentre arriben chunks
   aiResponse = resource({
+    // params() defineix la dependència reactiva: resource es re-executa cada cop que currentAiPrompt canvia
     params: () => this.currentAiPrompt(),
     stream: async ({ params: prompt }) => {
+      // data és el signal intern que resource() exposa via .value() — comencem amb string buit
       const data = signal<{ value: string } | { error: Error }>({ value: '' });
       if (!prompt) return data;
 
+      // TextDecoder converteix els chunks binaris (Uint8Array) que vénen del ReadableStream a text
       const decoder = new TextDecoder('utf-8');
 
       try {
@@ -42,9 +48,11 @@ export class Chatbot {
           throw new Error('No es va poder obtenir el lector del flux de resposta.');
         }
 
+        // readStream és un async generator — yield per cada chunk fins que l'stream acaba
         for await (const chunk of this.readStream(reader)) {
           const chunkText = decoder.decode(chunk);
           data.update((prev) => {
+            // Només acumulem si estem en estat { value } — si hi ha error no sobreescribim
             if ('value' in prev) {
               return { value: `${prev.value}${chunkText}` };
             }
@@ -60,6 +68,7 @@ export class Chatbot {
     },
   });
 
+  // Async generator: wraps la API de ReadableStream (que és callback-based) en un for-await net
   private async *readStream(reader: ReadableStreamDefaultReader<Uint8Array>) {
     while (true) {
       const { done, value } = await reader.read();
@@ -77,6 +86,8 @@ export class Chatbot {
           ...msgs,
           { id: `ai-${Date.now()}`, text: value, isUser: false },
         ]);
+        // untracked() evita un bucle infinit: resettejar currentAiPrompt dins d'un effect
+        // que dep de aiResponse (que dep de currentAiPrompt) causaria re-execucions infinites
         untracked(() => this.currentAiPrompt.set(''));
       }
     });

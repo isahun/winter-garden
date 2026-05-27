@@ -15,7 +15,7 @@ const browserDistFolder = join(import.meta.dirname, '../browser');
 const app = express();
 const angularApp = new AngularNodeAppEngine();
 
-// Client Supabase amb service role (bypassa RLS, mai al frontend)
+// SERVICE_KEY bypassa les Row Level Security policies de Supabase — mai exposar al frontend
 const supabaseAdmin = createClient(
   process.env['SUPABASE_URL']!,
   process.env['SUPABASE_SERVICE_KEY']!,
@@ -56,9 +56,11 @@ app.post('/api/chatbot', async (req, res) => {
     .map((p: any) => `- ${p.name} (${p.price}€): ${p.description ?? ''}`)
     .join('\n');
 
+  // chunked: envia cada fragment de text a mesura que Gemini el genera (streaming real, no espera la resposta completa)
   res.setHeader('Content-Type', 'text/plain');
   res.setHeader('Transfer-Encoding', 'chunked');
 
+  // .then() en lloc de await perquè no volem bloquejar Express mentre s'itereix l'stream async
   ai.models
     .generateContentStream({
       model: 'gemini-2.5-flash',
@@ -94,6 +96,7 @@ app.use((req, res, next) => {
     .catch(next);
 });
 
+// pm_id detecta quan corre dins PM2 (process manager) on isMainModule falla
 if (isMainModule(import.meta.url) || process.env['pm_id']) {
   const port = process.env['PORT'] || 4000;
   app.listen(port, () => {
@@ -101,4 +104,5 @@ if (isMainModule(import.meta.url) || process.env['pm_id']) {
   });
 }
 
+// reqHandler és el que importa Angular SSR en mode build per passar les peticions HTTP a Express
 export const reqHandler = createNodeRequestHandler(app);

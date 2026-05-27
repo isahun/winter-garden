@@ -4,9 +4,11 @@ import { adminGuard } from './core/auth/admin.guard';
 
 export const routes: Routes = [
   {
+    // auth queda fora del Layout principal (no té navbar/footer) — per eso és una ruta pare separada
     path: 'auth',
     children: [
       {
+        // loadComponent: lazy loading — Angular no descarrega el codi d'aquest component fins que l'usuari navega aquí
         path: 'login',
         loadComponent: () => import('./features/auth/login/login').then((module) => module.Login),
       },
@@ -86,6 +88,7 @@ export const routes: Routes = [
         ],
       },
       {
+        // Guards en array s'executen en ordre: primer comprova que estiguis logada, després que siguis admin
         path: 'admin',
         canActivate: [authGuard, adminGuard],
         children: [
