@@ -165,26 +165,71 @@ ng test
 src/
 ├── app/
 │   ├── core/
-│   │   ├── auth/          # AuthService, authGuard, adminGuard
-│   │   ├── interceptors/  # auth, error, loading
-│   │   ├── models/        # Interfaces TypeScript
-│   │   └── services/      # CartService, ProductService, FavoritesService, ChatService
+│   │   ├── auth/              # AuthService, authGuard, adminGuard
+│   │   ├── interceptors/      # auth, error, loading
+│   │   ├── models/            # Interfaces TypeScript
+│   │   └── services/
+│   │       ├── cart.service         # Carret — localStorage
+│   │       ├── chat.service         # Streaming Gemini AI
+│   │       ├── dashboard.service    # KPIs i estadístiques del panell admin
+│   │       ├── favorites.service    # Favorits de l'usuari (Supabase)
+│   │       ├── image.service        # Pujada d'imatges a Cloudinary
+│   │       ├── product.service      # CRUD de productes (Supabase)
+│   │       └── workshop.service     # CRUD de tallers i inscripcions (Supabase)
 │   ├── features/
-│   │   ├── admin/         # Dashboard, productes, comandes, tallers (CRUD)
-│   │   ├── account/       # Perfil, comandes, favorits, tallers inscrits
-│   │   ├── shop/          # Catàleg i detall de producte
-│   │   ├── checkout/      # Formulari de pagament Stripe
-│   │   ├── events/        # Calendari FullCalendar
-│   │   ├── stores/        # Mapa Leaflet
-│   │   ├── cart/          # Carret de la compra
-│   │   ├── auth/          # Login i registre
-│   │   ├── home/          # Landing page
-│   │   └── faq/           # Preguntes freqüents
+│   │   ├── admin/
+│   │   │   ├── dashboard/     # KPIs i gràfiques Chart.js
+│   │   │   ├── products/      # CRUD de productes
+│   │   │   ├── orders/        # Gestió d'estat de comandes
+│   │   │   └── events/        # Creació i edició de tallers
+│   │   ├── account/
+│   │   │   ├── account/       # Perfil d'usuari
+│   │   │   ├── orders/        # Historial de comandes
+│   │   │   ├── favorites/     # Productes favorits
+│   │   │   └── workshops/     # Tallers inscrits
+│   │   ├── shop/
+│   │   │   ├── shop/          # Catàleg amb filtres i paginació
+│   │   │   └── product-detail/ # Galeria, lightbox i afegir al carret
+│   │   ├── checkout/          # Formulari de pagament Stripe
+│   │   ├── events/            # Calendari FullCalendar (vista pública)
+│   │   ├── stores/            # Mapa Leaflet + cards sincronitzades
+│   │   ├── cart/              # Carret de la compra
+│   │   ├── auth/
+│   │   │   ├── login/
+│   │   │   └── register/
+│   │   ├── home/              # Landing page
+│   │   └── faq/               # Preguntes freqüents
 │   └── shared/
-│       └── components/    # Navbar, footer, chatbot, layout
-├── environments/          # Claus públiques per entorn
-└── server.ts              # Express SSR + API routes (/api/payment-intent, /api/chatbot)
+│       └── components/
+│           ├── navbar/        # Glassmorphism top nav + bottom nav mòbil
+│           ├── footer/
+│           ├── chatbot/       # Widget flotant IA
+│           └── layout/
+├── environments/              # Claus públiques per entorn
+└── server.ts                  # Express SSR + API routes (/api/payment-intent, /api/chatbot)
 ```
+
+---
+
+## Refactors recents
+
+### Capa de serveis (maig 2025)
+
+La lògica de negoci que estava acoblada als components s'ha extret progressivament a serveis dedicats dins de `core/services/`:
+
+| Servei | Responsabilitat | Extret de |
+|--------|----------------|-----------|
+| `WorkshopService` | CRUD de tallers, inscripcions i cancel·lacions a Supabase | `admin-events` component |
+| `ImageService` | Pujada i transformació d'imatges a Cloudinary | `admin-products` component |
+| `DashboardService` | Consultes de KPIs (vendes, comandes, productes) a Supabase | `admin-dashboard` component |
+
+Cada component admin ara delega tota la comunicació amb serveis externs al servei corresponent i només gestiona l'estat de la UI.
+
+### Navbar (glassmorphism + mòbil)
+
+- Top navbar amb efecte glassmorphism, visible en desktop
+- Bottom navigation fixa en mòbil (signal `menuOpen` + classes `md:hidden` / `md:flex`)
+- Padding inferior afegit als layouts per evitar solapament amb el bottom nav
 
 ---
 
