@@ -6,8 +6,9 @@
     "outDir": "./out-tsc/app",
     "rootDir": "./src",
     "types": [
+      "web",
       "node"
-    ]
+    ],
   },
   "include": [
     "src/**/*.ts"
