@@ -213,7 +213,7 @@ src/
 
 ## Refactors recents
 
-### Capa de serveis (maig 2025)
+### Capa de serveis (maig 2026)
 
 La lògica de negoci que estava acoblada als components s'ha extret progressivament a serveis dedicats dins de `core/services/`:
 
