@@ -2,7 +2,7 @@
   <div class="flex justify-between items-center mb-6">
     <h1 class="text-3xl font-semibold">Catàleg</h1>
     @if (auth.isAdmin()) {
-    <a routerLink="/admin/products" class="btn-primary text-sm">+ Nou producte</a>
+    <a routerLink="/admin/products" class="btn-primary text-sm">Panell d'edició</a>
     }
   </div>
   <div class="flex gap-3 mb-6 items-center">
@@ -37,7 +37,7 @@
     <div class="flex-1 min-w-0">
       <ul class="grid grid-cols-2 md:grid-cols-3 gap-6 list-none">
         @for (product of paginatedProducts(); track product.id) {
-        <li class="relative">
+        <li class="relative group">
           <a [routerLink]="['/shop', product.id]" class="card hover:shadow-md transition block">
             @if (auth.isLoggedIn() && !auth.isAdmin()) {
             <button (click)="favorites.toggleFavorite(product); $event.preventDefault()"
@@ -54,7 +54,7 @@
           </a>
           @if (auth.isAdmin()) {
           <a [routerLink]="['/shop', product.id]"
-            class="absolute bottom-2 right-2 text-xs bg-white border rounded-full px-2 py-0.5 text-gray-500 hover:text-primary shadow-sm">
+            class="absolute bottom-2 right-2 text-xs bg-white border rounded-full px-2 py-0.5 text-gray-500 shadow-sm transition group-hover:text-primary group-hover:border-primary group-hover:shadow-md">
             ✏️ Editar
           </a>
           }
