@@ -45,10 +45,12 @@
         {{ product.stock > 0 ? 'En estoc (' + product.stock + ' unitats)' : 'Sense estoc' }}
       </p>
 
+      @if (!auth.isAdmin()) {
       <button (click)="addProductToCart()" [disabled]="product.stock === 0" class="btn-primary w-full"
         [attr.aria-label]="'Afegir ' + product.name + ' al carret'">
         {{ added() ? '✓ Afegit al carret' : 'Afegir al carret' }}
       </button>
+      }
     </section>
   </div>
 </article>

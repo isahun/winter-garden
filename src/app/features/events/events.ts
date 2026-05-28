@@ -13,7 +13,7 @@ import { DatePipe } from '@angular/common';
 })
 export class Events {
   private supabase = inject(SupabaseService).client;
-  private auth = inject(AuthService);
+  auth = inject(AuthService);
   private router = inject(Router);
   private element = inject(ElementRef);
 

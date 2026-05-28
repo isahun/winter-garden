@@ -12,7 +12,7 @@
       <p class="text-sm text-gray-600">{{ w.description }}</p>
       <p class="text-sm text-gray-500">📍 {{ w.location }}</p>
       <p class="text-sm text-gray-500">👥 Aforament: {{ w.capacity }}</p>
-      @if (!isPast(w.date)) {
+      @if (!isPast(w.date) && !auth.isAdmin()) {
       <button
         (click)="toggleSignup(w)"
         class="w-full mt-2"
@@ -44,7 +44,7 @@
           </div>
           <p class="text-sm text-gray-500 mb-1">📍 {{ w.location }}</p>
           <p class="text-sm text-gray-500 mb-3">👥 {{ w.capacity }} places</p>
-          @if (!isPast(w.date)) {
+          @if (!isPast(w.date) && !auth.isAdmin()) {
           <button
             (click)="toggleSignup(w)"
             class="w-full text-sm"
