@@ -103,7 +103,7 @@ export class Events {
 
   startNewWorkshop() {
     this.selectedWorkshop.set(null);
-    this.newWorkshop.set({ title: '', description: '', date: '', location: '', capacity: 20 });
+    this.newWorkshop.set({ title: '', description: '', date: '', location: '', capacity: 20, price: null });
     setTimeout(() => this.calendar?.updateSize(), 50);
   }
 
