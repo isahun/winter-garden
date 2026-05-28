@@ -1,15 +1,16 @@
 import { Component, inject, signal, input, numberAttribute, effect } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CurrencyPipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../../core/services/product.service';
 import { CartService } from '../../../core/services/cart.service';
-import { Product } from '../../../core/models';
+import { Product, Category } from '../../../core/models';
 import { FavoritesService } from '../../../core/services/favorites.service';
 import { AuthService } from '../../../core/auth/auth.service';
 
 @Component({
   selector: 'app-product-detail',
-  imports: [CurrencyPipe, RouterLink],
+  imports: [CurrencyPipe, RouterLink, FormsModule],
   templateUrl: './product-detail.html',
   styleUrl: './product-detail.css',
 })
@@ -26,6 +27,8 @@ export class ProductDetail {
   related = signal<Product[]>([]);
   lightboxOpen = signal(false);
   activeImage = signal(0);
+  editingProduct = signal<Partial<Product> | null>(null);
+  categories = signal<Category[]>([]);
 
   constructor() {
     effect(async () => {
@@ -47,5 +50,27 @@ export class ProductDetail {
     this.cart.addToCart(this.product()!);
     this.added.set(true);
     setTimeout(() => this.added.set(false), 2000);
+  }
+
+  async startEditing() {
+    if (this.categories().length === 0) {
+      const { data } = await this.productService.getCategories();
+      this.categories.set(data ?? []);
+    }
+    const p = this.product();
+    if (p) this.editingProduct.set({ ...p });
+  }
+
+  cancelEditing() {
+    this.editingProduct.set(null);
+  }
+
+  async saveEditing() {
+    const p = this.editingProduct();
+    if (!p?.id) return;
+    const { categories, created_at, ...payload } = p as Product;
+    const { data } = await this.productService.updateProduct(p.id, payload);
+    if (data) this.product.set(data);
+    this.editingProduct.set(null);
   }
 }
