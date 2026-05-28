@@ -27,6 +27,10 @@ export class Workshops implements OnInit {
     this.workshops.set((data ?? []).map(signup => signup.workshops as unknown as Workshop));
   }
 
+  isPast(date: string) {
+    return new Date(date) < new Date();
+  }
+
   async cancelSignup(workshopId: number) {
     await this.supabase
     .from('workshop_signups')
