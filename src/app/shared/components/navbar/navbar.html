@@ -25,8 +25,30 @@
   </div>
 </nav>
 
-@if (!auth.isAdmin()) {
-  <nav class="bottom-nav md:hidden" aria-label="Navegació ràpida">
+<nav class="bottom-nav md:hidden" aria-label="Navegació ràpida">
+  @if (auth.isAdmin()) {
+    <a routerLink="/shop" routerLinkActive="active" class="bottom-nav-item"
+       [routerLinkActiveOptions]="{ exact: false }">
+      <span aria-hidden="true">🌿</span>
+      <span>Catàleg</span>
+    </a>
+    <a routerLink="/events" routerLinkActive="active" class="bottom-nav-item">
+      <span aria-hidden="true">🌸</span>
+      <span>Tallers</span>
+    </a>
+    <a routerLink="/stores" routerLinkActive="active" class="bottom-nav-item">
+      <span aria-hidden="true">📍</span>
+      <span>Botigues</span>
+    </a>
+    <a routerLink="/admin/dashboard" routerLinkActive="active" class="bottom-nav-item">
+      <span aria-hidden="true">⚙️</span>
+      <span>Panell</span>
+    </a>
+    <button (click)="auth.logout()" class="bottom-nav-item">
+      <span aria-hidden="true">↩</span>
+      <span>Sortir</span>
+    </button>
+  } @else {
     <a routerLink="/shop" routerLinkActive="active" class="bottom-nav-item"
        [routerLinkActiveOptions]="{ exact: false }">
       <span aria-hidden="true">🌿</span>
@@ -63,19 +85,19 @@
         <span>Entrar</span>
       </a>
     }
-  </nav>
-}
+  }
+</nav>
 
 <ng-template #navLinks>
   @if (auth.isAdmin()) {
-    <li><a routerLink="/admin/dashboard" routerLinkActive="text-primary font-semibold"
-           class="text-sm text-muted hover:text-primary transition-colors duration-200">Dashboard</a></li>
-    <li><a routerLink="/admin/products" routerLinkActive="text-primary font-semibold"
-           class="text-sm text-muted hover:text-primary transition-colors duration-200">Productes</a></li>
-    <li><a routerLink="/admin/orders" routerLinkActive="text-primary font-semibold"
-           class="text-sm text-muted hover:text-primary transition-colors duration-200">Comandes</a></li>
-    <li><a routerLink="/admin/events" routerLinkActive="text-primary font-semibold"
+    <li><a routerLink="/shop" routerLinkActive="text-primary font-semibold"
+           class="text-sm text-muted hover:text-primary transition-colors duration-200">Catàleg</a></li>
+    <li><a routerLink="/events" routerLinkActive="text-primary font-semibold"
            class="text-sm text-muted hover:text-primary transition-colors duration-200">Tallers</a></li>
+    <li><a routerLink="/stores" routerLinkActive="text-primary font-semibold"
+           class="text-sm text-muted hover:text-primary transition-colors duration-200">Botigues</a></li>
+    <li><a routerLink="/admin/dashboard" routerLinkActive="text-primary font-semibold"
+           class="text-sm text-muted hover:text-primary transition-colors duration-200">Panell</a></li>
     <li><button (click)="auth.logout()"
                 class="text-sm text-muted hover:text-primary transition-colors duration-200 cursor-pointer">Sortir</button></li>
   } @else {
