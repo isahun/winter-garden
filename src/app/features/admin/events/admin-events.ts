@@ -70,7 +70,7 @@ export class AdminEvents implements OnInit {
       .eq('workshop_id', workshopId);
     this.signups.update(map => {
       const next = new Map(map);
-      next.set(workshopId, (data ?? []) as WorkshopSignupRow[]);
+      next.set(workshopId, (data ?? []) as unknown as WorkshopSignupRow[]);
       return next;
     });
   }
