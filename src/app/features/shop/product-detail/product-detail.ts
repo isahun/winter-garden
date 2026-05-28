@@ -1,4 +1,5 @@
-import { Component, inject, signal, input, numberAttribute, effect } from '@angular/core';
+import { Component, inject, signal, input, numberAttribute, effect, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -19,6 +20,7 @@ export class ProductDetail {
 
   private productService = inject(ProductService);
   private cart = inject(CartService);
+  private readonly autoEdit = isPlatformBrowser(inject(PLATFORM_ID)) && history.state?.['autoEdit'] === true;
   favorites = inject(FavoritesService);
   auth = inject(AuthService);
 
@@ -42,6 +44,7 @@ export class ProductDetail {
         this.related.set(rel ?? []);
       }
       if (this.auth.isLoggedIn()) await this.favorites.loadFavorites();
+      if (this.autoEdit && this.auth.isAdmin()) await this.startEditing();
     });
   }
 

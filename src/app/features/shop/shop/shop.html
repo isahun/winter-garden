@@ -37,7 +37,7 @@
     <div class="flex-1 min-w-0">
       <ul class="grid grid-cols-2 md:grid-cols-3 gap-6 list-none">
         @for (product of paginatedProducts(); track product.id) {
-        <li class="relative group">
+        <li class="relative">
           <a [routerLink]="['/shop', product.id]" class="card hover:shadow-md transition block">
             @if (auth.isLoggedIn() && !auth.isAdmin()) {
             <button (click)="favorites.toggleFavorite(product); $event.preventDefault()"
@@ -51,13 +51,13 @@
               <h3 class="font-medium">{{ product.name }}</h3>
               <p class="text-green-700 font-semibold">{{ product.price | currency:'EUR' }}</p>
             </div>
+            @if (auth.isAdmin()) {
+            <span (click)="navigateToEdit(product.id, $event)"
+              class="absolute bottom-2 right-2 text-xs bg-white border rounded-full px-2 py-0.5 text-gray-500 shadow-sm cursor-pointer hover:text-primary hover:border-primary transition-colors">
+              ✏️ Editar
+            </span>
+            }
           </a>
-          @if (auth.isAdmin()) {
-          <a [routerLink]="['/shop', product.id]"
-            class="absolute bottom-2 right-2 text-xs bg-white border rounded-full px-2 py-0.5 text-gray-500 shadow-sm transition group-hover:text-primary group-hover:border-primary group-hover:shadow-md">
-            ✏️ Editar
-          </a>
-          }
         </li>
         } @empty {
         <li class="col-span-full text-center text-gray-500">Cap producte trobat.</li>
