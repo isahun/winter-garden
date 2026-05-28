@@ -78,11 +78,15 @@
       <tbody class="divide-y">
         @for (product of products(); track product.id) {
         <tr [class.opacity-50]="product.stock === 0">
-          <td class="py-3">
-            {{ product.name }}
-            @if (product.stock === 0) {
-            <span class="ml-2 text-xs text-red-500 font-medium">Sense estoc</span>
-            }
+          <td class="py-3 flex items-center gap-3">
+            <img [src]="product.images[0] || 'assets/placeholder.jpg'" [alt]="product.name"
+              class="w-10 h-10 rounded object-cover shrink-0" />
+            <span>
+              {{ product.name }}
+              @if (product.stock === 0) {
+              <span class="ml-2 text-xs text-red-500 font-medium">Sense estoc</span>
+              }
+            </span>
           </td>
           <td class="py-3">{{ product.price }}€</td>
           <td class="py-3">{{ product.stock }}</td>
