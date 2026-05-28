@@ -1,5 +1,10 @@
 <div class="container mx-auto px-4 py-8">
-  <h1 class="text-3xl font-semibold mb-6">Tallers i esdeveniments</h1>
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-semibold">Tallers i esdeveniments</h1>
+    @if (auth.isAdmin()) {
+    <a routerLink="/admin/events" class="btn-primary text-sm">+ Nou taller</a>
+    }
+  </div>
 
   <div class="hidden md:flex gap-6">
     <div class="flex-1 min-w-0">

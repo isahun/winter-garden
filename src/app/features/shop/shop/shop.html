@@ -1,5 +1,10 @@
 <section class="container mx-auto px-4 py-8">
-  <h1 class="text-3xl font-semibold mb-6">Catàleg</h1>
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-semibold">Catàleg</h1>
+    @if (auth.isAdmin()) {
+    <a routerLink="/admin/products" class="btn-primary text-sm">+ Nou producte</a>
+    }
+  </div>
   <div class="flex gap-3 mb-6 items-center">
     <search class="flex-1">
       <label for="search-input" class="sr-only">Cercar productes</label>
