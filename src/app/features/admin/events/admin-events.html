@@ -20,6 +20,9 @@
       <label class="sr-only" for="w-capacity">Aforament</label>
       <input id="w-capacity" [(ngModel)]="editing()!.capacity" name="capacity" type="number" placeholder="Aforament"
         class="input" />
+      <label class="sr-only" for="w-price">Preu (€)</label>
+      <input id="w-price" [(ngModel)]="editing()!.price" name="price" type="number"
+        placeholder="Preu en € (buit = gratuït)" class="input" />
       <label class="sr-only" for="w-desc">Descripció</label>
       <textarea id="w-desc" [(ngModel)]="editing()!.description" name="description" placeholder="Descripció"
         class="input md:col-span-2"></textarea>
@@ -40,6 +43,7 @@
           <p class="text-sm text-gray-500">
             <time [attr.datetime]="w.date">{{ w.date | date:'dd/MM/yyyy HH:mm' }}</time>
             · {{ w.location }}
+            @if (w.price) { · {{ w.price }}€ } @else { · Gratuït }
           </p>
         </div>
         <div class="flex gap-2 items-center">
@@ -52,7 +56,7 @@
       </div>
       <details class="border-t" (toggle)="loadSignups(w.id)">
         <summary class="px-4 py-2 text-sm text-gray-500 cursor-pointer hover:bg-gray-50 list-none">
-          Veure inscrits
+          👥 {{ getSignupCount(w.id) }}/{{ w.capacity }} inscrits
         </summary>
         <div class="px-4 pb-3">
           @if (getSignups(w.id).length === 0) {

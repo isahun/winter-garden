@@ -24,14 +24,27 @@ export class AdminEvents implements OnInit {
   editing = signal<Partial<Workshop> | null>(null);
   isNew = signal(false);
   signups = signal<Map<number, WorkshopSignupRow[]>>(new Map());
+  signupCounts = signal<Map<number, number>>(new Map());
 
   async ngOnInit() {
     const { data } = await this.workshopService.getAllWorkshops();
     this.workshops.set(data ?? []);
+    const { data: allSignups } = await this.supabase
+      .from('workshop_signups')
+      .select('workshop_id');
+    const counts = new Map<number, number>();
+    for (const row of allSignups ?? []) {
+      counts.set(row.workshop_id, (counts.get(row.workshop_id) ?? 0) + 1);
+    }
+    this.signupCounts.set(counts);
+  }
+
+  getSignupCount(workshopId: number): number {
+    return this.signupCounts().get(workshopId) ?? 0;
   }
 
   createNewEventAdmin() {
-    this.editing.set({ title: '', description: '', date: '', location: '', capacity: 20 });
+    this.editing.set({ title: '', description: '', date: '', location: '', capacity: 20, price: null });
     this.isNew.set(true);
   }
 
@@ -64,15 +77,25 @@ export class AdminEvents implements OnInit {
 
   async loadSignups(workshopId: number) {
     if (this.signups().has(workshopId)) return;
-    const { data } = await this.supabase
+    const { data: rows } = await this.supabase
       .from('workshop_signups')
-      .select('user_id, profiles(name, email)')
+      .select('user_id')
       .eq('workshop_id', workshopId);
-    this.signups.update(map => {
-      const next = new Map(map);
-      next.set(workshopId, (data ?? []) as unknown as WorkshopSignupRow[]);
-      return next;
-    });
+    if (!rows || rows.length === 0) {
+      this.signups.update(map => { const next = new Map(map); next.set(workshopId, []); return next; });
+      return;
+    }
+    const userIds = rows.map(r => r.user_id);
+    const { data: profiles } = await this.supabase
+      .from('profiles')
+      .select('id, name, email')
+      .in('id', userIds);
+    const profileMap = new Map((profiles ?? []).map(p => [p.id, p]));
+    const result: WorkshopSignupRow[] = rows.map(r => ({
+      user_id: r.user_id,
+      profiles: profileMap.get(r.user_id) ?? null,
+    }));
+    this.signups.update(map => { const next = new Map(map); next.set(workshopId, result); return next; });
   }
 
   getSignups(workshopId: number): WorkshopSignupRow[] {
