@@ -94,8 +94,7 @@ export class Shop implements OnInit {
     this.currentPage.set(1);
   }
 
-  navigateToEdit(productId: number, event: Event) {
-    event.stopPropagation();
+  navigateToEdit(productId: number) {
     this.router.navigate(['/shop', productId], { state: { autoEdit: true } });
   }
 
