@@ -12,6 +12,7 @@
       <p class="text-sm text-gray-600">{{ w.description }}</p>
       <p class="text-sm text-gray-500">📍 {{ w.location }}</p>
       <p class="text-sm text-gray-500">👥 Aforament: {{ w.capacity }}</p>
+      @if (!isPast(w.date)) {
       <button
         (click)="toggleSignup(w)"
         class="w-full mt-2"
@@ -19,6 +20,7 @@
       >
         {{ isSignedUp(w.id) ? 'Cancel·lar inscripció' : "Inscriure'm" }}
       </button>
+      }
     </aside>
     }
   </div>
@@ -42,6 +44,7 @@
           </div>
           <p class="text-sm text-gray-500 mb-1">📍 {{ w.location }}</p>
           <p class="text-sm text-gray-500 mb-3">👥 {{ w.capacity }} places</p>
+          @if (!isPast(w.date)) {
           <button
             (click)="toggleSignup(w)"
             class="w-full text-sm"
@@ -49,6 +52,7 @@
           >
             {{ isSignedUp(w.id) ? 'Cancel·lar inscripció' : "Inscriure'm" }}
           </button>
+          }
         </li>
         }
       </ul>

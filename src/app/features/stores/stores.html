@@ -34,7 +34,7 @@
             @if (store.email) {
               <div class="flex gap-2">
                 <dt aria-hidden="true">✉️</dt>
-                <dd><a [href]="'mailto:' + store.email" class="underline hover:text-green-700" (click)="$event.stopPropagation()">{{ store.email }}</a></dd>
+                <dd><a [href]="'mailto:' + store.email" target="_blank" rel="noopener" class="underline hover:text-green-700" (click)="$event.stopPropagation()">{{ store.email }}</a></dd>
               </div>
             }
           </dl>

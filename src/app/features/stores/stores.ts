@@ -35,7 +35,7 @@ export class Stores {
       storeList.forEach((store) => {
         const marker = L.marker([store.lat, store.lng])
           .addTo(map)
-          .bindPopup(`<b>${store.name}</b><br>${store.address}${store.schedule ? '<br>' + store.schedule : ''}`);
+          .bindPopup(`<b>${store.name}</b>`);
 
         marker.on('click', () => this.selectStore(store.id, false));
         this.markers.set(store.id, marker);

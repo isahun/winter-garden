@@ -96,6 +96,10 @@ export class Events {
     return this.signedUpIds().has(workshopId);
   }
 
+  isPast(date: string) {
+    return new Date(date) < new Date();
+  }
+
   async toggleSignup(workshop: Workshop) {
     if (!this.auth.isLoggedIn()) {
       this.router.navigate(['/auth/login']);

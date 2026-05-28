@@ -165,6 +165,7 @@
 
   select.input {
     cursor: pointer;
+    accent-color: var(--color-secondary);
   }
 
   .navbar-glass {
