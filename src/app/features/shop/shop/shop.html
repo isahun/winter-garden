@@ -39,7 +39,7 @@
         @for (product of paginatedProducts(); track product.id) {
         <li class="relative">
           <a [routerLink]="['/shop', product.id]" class="card hover:shadow-md transition block">
-            @if (auth.isLoggedIn()) {
+            @if (auth.isLoggedIn() && !auth.isAdmin()) {
             <button (click)="favorites.toggleFavorite(product); $event.preventDefault()"
               class="absolute top-2 right-2 text-xl" [attr.aria-label]="'Favorit'">
               {{ favorites.isFavorite(product.id)() ? '❤️' : '🤍' }}
