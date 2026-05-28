@@ -5,10 +5,11 @@ import { AuthService } from '../../core/auth/auth.service';
 import { Workshop } from '../../core/models';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-events',
-  imports: [DatePipe, FormsModule],
+  imports: [DatePipe, FormsModule, RouterLink],
   templateUrl: './events.html',
   styleUrl: './events.css',
 })
@@ -22,6 +23,7 @@ export class Events {
   selectedWorkshop = signal<Workshop | null>(null);
   newWorkshop = signal<Partial<Workshop> | null>(null);
   signedUpIds = signal<Set<number>>(new Set());
+  workshopSignupCount = signal<number | null>(null);
 
   currentMonth = signal(new Date());
   monthLabel = computed(() =>
@@ -73,7 +75,9 @@ export class Events {
           extendedProps: w,
         })),
         eventClick: (info) => {
-          this.selectedWorkshop.set(info.event.extendedProps as Workshop);
+          const w = info.event.extendedProps as Workshop;
+          this.selectedWorkshop.set(w);
+          if (this.auth.isAdmin()) this.loadWorkshopCount(w.id);
           setTimeout(() => this.calendar?.updateSize(), 50);
         },
       });
@@ -84,7 +88,17 @@ export class Events {
   closePanel() {
     this.selectedWorkshop.set(null);
     this.newWorkshop.set(null);
+    this.workshopSignupCount.set(null);
     setTimeout(() => this.calendar?.updateSize(), 50);
+  }
+
+  async loadWorkshopCount(workshopId: number) {
+    this.workshopSignupCount.set(null);
+    const { count } = await this.supabase
+      .from('workshop_signups')
+      .select('*', { count: 'exact', head: true })
+      .eq('workshop_id', workshopId);
+    this.workshopSignupCount.set(count ?? 0);
   }
 
   startNewWorkshop() {

@@ -2,7 +2,10 @@
   <div class="flex justify-between items-center mb-6">
     <h1 class="text-3xl font-semibold">Tallers i esdeveniments</h1>
     @if (auth.isAdmin()) {
-    <button (click)="startNewWorkshop()" class="btn-primary text-sm">+ Nou taller</button>
+    <div class="flex gap-2">
+      <a routerLink="/admin/events" class="btn-secondary text-sm">Vista d'administrador</a>
+      <button (click)="startNewWorkshop()" class="btn-primary text-sm">+ Nou taller</button>
+    </div>
     }
   </div>
 
@@ -16,7 +19,13 @@
       <h2 class="text-lg font-semibold">{{ w.title }}</h2>
       <p class="text-sm text-gray-600">{{ w.description }}</p>
       <p class="text-sm text-gray-500">📍 {{ w.location }}</p>
+      @if (auth.isAdmin()) {
+      <p class="text-sm text-gray-500">
+        👥 Inscrits: {{ workshopSignupCount() !== null ? workshopSignupCount() + '/' + w.capacity : '...' }}
+      </p>
+      } @else {
       <p class="text-sm text-gray-500">👥 Aforament: {{ w.capacity }}</p>
+      }
       @if (!isPast(w.date) && !auth.isAdmin()) {
       <button
         (click)="toggleSignup(w)"
@@ -36,9 +45,9 @@
       <input [(ngModel)]="nw.location" name="location" placeholder="Lloc" class="input" />
       <input [(ngModel)]="nw.capacity" name="capacity" type="number" placeholder="Aforament" class="input" />
       <textarea [(ngModel)]="nw.description" name="description" placeholder="Descripció" class="input" rows="3"></textarea>
-      <div class="flex gap-2">
-        <button (click)="saveNewWorkshop()" class="btn-primary flex-1">Guardar</button>
-        <button (click)="closePanel()" class="btn-secondary flex-1">Cancel·lar</button>
+      <div class="flex flex-col gap-2">
+        <button (click)="saveNewWorkshop()" class="btn-primary w-full">Guardar</button>
+        <button (click)="closePanel()" class="btn-secondary w-full">Cancel·lar</button>
       </div>
     </aside>
     }
