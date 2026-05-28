@@ -40,10 +40,10 @@
       <span aria-hidden="true">📍</span>
       <span>Botigues</span>
     </a>
-    <a routerLink="/admin/dashboard" routerLinkActive="active" class="bottom-nav-item">
+    <button (click)="panellOpen.set(true)" class="bottom-nav-item">
       <span aria-hidden="true">⚙️</span>
       <span>Panell</span>
-    </a>
+    </button>
     <button (click)="auth.logout()" class="bottom-nav-item">
       <span aria-hidden="true">↩</span>
       <span>Sortir</span>
@@ -88,6 +88,40 @@
   }
 </nav>
 
+@if (panellOpen()) {
+<div class="fixed inset-0 bg-black/50 z-40 md:hidden" (click)="panellOpen.set(false)" aria-hidden="true"></div>
+<div class="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl md:hidden" role="dialog" aria-modal="true" aria-label="Panell d'administrador">
+  <div class="flex justify-center pt-3 pb-1">
+    <div class="w-10 h-1 bg-gray-300 rounded-full"></div>
+  </div>
+  <div class="flex justify-between items-center px-6 py-3 border-b">
+    <h2 class="font-semibold">Panell d'administrador</h2>
+    <button (click)="panellOpen.set(false)" class="text-gray-500 text-xl" aria-label="Tancar">✕</button>
+  </div>
+  <nav class="px-4 py-3 space-y-1">
+    <a routerLink="/admin/dashboard" (click)="panellOpen.set(false)"
+       class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-muted hover:bg-gray-50 hover:text-primary transition-colors">
+      <span class="text-lg">📊</span> Estadístiques
+    </a>
+    <a routerLink="/admin/products" (click)="panellOpen.set(false)"
+       class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-muted hover:bg-gray-50 hover:text-primary transition-colors">
+      <span class="text-lg">🌿</span> Productes
+    </a>
+    <a routerLink="/admin/orders" (click)="panellOpen.set(false)"
+       class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-muted hover:bg-gray-50 hover:text-primary transition-colors">
+      <span class="text-lg">📦</span> Comandes
+    </a>
+    <a routerLink="/admin/events" (click)="panellOpen.set(false)"
+       class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-muted hover:bg-gray-50 hover:text-primary transition-colors">
+      <span class="text-lg">🌸</span> Tallers
+    </a>
+  </nav>
+  <div class="px-6 pb-8 pt-2">
+    <button (click)="auth.logout()" class="btn-secondary w-full">Tancar sessió</button>
+  </div>
+</div>
+}
+
 <ng-template #navLinks>
   @if (auth.isAdmin()) {
     <li><a routerLink="/shop" routerLinkActive="text-primary font-semibold"
@@ -96,8 +130,17 @@
            class="text-sm text-muted hover:text-primary transition-colors duration-200">Tallers</a></li>
     <li><a routerLink="/stores" routerLinkActive="text-primary font-semibold"
            class="text-sm text-muted hover:text-primary transition-colors duration-200">Botigues</a></li>
-    <li><a routerLink="/admin/dashboard" routerLinkActive="text-primary font-semibold"
-           class="text-sm text-muted hover:text-primary transition-colors duration-200">Panell</a></li>
+    <li class="relative group">
+      <button class="text-sm text-muted hover:text-primary transition-colors duration-200 flex items-center gap-1 cursor-pointer">
+        Panell <span class="text-xs">▾</span>
+      </button>
+      <ul class="absolute top-full right-0 mt-2 bg-white shadow-lg rounded-xl py-2 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-150 min-w-44 border list-none z-50">
+        <li><a routerLink="/admin/dashboard" class="flex items-center gap-2 px-4 py-2 text-sm text-muted hover:text-primary hover:bg-gray-50">📊 Estadístiques</a></li>
+        <li><a routerLink="/admin/products" class="flex items-center gap-2 px-4 py-2 text-sm text-muted hover:text-primary hover:bg-gray-50">🌿 Productes</a></li>
+        <li><a routerLink="/admin/orders" class="flex items-center gap-2 px-4 py-2 text-sm text-muted hover:text-primary hover:bg-gray-50">📦 Comandes</a></li>
+        <li><a routerLink="/admin/events" class="flex items-center gap-2 px-4 py-2 text-sm text-muted hover:text-primary hover:bg-gray-50">🌸 Tallers</a></li>
+      </ul>
+    </li>
     <li><button (click)="auth.logout()"
                 class="text-sm text-muted hover:text-primary transition-colors duration-200 cursor-pointer">Sortir</button></li>
   } @else {
