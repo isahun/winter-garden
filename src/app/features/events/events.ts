@@ -4,10 +4,11 @@ import { SupabaseService } from '../../core/supabase.service';
 import { AuthService } from '../../core/auth/auth.service';
 import { Workshop } from '../../core/models';
 import { DatePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-events',
-  imports: [DatePipe],
+  imports: [DatePipe, FormsModule],
   templateUrl: './events.html',
   styleUrl: './events.css',
 })
@@ -19,6 +20,7 @@ export class Events {
 
   workshops = signal<Workshop[]>([]);
   selectedWorkshop = signal<Workshop | null>(null);
+  newWorkshop = signal<Partial<Workshop> | null>(null);
   signedUpIds = signal<Set<number>>(new Set());
 
   currentMonth = signal(new Date());
@@ -81,6 +83,34 @@ export class Events {
 
   closePanel() {
     this.selectedWorkshop.set(null);
+    this.newWorkshop.set(null);
+    setTimeout(() => this.calendar?.updateSize(), 50);
+  }
+
+  startNewWorkshop() {
+    this.selectedWorkshop.set(null);
+    this.newWorkshop.set({ title: '', description: '', date: '', location: '', capacity: 20 });
+    setTimeout(() => this.calendar?.updateSize(), 50);
+  }
+
+  async saveNewWorkshop() {
+    const data = this.newWorkshop();
+    if (!data?.title || !data.date) return;
+    const { data: created } = await this.supabase
+      .from('workshops')
+      .insert(data)
+      .select()
+      .single<Workshop>();
+    if (created) {
+      this.workshops.update(ws => [...ws, created]);
+      this.calendar?.addEvent({
+        id: String(created.id),
+        title: created.title,
+        date: created.date,
+        extendedProps: created,
+      });
+    }
+    this.newWorkshop.set(null);
     setTimeout(() => this.calendar?.updateSize(), 50);
   }
 
