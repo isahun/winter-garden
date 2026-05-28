@@ -33,21 +33,42 @@
 
   <ul class="space-y-3 list-none">
     @for (w of workshops(); track w.id) {
-    <li class="border rounded-lg p-4 flex justify-between items-center">
-      <div>
-        <h2 class="font-medium">{{ w.title }}</h2>
-        <p class="text-sm text-gray-500">
-          <time [attr.datetime]="w.date">{{ w.date | date:'dd/MM/yyyy HH:mm' }}</time>
-          · {{ w.location }}
-        </p>
+    <li class="border rounded-lg overflow-hidden">
+      <div class="p-4 flex justify-between items-center">
+        <div>
+          <h2 class="font-medium">{{ w.title }}</h2>
+          <p class="text-sm text-gray-500">
+            <time [attr.datetime]="w.date">{{ w.date | date:'dd/MM/yyyy HH:mm' }}</time>
+            · {{ w.location }}
+          </p>
+        </div>
+        <div class="flex gap-2 items-center">
+          <button (click)="editEventAdmin(w)" class="text-blue-600 hover:underline text-sm">Editar</button>
+          <button (click)="deleteEventAdmin(w.id)" class="text-red-500 hover:underline text-sm"
+            [attr.aria-label]="'Eliminar taller ' + w.title">
+            Eliminar
+          </button>
+        </div>
       </div>
-      <div class="flex gap-2">
-        <button (click)="editEventAdmin(w)" class="text-blue-600 hover:underline text-sm">Editar</button>
-        <button (click)="deleteEventAdmin(w.id)" class="text-red-500 hover:underline text-sm"
-          [attr.aria-label]="'Eliminar taller ' + w.title">
-          Eliminar
-        </button>
-      </div>
+      <details class="border-t" (toggle)="loadSignups(w.id)">
+        <summary class="px-4 py-2 text-sm text-gray-500 cursor-pointer hover:bg-gray-50 list-none">
+          Veure inscrits
+        </summary>
+        <div class="px-4 pb-3">
+          @if (getSignups(w.id).length === 0) {
+            <p class="text-sm text-gray-400 py-2">Cap persona inscrita.</p>
+          } @else {
+            <ul class="divide-y text-sm list-none">
+              @for (s of getSignups(w.id); track s.user_id) {
+              <li class="py-2 flex gap-3">
+                <span class="font-medium">{{ s.profiles?.name ?? '—' }}</span>
+                <span class="text-gray-500">{{ s.profiles?.email ?? '—' }}</span>
+              </li>
+              }
+            </ul>
+          }
+        </div>
+      </details>
     </li>
     }
   </ul>

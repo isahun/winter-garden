@@ -4,6 +4,12 @@ import { DatePipe } from '@angular/common';
 import { WorkshopService } from '../../../core/services/workshop.service';
 import { Workshop } from '../../../core/models';
 import { RouterLink } from '@angular/router';
+import { SupabaseService } from '../../../core/supabase.service';
+
+interface WorkshopSignupRow {
+  user_id: string;
+  profiles: { name: string | null; email: string | null } | null;
+}
 
 @Component({
   selector: 'app-admin-events',
@@ -12,10 +18,12 @@ import { RouterLink } from '@angular/router';
 })
 export class AdminEvents implements OnInit {
   private workshopService = inject(WorkshopService);
+  private supabase = inject(SupabaseService).client;
 
   workshops = signal<Workshop[]>([]);
   editing = signal<Partial<Workshop> | null>(null);
   isNew = signal(false);
+  signups = signal<Map<number, WorkshopSignupRow[]>>(new Map());
 
   async ngOnInit() {
     const { data } = await this.workshopService.getAllWorkshops();
@@ -52,5 +60,22 @@ export class AdminEvents implements OnInit {
     if (!confirm('Eliminar aquest taller?')) return;
     await this.workshopService.deleteWorkshop(id);
     await this.ngOnInit();
+  }
+
+  async loadSignups(workshopId: number) {
+    if (this.signups().has(workshopId)) return;
+    const { data } = await this.supabase
+      .from('workshop_signups')
+      .select('user_id, profiles(name, email)')
+      .eq('workshop_id', workshopId);
+    this.signups.update(map => {
+      const next = new Map(map);
+      next.set(workshopId, (data ?? []) as WorkshopSignupRow[]);
+      return next;
+    });
+  }
+
+  getSignups(workshopId: number): WorkshopSignupRow[] {
+    return this.signups().get(workshopId) ?? [];
   }
 }
