@@ -3,8 +3,8 @@
     <h1 class="text-3xl font-semibold">Tallers i esdeveniments</h1>
     @if (auth.isAdmin()) {
     <div class="flex gap-2">
-      <a routerLink="/admin/events" class="btn-secondary text-sm">Vista d'administrador</a>
-      <button (click)="startNewWorkshop()" class="btn-primary text-sm">+ Nou taller</button>
+      <a routerLink="/admin/events" class="btn-secondary inline-flex items-center justify-center px-3 py-1.5 text-sm">Panell d'edició</a>
+      <button (click)="startNewWorkshop()" class="btn-primary inline-flex items-center justify-center px-3 py-1.5 text-sm">+ Nou taller</button>
     </div>
     }
   </div>
@@ -40,6 +40,24 @@
         {{ isSignedUp(w.id) ? 'Cancel·lar inscripció' : "Inscriure'm" }}
       </button>
       }
+      @if (auth.isAdmin()) {
+      <button (click)="startEditingWorkshop(w)" class="btn-secondary w-full text-sm">✏️ Editar taller</button>
+      }
+    </aside>
+    } @else if (editingWorkshop(); as ew) {
+    <aside class="w-72 shrink-0 border rounded-xl p-5 space-y-3 self-start sticky top-4 mt-17">
+      <button (click)="closePanel()" class="text-sm text-gray-400 hover:text-gray-600">← Tancar</button>
+      <h2 class="text-lg font-semibold mb-1">Editar taller</h2>
+      <input [(ngModel)]="ew.title" name="title" placeholder="Títol" class="input" />
+      <input [(ngModel)]="ew.date" name="date" type="datetime-local" class="input" />
+      <input [(ngModel)]="ew.location" name="location" placeholder="Lloc" class="input" />
+      <input [(ngModel)]="ew.capacity" name="capacity" type="number" placeholder="Aforament" class="input" />
+      <input [(ngModel)]="ew.price" name="price" type="number" placeholder="Preu en € (buit = gratuït)" class="input" />
+      <textarea [(ngModel)]="ew.description" name="description" placeholder="Descripció" class="input" rows="3"></textarea>
+      <div class="flex flex-col gap-2">
+        <button (click)="saveEditingWorkshop()" class="btn-primary w-full">Guardar</button>
+        <button (click)="closePanel()" class="btn-secondary w-full">Cancel·lar</button>
+      </div>
     </aside>
     } @else if (newWorkshop(); as nw) {
     <aside class="w-72 shrink-0 border rounded-xl p-5 space-y-3 self-start sticky top-4 mt-17">
@@ -78,8 +96,14 @@
           </div>
           <p class="text-sm text-gray-500 mb-1">📍 {{ w.location }}</p>
           <p class="text-sm text-gray-500 mb-1">💶 @if (w.price) { {{ w.price }}€ } @else { Gratuït }</p>
+          @if (auth.isAdmin()) {
+          <p class="text-sm text-gray-500 mb-3">👥 {{ getSignupCount(w.id) }}/{{ w.capacity }} inscrits</p>
+          } @else {
           <p class="text-sm text-gray-500 mb-3">👥 {{ w.capacity }} places</p>
-          @if (!isPast(w.date) && !auth.isAdmin()) {
+          }
+          @if (auth.isAdmin()) {
+          <button (click)="startEditingWorkshop(w)" class="btn-secondary w-full text-sm">✏️ Editar taller</button>
+          } @else if (!isPast(w.date)) {
           <button
             (click)="toggleSignup(w)"
             class="w-full text-sm"
@@ -94,3 +118,28 @@
     }
   </div>
 </div>
+
+@if (editingWorkshop(); as ew) {
+<div class="fixed inset-0 bg-black/50 z-40 md:hidden" (click)="closePanel()" aria-hidden="true"></div>
+<div class="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl md:hidden max-h-[90vh] flex flex-col" role="dialog" aria-modal="true">
+  <div class="flex justify-center pt-3 pb-1">
+    <div class="w-10 h-1 bg-gray-300 rounded-full"></div>
+  </div>
+  <div class="flex justify-between items-center px-6 py-3 border-b">
+    <h2 class="font-semibold">Editar taller</h2>
+    <button (click)="closePanel()" class="text-gray-500 text-xl" aria-label="Tancar">✕</button>
+  </div>
+  <div class="overflow-y-auto flex-1 px-6 py-4 space-y-3">
+    <input [(ngModel)]="ew.title" name="title" placeholder="Títol" class="input" />
+    <input [(ngModel)]="ew.date" name="date" type="datetime-local" class="input" />
+    <input [(ngModel)]="ew.location" name="location" placeholder="Lloc" class="input" />
+    <input [(ngModel)]="ew.capacity" name="capacity" type="number" placeholder="Aforament" class="input" />
+    <input [(ngModel)]="ew.price" name="price" type="number" placeholder="Preu en € (buit = gratuït)" class="input" />
+    <textarea [(ngModel)]="ew.description" name="description" placeholder="Descripció" class="input" rows="3"></textarea>
+  </div>
+  <div class="px-6 pb-8 pt-3 border-t flex flex-col gap-2">
+    <button (click)="saveEditingWorkshop()" class="btn-primary w-full">Guardar</button>
+    <button (click)="closePanel()" class="btn-secondary w-full">Cancel·lar</button>
+  </div>
+</div>
+}

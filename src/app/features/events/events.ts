@@ -22,8 +22,10 @@ export class Events {
   workshops = signal<Workshop[]>([]);
   selectedWorkshop = signal<Workshop | null>(null);
   newWorkshop = signal<Partial<Workshop> | null>(null);
+  editingWorkshop = signal<Partial<Workshop> | null>(null);
   signedUpIds = signal<Set<number>>(new Set());
   workshopSignupCount = signal<number | null>(null);
+  signupCounts = signal<Map<number, number>>(new Map());
 
   currentMonth = signal(new Date());
   monthLabel = computed(() =>
@@ -51,6 +53,16 @@ export class Events {
           .select('workshop_id')
           .eq('user_id', this.auth.user()!.id);
         this.signedUpIds.set(new Set((signups ?? []).map((s) => s.workshop_id)));
+      }
+      if (this.auth.isAdmin()) {
+        const { data: allSignups } = await this.supabase
+          .from('workshop_signups')
+          .select('workshop_id');
+        const counts = new Map<number, number>();
+        for (const row of allSignups ?? []) {
+          counts.set(row.workshop_id, (counts.get(row.workshop_id) ?? 0) + 1);
+        }
+        this.signupCounts.set(counts);
       }
 
       if (window.innerWidth < 768) return;
@@ -88,7 +100,32 @@ export class Events {
   closePanel() {
     this.selectedWorkshop.set(null);
     this.newWorkshop.set(null);
+    this.editingWorkshop.set(null);
     this.workshopSignupCount.set(null);
+    setTimeout(() => this.calendar?.updateSize(), 50);
+  }
+
+  startEditingWorkshop(w: Workshop) {
+    this.selectedWorkshop.set(null);
+    this.editingWorkshop.set({ ...w, date: w.date?.slice(0, 16) ?? '' });
+    this.workshopSignupCount.set(null);
+    setTimeout(() => this.calendar?.updateSize(), 50);
+  }
+
+  async saveEditingWorkshop() {
+    const data = this.editingWorkshop();
+    if (!data?.id) return;
+    const { data: updated } = await this.supabase
+      .from('workshops')
+      .update(data)
+      .eq('id', data.id)
+      .select()
+      .single<Workshop>();
+    if (updated) {
+      this.workshops.update(ws => ws.map(w => w.id === updated.id ? updated : w));
+      this.calendar?.getEventById(String(updated.id))?.setProp('title', updated.title);
+    }
+    this.editingWorkshop.set(null);
     setTimeout(() => this.calendar?.updateSize(), 50);
   }
 
@@ -134,6 +171,10 @@ export class Events {
 
   nextMonth() {
     this.currentMonth.update((date) => new Date(date.getFullYear(), date.getMonth() + 1, 1));
+  }
+
+  getSignupCount(workshopId: number): number {
+    return this.signupCounts().get(workshopId) ?? 0;
   }
 
   isSignedUp(workshopId: number) {
