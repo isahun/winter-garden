@@ -32,12 +32,17 @@ app.post('/api/payment-intent', async (req, res) => {
     res.status(400).json({ error: 'Import invàlid' });
     return;
   }
-  const intent = await stripe.paymentIntents.create({
-    amount,
-    currency: 'eur',
-    automatic_payment_methods: { enabled: true },
-  });
-  res.json({ clientSecret: intent.client_secret });
+  try {
+    const intent = await stripe.paymentIntents.create({
+      amount,
+      currency: 'eur',
+      automatic_payment_methods: { enabled: true },
+    });
+    res.json({ clientSecret: intent.client_secret });
+  } catch (err) {
+    console.error('[Stripe] Error creant PaymentIntent:', err);
+    res.status(500).json({ error: 'Error al processador de pagament. Torna-ho a intentar.' });
+  }
 });
 
 app.post('/api/chatbot', async (req, res) => {

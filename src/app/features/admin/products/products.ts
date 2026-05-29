@@ -20,6 +20,7 @@ export class Products implements OnInit {
   editing = signal<Partial<Product> | null>(null);
   isNew = signal(false);
   uploading = signal(false);
+  uploadError = signal('');
   categoryFilter = signal<number | null>(null);
   stockFilter = signal<string>('');
   sortBy = signal<'name' | 'price' | 'stock'>('name');
@@ -72,14 +73,20 @@ export class Products implements OnInit {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
     this.uploading.set(true);
-    const url = await this.imageService.uploadToCloudinary(file);
-    this.editing.update((product) => {
-      if (!product) return product;
-      const images = [...(product.images ?? [])];
-      images[index] = url;
-      return { ...product, images };
-    });
-    this.uploading.set(false);
+    this.uploadError.set('');
+    try {
+      const url = await this.imageService.uploadToCloudinary(file);
+      this.editing.update((product) => {
+        if (!product) return product;
+        const images = [...(product.images ?? [])];
+        images[index] = url;
+        return { ...product, images };
+      });
+    } catch {
+      this.uploadError.set('Error pujant la imatge. Comprova la connexió i torna-ho a intentar.');
+    } finally {
+      this.uploading.set(false);
+    }
   }
 
   removeImage(index: number) {

@@ -72,10 +72,15 @@ export class Chatbot {
     effect(() => {
       const isLoading = this.aiResponse.isLoading();
       const value = this.aiResponse.value();
-      if (!isLoading && value) {
+      const streamError = this.aiResponse.error();
+
+      if (!isLoading && (value || streamError)) {
+        const text = streamError
+          ? "No es va poder connectar amb l'assistenta. Torna-ho a intentar."
+          : (value as string);
         this.chatMessages.update((msgs) => [
           ...msgs,
-          { id: `ai-${Date.now()}`, text: value, isUser: false },
+          { id: `ai-${Date.now()}`, text, isUser: false },
         ]);
         untracked(() => this.currentAiPrompt.set(''));
       }
