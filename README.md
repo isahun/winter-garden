@@ -43,7 +43,7 @@ Projecte final de Bootcamp Frontend — Angular 22 · Supabase · Stripe · Gemi
 | Calendari | FullCalendar |
 | Imatges | Cloudinary |
 | Gràfiques | Chart.js |
-| Testing | Vitest |
+| Testing | Karma + Jasmine (21 tests, format Gherkin) |
 
 ---
 
@@ -67,7 +67,9 @@ Projecte final de Bootcamp Frontend — Angular 22 · Supabase · Stripe · Gemi
 
 ### Tallers
 - Calendari interactiu amb FullCalendar (vista mensual)
-- Inscripció i cancel·lació de places
+- Events amb codi de color: verd (places lliures) · ambre (quasi ple, <20% restant) · vermell (complet) · gris (passat)
+- Inscripció i cancel·lació de places; botó deshabilitat quan el taller és complet
+- Color dels events s'actualitza en temps real en apuntar-se o cancel·lar
 - Historial de tallers inscrits al compte de l'usuari
 
 ### Botigues
@@ -83,8 +85,10 @@ Projecte final de Bootcamp Frontend — Angular 22 · Supabase · Stripe · Gemi
 
 ### Panell d'administració
 - CRUD complet de productes amb pujada d'imatges via Cloudinary
+- Soft delete de productes (arxivar/restaurar) per preservar l'historial de comandes
 - Gestió de comandes amb canvi d'estat (pendent · enviat · completat)
-- Creació i edició de tallers des del calendari
+- Creació i edició de tallers des del calendari (desktop: panell lateral · mòbil: bottom sheet)
+- Comptador d'inscrits per taller, llista de participants amb email
 - Dashboard amb KPIs (vendes, comandes, productes) i gràfiques Chart.js
 
 ---
@@ -112,7 +116,7 @@ L'entorn de test de Stripe no cobra diners reals. Fes servir aquestes dades al f
 
 ### Requisits
 
-- Node.js >= 20
+- Node.js >= 22.22.0 (recomanat: v24)
 - npm >= 11
 
 ### Instal·lació

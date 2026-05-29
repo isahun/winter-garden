@@ -12,4 +12,5 @@ export interface Product {
   created_at: string;
   categories?: Category;
   featured?: boolean;
+  archived?: boolean;
 }

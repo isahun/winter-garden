@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { CurrencyPipe, NgTemplateOutlet } from '@angular/common';
 import { ProductService } from '../../../core/services/product.service';
 import { Product } from '../../../core/models';
@@ -13,6 +13,7 @@ import { AuthService } from '../../../core/auth/auth.service';
 })
 export class Shop implements OnInit {
   private productService = inject(ProductService);
+  private router = inject(Router);
   favorites = inject(FavoritesService);
   auth = inject(AuthService);
 
@@ -91,6 +92,25 @@ export class Shop implements OnInit {
     this.selectedPriceRange.set('');
     this.selectedSizes.set([]);
     this.currentPage.set(1);
+  }
+
+  navigateToProduct(productId: number) {
+    this.router.navigate(['/shop', productId]);
+  }
+
+  navigateToCreate() {
+    this.router.navigate(['/admin/products'], { state: { autoCreate: true } });
+  }
+
+  navigateToEdit(productId: number) {
+    this.router.navigate(['/shop', productId], { state: { autoEdit: true } });
+  }
+
+  async archiveProduct(productId: number) {
+    if (!confirm('Arxivar aquest producte? Deixarà de ser visible al catàleg.')) return;
+    const { error } = await this.productService.archiveProduct(productId);
+    if (error) { alert('Error en arxivar el producte.'); return; }
+    this.products.update(ps => ps.filter(p => p.id !== productId));
   }
 
   async ngOnInit() {

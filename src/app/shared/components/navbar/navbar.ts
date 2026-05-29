@@ -14,4 +14,5 @@ export class Navbar {
   auth = inject(AuthService);
   cart = inject(CartService);
   menuOpen = signal(false);
+  panellOpen = signal(false);
 }
