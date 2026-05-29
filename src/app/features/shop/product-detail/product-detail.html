@@ -95,10 +95,14 @@
 }
 @if (lightboxOpen()) {
 <div class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
-  (click)="lightboxOpen.set(false)" role="dialog" aria-modal="true" aria-label="Imatge ampliada">
+  (click)="lightboxOpen.set(false)"
+  (keydown.escape)="lightboxOpen.set(false)"
+  role="dialog" aria-modal="true" aria-label="Imatge ampliada"
+  tabindex="-1">
   <img [src]="product.images[activeImage()]" [alt]="product.name"
     class="max-h-full max-w-full object-contain rounded-lg shadow-xl" />
-  <button class="absolute top-4 right-4 text-white text-3xl leading-none" aria-label="Tancar">✕</button>
+  <button id="lightbox-close" class="absolute top-4 right-4 text-white text-3xl leading-none"
+    aria-label="Tancar" (click)="lightboxOpen.set(false)">✕</button>
 </div>
 }
 } @else {
