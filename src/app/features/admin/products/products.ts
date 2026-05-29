@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, inject, computed, signal, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -20,6 +20,27 @@ export class Products implements OnInit {
   editing = signal<Partial<Product> | null>(null);
   isNew = signal(false);
   uploading = signal(false);
+  categoryFilter = signal<number | null>(null);
+  stockFilter = signal<string>('');
+  sortBy = signal<'name' | 'price' | 'stock'>('name');
+  sortDir = signal<'asc' | 'desc'>('asc');
+
+  filtered = computed(() => {
+    const items = this.products().filter((p) => {
+      const categoryOk = !this.categoryFilter() || p.category_id === this.categoryFilter();
+      const stockOk =
+        !this.stockFilter() ||
+        (this.stockFilter() === 'instock' && p.stock > 0) ||
+        (this.stockFilter() === 'outofstock' && p.stock === 0);
+      return categoryOk && stockOk;
+    });
+    const dir = this.sortDir() === 'asc' ? 1 : -1;
+    return [...items].sort((a, b) => {
+      if (this.sortBy() === 'price') return (a.price - b.price) * dir;
+      if (this.sortBy() === 'stock') return (a.stock - b.stock) * dir;
+      return a.name.localeCompare(b.name) * dir;
+    });
+  });
 
   private readonly platformId = inject(PLATFORM_ID);
 
@@ -62,7 +83,7 @@ export class Products implements OnInit {
   }
 
   removeImage(index: number) {
-    this.editing.update(product => {
+    this.editing.update((product) => {
       if (!product) return product;
       const images = [...(product.images ?? [])];
       images.splice(index, 1);
@@ -97,7 +118,18 @@ export class Products implements OnInit {
   async deleteProductAdmin(id: number) {
     if (!confirm('⚠️ Eliminar definitivament? Aquesta acció NO es pot desfer.')) return;
     const { error } = await this.productService.deleteProduct(id);
-    if (error?.code === '23503') { alert('No es pot eliminar: té comandes associades. Arxiva\'l en comptes.'); return; }
+    if (error?.code === '23503') {
+      alert("No es pot eliminar: té comandes associades. Arxiva'l en comptes.");
+      return;
+    }
     await this.ngOnInit();
+  }
+
+  sort(col: 'name' | 'price' | 'stock') {
+    if (this.sortBy() === col) this.sortDir.update((d) => (d === 'asc' ? 'desc' : 'asc'));
+    else {
+      this.sortBy.set(col);
+      this.sortDir.set('asc');
+    }
   }
 }

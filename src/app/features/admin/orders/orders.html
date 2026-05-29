@@ -1,5 +1,15 @@
 ﻿<section class="container mx-auto px-4 py-8">
   <h1 class="text-3xl font-semibold mb-6">Gestió de comandes</h1>
+  <div class="mb-4">
+    <label for="status-filter" class="sr-only">Filtrar per estat</label>
+    <select id="status-filter" (change)="statusFilter.set($any($event.target).value)" class="input text-sm">
+      <option value="">Tots els estats</option>
+      <option value="pending">Pendent</option>
+      <option value="shipped">Enviat</option>
+      <option value="completed">Completat</option>
+      <option value="cancelled">Cancel·lat</option>
+    </select>
+  </div>
   <div class="overflow-x-auto">
     <table class="w-full text-sm">
       <caption class="sr-only">
@@ -15,27 +25,18 @@
         </tr>
       </thead>
       <tbody class="divide-y">
-        @for (order of orders(); track order.id) {
+        @for (order of filtered(); track order.id) {
         <tr>
           <td class="py-3">{{ order.id }}</td>
           <td class="py-3">
-            <time [attr.datetime]="order.created_at"
-              >{{ order.created_at | date:'dd/MM/yyyy' }}</time
-            >
+            <time [attr.datetime]="order.created_at">{{ order.created_at | date:'dd/MM/yyyy' }}</time>
           </td>
           <td class="py-3">{{ order.total | currency:'EUR' }}</td>
           <td class="py-3">{{ order.profiles?.email }}</td>
           <td class="py-3">
-            <label [for]="'status-' + order.id" class="sr-only"
-              >Estat comanda #{{ order.id }}</label
-            >
-            <select
-              [id]="'status-' + order.id"
-              [name]="'status-' + order.id"
-              [value]="order.status"
-              (change)="updateStatusAdmin(order.id, $any($event.target).value)"
-              class="input text-sm py-1"
-            >
+            <label [for]="'status-' + order.id" class="sr-only">Estat comanda #{{ order.id }}</label>
+            <select [id]="'status-' + order.id" [name]="'status-' + order.id" [value]="order.status"
+              (change)="updateStatusAdmin(order.id, $any($event.target).value)" class="input text-sm py-1">
               <option value="pending">Pendent</option>
               <option value="shipped">Enviat</option>
               <option value="completed">Completat</option>

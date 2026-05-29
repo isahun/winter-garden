@@ -2,8 +2,10 @@
   <header class="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center mb-6">
     <h1 class="text-2xl md:text-3xl font-semibold">Gestió de productes</h1>
     <div class="flex gap-2">
-      <a routerLink="/shop" class="btn-secondary inline-flex items-center justify-center px-3 py-1.5 text-sm">Veure catàleg</a>
-      <button (click)="createProductAdmin()" class="btn-primary inline-flex items-center justify-center px-3 py-1.5 text-sm">+ Nou producte</button>
+      <a routerLink="/shop" class="btn-secondary inline-flex items-center justify-center px-3 py-1.5 text-sm">Veure
+        catàleg</a>
+      <button (click)="createProductAdmin()"
+        class="btn-primary inline-flex items-center justify-center px-3 py-1.5 text-sm">+ Nou producte</button>
     </div>
   </header>
 
@@ -35,7 +37,8 @@
           @for (i of [0, 1, 2]; track i) {
           <div class="space-y-1">
             @if (editing()!.images?.[i]) {
-            <img [src]="editing()!.images![i]" alt="Previsualització" class="w-full aspect-square object-cover rounded" />
+            <img [src]="editing()!.images![i]" alt="Previsualització"
+              class="w-full aspect-square object-cover rounded" />
             <button type="button" (click)="removeImage(i)" class="text-red-500 text-xs hover:underline w-full">
               Eliminar
             </button>
@@ -44,8 +47,8 @@
               class="flex items-center justify-center w-full aspect-square border-2 border-dashed rounded text-gray-300 text-3xl cursor-pointer hover:border-gray-400">
               +
             </label>
-            <input [id]="'p-image-' + i" type="file" accept="image/*" (change)="uploadImage($event, i)"
-              class="sr-only" [disabled]="uploading()" />
+            <input [id]="'p-image-' + i" type="file" accept="image/*" (change)="uploadImage($event, i)" class="sr-only"
+              [disabled]="uploading()" />
             }
           </div>
           }
@@ -62,6 +65,24 @@
   </section>
   }
 
+  <div class="flex flex-wrap gap-3 mb-4">
+    <label for="cat-filter" class="sr-only">Filtrar per categoria</label>
+    <select id="cat-filter" (change)="categoryFilter.set($any($event.target).value ? +$any($event.target).value : null)"
+      class="input text-sm">
+      <option value="">Totes les categories</option>
+      @for (cat of categories(); track cat.id) {
+      <option [value]="cat.id">{{ cat.name }}</option>
+      }
+    </select>
+
+    <label for="stock-filter" class="sr-only">Filtrar per estoc</label>
+    <select id="stock-filter" (change)="stockFilter.set($any($event.target).value)" class="input text-sm">
+      <option value="">Tot l'estoc</option>
+      <option value="instock">En estoc</option>
+      <option value="outofstock">Sense estoc</option>
+    </select>
+  </div>
+
   <div class="overflow-x-auto">
     <table class="w-full text-sm">
       <caption class="sr-only">
@@ -69,14 +90,26 @@
       </caption>
       <thead class="border-b">
         <tr class="text-left">
-          <th scope="col" class="pb-3">Nom</th>
-          <th scope="col" class="pb-3">Preu</th>
-          <th scope="col" class="pb-3">Estoc</th>
+          <th scope="col" class="pb-3">
+            <button (click)="sort('name')" class="flex items-center gap-1 hover:underline hover:cursor-pointer">
+              Nom <span class="text-xs">{{ sortBy() === 'name' ? (sortDir() === 'asc' ? '↑' : '↓') : '↕' }}</span>
+            </button>
+          </th>
+          <th scope="col" class="pb-3">
+            <button (click)="sort('price')" class="flex items-center gap-1 hover:underline hover:cursor-pointer">
+              Preu <span class="text-xs">{{ sortBy() === 'price' ? (sortDir() === 'asc' ? '↑' : '↓') : '↕' }}</span>
+            </button>
+          </th>
+          <th scope="col" class="pb-3">
+            <button (click)="sort('stock')" class="flex items-center gap-1 hover:underline hover:cursor-pointer">
+              Estoc <span class="text-xs">{{ sortBy() === 'stock' ? (sortDir() === 'asc' ? '↑' : '↓') : '↕' }}</span>
+            </button>
+          </th>
           <th scope="col" class="pb-3">Accions</th>
         </tr>
       </thead>
       <tbody class="divide-y">
-        @for (product of products(); track product.id) {
+        @for (product of filtered(); track product.id) {
         <tr [class.opacity-50]="product.stock === 0">
           <td class="py-3 flex items-center gap-3">
             <img [src]="product.images[0] || 'assets/placeholder.jpg'" [alt]="product.name"
@@ -101,10 +134,10 @@
               Eliminar
             </button>
             } @else {
-            <button (click)="openEditAdmin(product)" class="text-blue-600 hover:underline text-sm">
+            <button (click)="openEditAdmin(product)" class="text-blue-600 hover:underline hover:cursor-pointer text-sm">
               Editar
             </button>
-            <button (click)="archiveProductAdmin(product.id)" class="text-gray-400 hover:underline text-sm">
+            <button (click)="archiveProductAdmin(product.id)" class="text-gray-400 hover:underline hover:cursor-pointer text-sm">
               Arxivar
             </button>
             }
