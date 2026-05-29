@@ -3,7 +3,7 @@
     <h1 class="text-3xl font-semibold">Tallers i esdeveniments</h1>
     @if (auth.isAdmin()) {
     <div class="flex gap-2">
-      <a routerLink="/admin/events" class="btn-secondary inline-flex items-center justify-center px-3 py-1.5 text-sm">Panell d'edició</a>
+      <button routerLink="/admin/events" class="btn-secondary inline-flex items-center justify-center px-3 py-1.5 text-sm">Panell d'edició</button>
       <button (click)="startNewWorkshop()" class="btn-primary inline-flex items-center justify-center px-3 py-1.5 text-sm">+ Nou taller</button>
     </div>
     }
@@ -25,23 +25,26 @@
       <p class="text-sm text-gray-500">💶 Gratuït</p>
       }
       @if (auth.isAdmin()) {
-      <p class="text-sm text-gray-500">
-        👥 Inscrits: {{ workshopSignupCount() !== null ? workshopSignupCount() + '/' + w.capacity : '...' }}
-      </p>
+      <p class="text-sm text-gray-500">👥 {{ w.signup_count ?? 0 }}/{{ w.capacity }} inscrits</p>
       } @else {
       <p class="text-sm text-gray-500">👥 Aforament: {{ w.capacity }}</p>
       }
       @if (!isPast(w.date) && !auth.isAdmin()) {
-      <button
-        (click)="toggleSignup(w)"
-        class="w-full mt-2"
-        [class]="isSignedUp(w.id) ? 'btn-secondary' : 'btn-primary'"
-      >
-        {{ isSignedUp(w.id) ? 'Cancel·lar inscripció' : "Inscriure'm" }}
-      </button>
+        @if (isFull(w) && !isSignedUp(w.id)) {
+        <button disabled class="btn-secondary w-full mt-2 opacity-50 cursor-not-allowed">Taller complet</button>
+        } @else {
+        <button
+          (click)="toggleSignup(w)"
+          class="w-full mt-2"
+          [class]="isSignedUp(w.id) ? 'btn-secondary' : 'btn-primary'"
+        >
+          {{ isSignedUp(w.id) ? 'Cancel·lar inscripció' : "Inscriure'm" }}
+        </button>
+        }
       }
       @if (auth.isAdmin()) {
       <button (click)="startEditingWorkshop(w)" class="btn-secondary w-full text-sm">✏️ Editar taller</button>
+      <button (click)="deleteWorkshop(w)" class="text-sm text-red-500 hover:text-red-700 w-full text-center cursor-pointer">Eliminar taller</button>
       }
     </aside>
     } @else if (editingWorkshop(); as ew) {
@@ -97,20 +100,35 @@
           <p class="text-sm text-gray-500 mb-1">📍 {{ w.location }}</p>
           <p class="text-sm text-gray-500 mb-1">💶 @if (w.price) { {{ w.price }}€ } @else { Gratuït }</p>
           @if (auth.isAdmin()) {
-          <p class="text-sm text-gray-500 mb-3">👥 {{ getSignupCount(w.id) }}/{{ w.capacity }} inscrits</p>
+          <p class="text-sm text-gray-500 mb-1">👥 {{ w.signup_count ?? 0 }}/{{ w.capacity }} inscrits</p>
           } @else {
-          <p class="text-sm text-gray-500 mb-3">👥 {{ w.capacity }} places</p>
+          <p class="text-sm text-gray-500 mb-1">👥 {{ w.capacity }} places</p>
+          }
+          @if (w.description) {
+          <details class="mt-1 mb-3">
+            <summary class="text-xs text-gray-400 cursor-pointer hover:text-gray-600 select-none">Descripció</summary>
+            <p class="text-sm text-gray-600 mt-1">{{ w.description }}</p>
+          </details>
+          } @else {
+          <div class="mb-3"></div>
           }
           @if (auth.isAdmin()) {
-          <button (click)="startEditingWorkshop(w)" class="btn-secondary w-full text-sm">✏️ Editar taller</button>
+          <div class="flex gap-2">
+            <button (click)="startEditingWorkshop(w)" class="btn-secondary flex-1 text-sm">✏️ Editar</button>
+            <button (click)="deleteWorkshop(w)" class="btn-secondary flex-1 text-sm text-red-500 border-red-200 hover:border-red-400 hover:text-red-700">🗑️ Eliminar</button>
+          </div>
           } @else if (!isPast(w.date)) {
-          <button
-            (click)="toggleSignup(w)"
-            class="w-full text-sm"
-            [class]="isSignedUp(w.id) ? 'btn-secondary' : 'btn-primary'"
-          >
-            {{ isSignedUp(w.id) ? 'Cancel·lar inscripció' : "Inscriure'm" }}
-          </button>
+            @if (isFull(w) && !isSignedUp(w.id)) {
+            <button disabled class="btn-secondary w-full text-sm opacity-50 cursor-not-allowed">Taller complet</button>
+            } @else {
+            <button
+              (click)="toggleSignup(w)"
+              class="w-full text-sm"
+              [class]="isSignedUp(w.id) ? 'btn-secondary' : 'btn-primary'"
+            >
+              {{ isSignedUp(w.id) ? 'Cancel·lar inscripció' : "Inscriure'm" }}
+            </button>
+            }
           }
         </li>
         }

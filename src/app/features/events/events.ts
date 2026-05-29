@@ -24,8 +24,6 @@ export class Events {
   newWorkshop = signal<Partial<Workshop> | null>(null);
   editingWorkshop = signal<Partial<Workshop> | null>(null);
   signedUpIds = signal<Set<number>>(new Set());
-  workshopSignupCount = signal<number | null>(null);
-  signupCounts = signal<Map<number, number>>(new Map());
 
   currentMonth = signal(new Date());
   monthLabel = computed(() =>
@@ -54,18 +52,6 @@ export class Events {
           .eq('user_id', this.auth.user()!.id);
         this.signedUpIds.set(new Set((signups ?? []).map((s) => s.workshop_id)));
       }
-      if (this.auth.isAdmin()) {
-        const { data: allSignups } = await this.supabase
-          .from('workshop_signups')
-          .select('workshop_id');
-        const counts = new Map<number, number>();
-        for (const row of allSignups ?? []) {
-          counts.set(row.workshop_id, (counts.get(row.workshop_id) ?? 0) + 1);
-        }
-        this.signupCounts.set(counts);
-      }
-
-      if (window.innerWidth < 768) return;
 
       const { Calendar } = await import('@fullcalendar/core');
       const { default: dayGridPlugin } = await import('@fullcalendar/daygrid');
@@ -80,16 +66,23 @@ export class Events {
         initialView: 'dayGridMonth',
         locale: caLocale,
         displayEventTime: false,
-        events: ws.map((w) => ({
-          id: String(w.id),
-          title: w.title,
-          date: w.date,
-          extendedProps: w,
-        })),
+        windowResize: () => this.calendar?.updateSize(),
+        events: ws.map((w) => {
+          const { bg, border } = this.getEventColor(w);
+          return {
+            id: String(w.id),
+            title: w.title,
+            date: w.date,
+            backgroundColor: bg,
+            borderColor: border,
+            textColor: '#ffffff',
+            extendedProps: w,
+          };
+        }),
         eventClick: (info) => {
           const w = info.event.extendedProps as Workshop;
-          this.selectedWorkshop.set(w);
-          if (this.auth.isAdmin()) this.loadWorkshopCount(w.id);
+          const live = this.workshops().find((ww) => ww.id === w.id) ?? w;
+          this.selectedWorkshop.set(live);
           setTimeout(() => this.calendar?.updateSize(), 50);
         },
       });
@@ -97,19 +90,39 @@ export class Events {
     });
   }
 
+  private getEventColor(w: Workshop): { bg: string; border: string } {
+    if (this.isPast(w.date)) return { bg: '#9CA3AF', border: '#9CA3AF' };
+    const count = w.signup_count ?? 0;
+    const ratio = count / w.capacity;
+    if (ratio >= 1)   return { bg: '#DC2626', border: '#DC2626' };
+    if (ratio >= 0.8) return { bg: '#D97706', border: '#D97706' };
+    return { bg: '#3B6934', border: '#3B6934' };
+  }
+
+  isFull(w: Workshop): boolean {
+    return (w.signup_count ?? 0) >= w.capacity;
+  }
+
   closePanel() {
     this.selectedWorkshop.set(null);
     this.newWorkshop.set(null);
     this.editingWorkshop.set(null);
-    this.workshopSignupCount.set(null);
     setTimeout(() => this.calendar?.updateSize(), 50);
   }
 
   startEditingWorkshop(w: Workshop) {
     this.selectedWorkshop.set(null);
     this.editingWorkshop.set({ ...w, date: w.date?.slice(0, 16) ?? '' });
-    this.workshopSignupCount.set(null);
     setTimeout(() => this.calendar?.updateSize(), 50);
+  }
+
+  async deleteWorkshop(w: Workshop) {
+    if (!confirm('Eliminar aquest taller? Aquesta acció no es pot desfer.')) return;
+    const { error } = await this.supabase.from('workshops').delete().eq('id', w.id);
+    if (error) { alert('Error en eliminar el taller.'); return; }
+    this.workshops.update(ws => ws.filter(ww => ww.id !== w.id));
+    this.calendar?.getEventById(String(w.id))?.remove();
+    this.closePanel();
   }
 
   async saveEditingWorkshop() {
@@ -123,19 +136,14 @@ export class Events {
       .single<Workshop>();
     if (updated) {
       this.workshops.update(ws => ws.map(w => w.id === updated.id ? updated : w));
-      this.calendar?.getEventById(String(updated.id))?.setProp('title', updated.title);
+      const calEvent = this.calendar?.getEventById(String(updated.id));
+      calEvent?.setProp('title', updated.title);
+      const { bg, border } = this.getEventColor(updated);
+      calEvent?.setProp('backgroundColor', bg);
+      calEvent?.setProp('borderColor', border);
     }
     this.editingWorkshop.set(null);
     setTimeout(() => this.calendar?.updateSize(), 50);
-  }
-
-  async loadWorkshopCount(workshopId: number) {
-    this.workshopSignupCount.set(null);
-    const { count } = await this.supabase
-      .from('workshop_signups')
-      .select('*', { count: 'exact', head: true })
-      .eq('workshop_id', workshopId);
-    this.workshopSignupCount.set(count ?? 0);
   }
 
   startNewWorkshop() {
@@ -154,10 +162,14 @@ export class Events {
       .single<Workshop>();
     if (created) {
       this.workshops.update(ws => [...ws, created]);
+      const { bg, border } = this.getEventColor(created);
       this.calendar?.addEvent({
         id: String(created.id),
         title: created.title,
         date: created.date,
+        backgroundColor: bg,
+        borderColor: border,
+        textColor: '#ffffff',
         extendedProps: created,
       });
     }
@@ -171,10 +183,6 @@ export class Events {
 
   nextMonth() {
     this.currentMonth.update((date) => new Date(date.getFullYear(), date.getMonth() + 1, 1));
-  }
-
-  getSignupCount(workshopId: number): number {
-    return this.signupCounts().get(workshopId) ?? 0;
   }
 
   isSignedUp(workshopId: number) {
@@ -197,17 +205,31 @@ export class Events {
         .delete()
         .eq('workshop_id', workshop.id)
         .eq('user_id', userId);
-      this.signedUpIds.update((signedupId) => {
-        const newSet = new Set(signedupId);
+      this.signedUpIds.update((s) => {
+        const newSet = new Set(s);
         newSet.delete(workshop.id);
         return newSet;
       });
+      this.workshops.update(ws => ws.map(w => w.id === workshop.id
+        ? { ...w, signup_count: Math.max((w.signup_count ?? 0) - 1, 0) }
+        : w
+      ));
     } else {
       await this.supabase
         .from('workshop_signups')
         .insert({ workshop_id: workshop.id, user_id: userId });
-        this.signedUpIds.update(s => new Set([...s, workshop.id]));
+      this.signedUpIds.update(s => new Set([...s, workshop.id]));
+      this.workshops.update(ws => ws.map(w => w.id === workshop.id
+        ? { ...w, signup_count: (w.signup_count ?? 0) + 1 }
+        : w
+      ));
     }
-
+    const updated = this.workshops().find(w => w.id === workshop.id);
+    if (updated) {
+      if (this.selectedWorkshop()?.id === workshop.id) this.selectedWorkshop.set(updated);
+      const { bg, border } = this.getEventColor(updated);
+      this.calendar?.getEventById(String(workshop.id))?.setProp('backgroundColor', bg);
+      this.calendar?.getEventById(String(workshop.id))?.setProp('borderColor', border);
+    }
   }
 }

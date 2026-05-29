@@ -24,23 +24,10 @@ export class AdminEvents implements OnInit {
   editing = signal<Partial<Workshop> | null>(null);
   isNew = signal(false);
   signups = signal<Map<number, WorkshopSignupRow[]>>(new Map());
-  signupCounts = signal<Map<number, number>>(new Map());
 
   async ngOnInit() {
     const { data } = await this.workshopService.getAllWorkshops();
     this.workshops.set(data ?? []);
-    const { data: allSignups } = await this.supabase
-      .from('workshop_signups')
-      .select('workshop_id');
-    const counts = new Map<number, number>();
-    for (const row of allSignups ?? []) {
-      counts.set(row.workshop_id, (counts.get(row.workshop_id) ?? 0) + 1);
-    }
-    this.signupCounts.set(counts);
-  }
-
-  getSignupCount(workshopId: number): number {
-    return this.signupCounts().get(workshopId) ?? 0;
   }
 
   createNewEventAdmin() {

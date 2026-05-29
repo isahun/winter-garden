@@ -11,6 +11,7 @@ export interface Workshop {
   price: number | null;
   difficulty: 'Principiant' | 'Regular' | 'Expert' | null;
   store_id: number | null;
+  signup_count?: number;
 }
 
 export interface WorkshopSignup {
