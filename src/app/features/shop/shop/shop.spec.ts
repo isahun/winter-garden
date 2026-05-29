@@ -78,7 +78,7 @@ describe('Shop - filteredProducts (computed)', () => {
             toggleFavorite: () => {},
           },
         },
-        { provide: AuthService, useValue: { isLoggedIn: signal(false) } },
+        { provide: AuthService, useValue: { isLoggedIn: signal(false), isAdmin: signal(false) } },
       ],
     }).compileComponents();
 
