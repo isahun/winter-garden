@@ -1,6 +1,6 @@
 import { Component, inject, signal, input, numberAttribute, effect, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../../core/services/product.service';
@@ -20,6 +20,7 @@ export class ProductDetail {
 
   private productService = inject(ProductService);
   private cart = inject(CartService);
+  private router = inject(Router);
   private readonly autoEdit = isPlatformBrowser(inject(PLATFORM_ID)) && history.state?.['autoEdit'] === true;
   favorites = inject(FavoritesService);
   auth = inject(AuthService);
@@ -75,5 +76,14 @@ export class ProductDetail {
     const { data } = await this.productService.updateProduct(p.id, payload);
     if (data) this.product.set(data);
     this.editingProduct.set(null);
+  }
+
+  async archiveProduct() {
+    if (!confirm('Arxivar aquest producte? Deixarà de ser visible al catàleg.')) return;
+    const p = this.product();
+    if (!p) return;
+    const { error } = await this.productService.archiveProduct(p.id);
+    if (error) { alert('Error en arxivar el producte.'); return; }
+    this.router.navigate(['/shop']);
   }
 }

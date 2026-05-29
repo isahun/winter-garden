@@ -68,6 +68,7 @@
         }
         @if (auth.isAdmin()) {
         <button (click)="startEditing()" class="btn-secondary w-full">Editar producte</button>
+        <button (click)="archiveProduct()" class="text-sm text-red-500 hover:text-red-700 w-full text-center mt-1 cursor-pointer">Arxivar producte</button>
         }
       }
     </section>
