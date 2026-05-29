@@ -83,6 +83,12 @@ Projecte final de Bootcamp Frontend — Angular 22 · Supabase · Stripe · Gemi
 - Context enriquit amb el catàleg real de productes
 - Model Gemini 2.5 Flash, respon sempre en català
 
+### Formulari de contacte
+- Pàgina `/contact` amb layout dos columnes (info de contacte + formulari)
+- Camps validats: nom, email, missatge
+- Confirmació visual en enviar (enviament simulat, integrable amb Resend)
+- Accessible des del navbar (desktop + mòbil) i el footer
+
 ### Panell d'administració
 - CRUD complet de productes amb pujada d'imatges via Cloudinary
 - Soft delete de productes (arxivar/restaurar) per preservar l'historial de comandes
@@ -90,6 +96,8 @@ Projecte final de Bootcamp Frontend — Angular 22 · Supabase · Stripe · Gemi
 - Creació i edició de tallers des del calendari (desktop: panell lateral · mòbil: bottom sheet)
 - Comptador d'inscrits per taller, llista de participants amb email
 - Dashboard amb KPIs (vendes, comandes, productes) i gràfiques Chart.js
+- Filtres locals a tots els llistats: comandes per estat, productes per categoria/estoc, tallers per data
+- Ordenació per columna a `/admin/products` (nom, preu, estoc)
 
 ---
 
