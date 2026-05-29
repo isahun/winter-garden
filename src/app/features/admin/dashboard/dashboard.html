@@ -1,5 +1,8 @@
 <section class="container mx-auto px-4 py-8">
-  <h1 class="text-3xl font-semibold mb-8">Dashboard</h1>
+  <h1 class="text-3xl font-semibold mb-8">Panell d'administrador</h1>
+  @if (loadError()) {
+  <p class="text-red-500 p-4">Error carregant les dades del panell. Refresca la pàgina.</p>
+  }
   <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
     <div class="card p-6 text-center">
       <dl>
