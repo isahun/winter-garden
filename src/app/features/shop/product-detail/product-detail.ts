@@ -34,6 +34,14 @@ export class ProductDetail {
   categories = signal<Category[]>([]);
 
   constructor() {
+    effect(() => {
+      if (this.lightboxOpen()) {
+        setTimeout(() => {
+          (document.getElementById('lightbox-close') as HTMLElement)?.focus();
+        }, 50);
+      }
+    });
+
     effect(async () => {
       const id = this.id();
       const { data } = await this.productService.getProductById(id);

@@ -8,7 +8,7 @@
   aria-label="Assessora de jardins">
   <div class="p-3 border-b font-semibold text-green-800">Assessora de jardins 🌿</div>
 
-  <div class="overflow-y-auto p-3 space-y-2 max-h-72">
+  <div class="overflow-y-auto p-3 space-y-2 max-h-72" aria-live="polite" aria-label="Missatges del chat">
     @for (msg of chatMessages(); track msg.id) {
     <div [class.text-right]="msg.isUser" [class.text-left]="!msg.isUser">
       <span [class]="msg.isUser
