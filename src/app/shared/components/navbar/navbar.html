@@ -1,8 +1,7 @@
 <nav class="navbar-glass sticky top-0 z-50 px-5 md:px-16 py-3" aria-label="Navegació principal">
   <div class="flex items-center justify-between h-12">
 
-    <a routerLink="/" class="text-xl tracking-tight text-primary"
-       style="font-family: var(--font-display)">
+    <a routerLink="/" class="text-xl tracking-tight text-primary" style="font-family: var(--font-display)">
       Jardí d'hivern
     </a>
 
@@ -11,15 +10,15 @@
     </ul>
 
     @if (!auth.isAdmin()) {
-      <a routerLink="/cart" class="md:hidden relative p-2 text-primary" aria-label="Carret">
-        <span class="text-xl">🛒</span>
-        @if (cart.count() > 0) {
-          <span class="absolute top-0 right-0 bg-primary text-white text-[10px] font-semibold
+    <a routerLink="/cart" class="md:hidden relative p-2 text-primary" aria-label="Carret">
+      <span class="text-xl">🛒</span>
+      @if (cart.count() > 0) {
+      <span class="absolute top-0 right-0 bg-primary text-white text-[10px] font-semibold
                         rounded-full w-4 h-4 flex items-center justify-center leading-none">
-            {{ cart.count() }}
-          </span>
-        }
-      </a>
+        {{ cart.count() }}
+      </span>
+      }
+    </a>
     }
 
   </div>
@@ -27,70 +26,73 @@
 
 <nav class="bottom-nav md:hidden" aria-label="Navegació ràpida">
   @if (auth.isAdmin()) {
-    <a routerLink="/shop" routerLinkActive="active" class="bottom-nav-item"
-       [routerLinkActiveOptions]="{ exact: false }">
-      <span aria-hidden="true">🌿</span>
-      <span>Catàleg</span>
-    </a>
-    <a routerLink="/events" routerLinkActive="active" class="bottom-nav-item">
-      <span aria-hidden="true">🌸</span>
-      <span>Tallers</span>
-    </a>
-    <a routerLink="/stores" routerLinkActive="active" class="bottom-nav-item">
-      <span aria-hidden="true">📍</span>
-      <span>Botigues</span>
-    </a>
-    <button (click)="panellOpen.set(true)" class="bottom-nav-item">
-      <span aria-hidden="true">⚙️</span>
-      <span>Panell</span>
-    </button>
-    <button (click)="auth.logout()" class="bottom-nav-item">
-      <span aria-hidden="true">↩</span>
-      <span>Sortir</span>
-    </button>
+  <a routerLink="/shop" routerLinkActive="active" class="bottom-nav-item" [routerLinkActiveOptions]="{ exact: false }">
+    <span aria-hidden="true">🌿</span>
+    <span>Catàleg</span>
+  </a>
+  <a routerLink="/events" routerLinkActive="active" class="bottom-nav-item">
+    <span aria-hidden="true">🌸</span>
+    <span>Tallers</span>
+  </a>
+  <a routerLink="/stores" routerLinkActive="active" class="bottom-nav-item">
+    <span aria-hidden="true">📍</span>
+    <span>Botigues</span>
+  </a>
+  <button (click)="panellOpen.set(true)" class="bottom-nav-item">
+    <span aria-hidden="true">⚙️</span>
+    <span>Panell</span>
+  </button>
+  <button (click)="auth.logout()" class="bottom-nav-item">
+    <span aria-hidden="true">↩</span>
+    <span>Sortir</span>
+  </button>
   } @else {
-    <a routerLink="/shop" routerLinkActive="active" class="bottom-nav-item"
-       [routerLinkActiveOptions]="{ exact: false }">
-      <span aria-hidden="true">🌿</span>
-      <span>Catàleg</span>
-    </a>
-    <a routerLink="/events" routerLinkActive="active" class="bottom-nav-item">
-      <span aria-hidden="true">🌸</span>
-      <span>Tallers</span>
-    </a>
-    <a routerLink="/stores" routerLinkActive="active" class="bottom-nav-item">
-      <span aria-hidden="true">📍</span>
-      <span>Botigues</span>
-    </a>
-    <a routerLink="/cart" routerLinkActive="active" class="bottom-nav-item relative">
-      <span class="relative" aria-hidden="true">
-        🛒
-        @if (cart.count() > 0) {
-          <span class="absolute -top-1 -right-1 bg-primary text-white text-[9px] font-semibold
+  <a routerLink="/shop" routerLinkActive="active" class="bottom-nav-item" [routerLinkActiveOptions]="{ exact: false }">
+    <span aria-hidden="true">🌿</span>
+    <span>Catàleg</span>
+  </a>
+  <a routerLink="/events" routerLinkActive="active" class="bottom-nav-item">
+    <span aria-hidden="true">🌸</span>
+    <span>Tallers</span>
+  </a>
+  <a routerLink="/stores" routerLinkActive="active" class="bottom-nav-item">
+    <span aria-hidden="true">📍</span>
+    <span>Botigues</span>
+  </a>
+  <a routerLink="/contact" routerLinkActive="active" class="bottom-nav-item">
+    <span aria-hidden="true">✉️</span>
+    <span>Contacte</span>
+  </a>
+  <a routerLink="/cart" routerLinkActive="active" class="bottom-nav-item relative">
+    <span class="relative" aria-hidden="true">
+      🛒
+      @if (cart.count() > 0) {
+      <span class="absolute -top-1 -right-1 bg-primary text-white text-[9px] font-semibold
                         rounded-full w-3.5 h-3.5 flex items-center justify-center leading-none">
-            {{ cart.count() }}
-          </span>
-        }
+        {{ cart.count() }}
       </span>
-      <span>Carret</span>
-    </a>
-    @if (auth.isLoggedIn()) {
-      <a routerLink="/account" routerLinkActive="active" class="bottom-nav-item">
-        <span aria-hidden="true">👤</span>
-        <span>Compte</span>
-      </a>
-    } @else {
-      <a routerLink="/auth/login" class="bottom-nav-item">
-        <span aria-hidden="true">→</span>
-        <span>Entrar</span>
-      </a>
-    }
+      }
+    </span>
+    <span>Carret</span>
+  </a>
+  @if (auth.isLoggedIn()) {
+  <a routerLink="/account" routerLinkActive="active" class="bottom-nav-item">
+    <span aria-hidden="true">👤</span>
+    <span>Compte</span>
+  </a>
+  } @else {
+  <a routerLink="/auth/login" class="bottom-nav-item">
+    <span aria-hidden="true">→</span>
+    <span>Entrar</span>
+  </a>
+  }
   }
 </nav>
 
 @if (panellOpen()) {
 <div class="fixed inset-0 bg-black/50 z-40 md:hidden" (click)="panellOpen.set(false)" aria-hidden="true"></div>
-<div class="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl md:hidden" role="dialog" aria-modal="true" aria-label="Panell d'administrador">
+<div class="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl md:hidden" role="dialog" aria-modal="true"
+  aria-label="Panell d'administrador">
   <div class="flex justify-center pt-3 pb-1">
     <div class="w-10 h-1 bg-gray-300 rounded-full"></div>
   </div>
@@ -100,19 +102,19 @@
   </div>
   <nav class="px-4 py-3 space-y-1">
     <a routerLink="/admin/dashboard" (click)="panellOpen.set(false)"
-       class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-muted hover:bg-gray-50 hover:text-primary transition-colors">
+      class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-muted hover:bg-gray-50 hover:text-primary transition-colors">
       <span class="text-lg">📊</span> Estadístiques
     </a>
     <a routerLink="/admin/products" (click)="panellOpen.set(false)"
-       class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-muted hover:bg-gray-50 hover:text-primary transition-colors">
+      class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-muted hover:bg-gray-50 hover:text-primary transition-colors">
       <span class="text-lg">🌿</span> Productes
     </a>
     <a routerLink="/admin/orders" (click)="panellOpen.set(false)"
-       class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-muted hover:bg-gray-50 hover:text-primary transition-colors">
+      class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-muted hover:bg-gray-50 hover:text-primary transition-colors">
       <span class="text-lg">📦</span> Comandes
     </a>
     <a routerLink="/admin/events" (click)="panellOpen.set(false)"
-       class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-muted hover:bg-gray-50 hover:text-primary transition-colors">
+      class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-muted hover:bg-gray-50 hover:text-primary transition-colors">
       <span class="text-lg">🌸</span> Tallers
     </a>
   </nav>
@@ -124,51 +126,63 @@
 
 <ng-template #navLinks>
   @if (auth.isAdmin()) {
-    <li><a routerLink="/shop" routerLinkActive="text-primary font-semibold"
-           class="text-sm text-muted hover:text-primary transition-colors duration-200">Catàleg</a></li>
-    <li><a routerLink="/events" routerLinkActive="text-primary font-semibold"
-           class="text-sm text-muted hover:text-primary transition-colors duration-200">Tallers</a></li>
-    <li><a routerLink="/stores" routerLinkActive="text-primary font-semibold"
-           class="text-sm text-muted hover:text-primary transition-colors duration-200">Botigues</a></li>
-    <li class="relative group">
-      <button class="text-sm text-muted hover:text-primary transition-colors duration-200 flex items-center gap-1 cursor-pointer">
-        Panell <span class="text-xs">▾</span>
-      </button>
-      <ul class="absolute top-full right-0 mt-2 bg-white shadow-lg rounded-xl py-2 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-150 min-w-44 border list-none z-50">
-        <li><a routerLink="/admin/dashboard" class="flex items-center gap-2 px-4 py-2 text-sm text-muted hover:text-primary hover:bg-gray-50">📊 Estadístiques</a></li>
-        <li><a routerLink="/admin/products" class="flex items-center gap-2 px-4 py-2 text-sm text-muted hover:text-primary hover:bg-gray-50">🌿 Productes</a></li>
-        <li><a routerLink="/admin/orders" class="flex items-center gap-2 px-4 py-2 text-sm text-muted hover:text-primary hover:bg-gray-50">📦 Comandes</a></li>
-        <li><a routerLink="/admin/events" class="flex items-center gap-2 px-4 py-2 text-sm text-muted hover:text-primary hover:bg-gray-50">🌸 Tallers</a></li>
-      </ul>
-    </li>
-    <li><button (click)="auth.logout()"
-                class="text-sm text-muted hover:text-primary transition-colors duration-200 cursor-pointer">Sortir</button></li>
+  <li><a routerLink="/shop" routerLinkActive="text-primary font-semibold"
+      class="text-sm text-muted hover:text-primary transition-colors duration-200">Catàleg</a></li>
+  <li><a routerLink="/events" routerLinkActive="text-primary font-semibold"
+      class="text-sm text-muted hover:text-primary transition-colors duration-200">Tallers</a></li>
+  <li><a routerLink="/stores" routerLinkActive="text-primary font-semibold"
+      class="text-sm text-muted hover:text-primary transition-colors duration-200">Botigues</a></li>
+  <li class="relative group">
+    <button
+      class="text-sm text-muted hover:text-primary transition-colors duration-200 flex items-center gap-1 cursor-pointer">
+      Panell <span class="text-xs">▾</span>
+    </button>
+    <ul
+      class="absolute top-full right-0 mt-2 bg-white shadow-lg rounded-xl py-2 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-150 min-w-44 border list-none z-50">
+      <li><a routerLink="/admin/dashboard"
+          class="flex items-center gap-2 px-4 py-2 text-sm text-muted hover:text-primary hover:bg-gray-50">📊
+          Estadístiques</a></li>
+      <li><a routerLink="/admin/products"
+          class="flex items-center gap-2 px-4 py-2 text-sm text-muted hover:text-primary hover:bg-gray-50">🌿
+          Productes</a></li>
+      <li><a routerLink="/admin/orders"
+          class="flex items-center gap-2 px-4 py-2 text-sm text-muted hover:text-primary hover:bg-gray-50">📦
+          Comandes</a></li>
+      <li><a routerLink="/admin/events"
+          class="flex items-center gap-2 px-4 py-2 text-sm text-muted hover:text-primary hover:bg-gray-50">🌸
+          Tallers</a></li>
+    </ul>
+  </li>
+  <li><button (click)="auth.logout()"
+      class="text-sm text-muted hover:text-primary transition-colors duration-200 cursor-pointer">Sortir</button></li>
   } @else {
-    <li><a routerLink="/shop" routerLinkActive="text-primary font-semibold"
-           class="text-sm text-muted hover:text-primary transition-colors duration-200">Catàleg</a></li>
-    <li><a routerLink="/events" routerLinkActive="text-primary font-semibold"
-           class="text-sm text-muted hover:text-primary transition-colors duration-200">Tallers</a></li>
-    <li><a routerLink="/stores" routerLinkActive="text-primary font-semibold"
-           class="text-sm text-muted hover:text-primary transition-colors duration-200">Botigues</a></li>
-    <li><a routerLink="/faq" routerLinkActive="text-primary font-semibold"
-           class="text-sm text-muted hover:text-primary transition-colors duration-200">FAQ</a></li>
-    <li>
-      <a routerLink="/cart" class="text-sm text-muted hover:text-primary transition-colors duration-200 relative">
-        Carret
-        @if (cart.count() > 0) {
-          <span class="absolute -top-2 -right-3 bg-primary text-white text-xs rounded-full px-1.5 leading-tight">
-            {{ cart.count() }}
-          </span>
-        }
-      </a>
-    </li>
-    @if (auth.isLoggedIn()) {
-      <li><a routerLink="/account" routerLinkActive="text-primary font-semibold"
-             class="text-sm text-muted hover:text-primary transition-colors duration-200">El meu compte</a></li>
-      <li><button (click)="auth.logout()"
-                  class="text-sm text-muted hover:text-primary transition-colors duration-200 cursor-pointer">Sortir</button></li>
-    } @else {
-      <li><a routerLink="/auth/login" class="btn-primary py-2 px-5 text-xs">Entrar</a></li>
-    }
+  <li><a routerLink="/shop" routerLinkActive="text-primary font-semibold"
+      class="text-sm text-muted hover:text-primary transition-colors duration-200">Catàleg</a></li>
+  <li><a routerLink="/events" routerLinkActive="text-primary font-semibold"
+      class="text-sm text-muted hover:text-primary transition-colors duration-200">Tallers</a></li>
+  <li><a routerLink="/stores" routerLinkActive="text-primary font-semibold"
+      class="text-sm text-muted hover:text-primary transition-colors duration-200">Botigues</a></li>
+  <li><a routerLink="/faq" routerLinkActive="text-primary font-semibold"
+      class="text-sm text-muted hover:text-primary transition-colors duration-200">FAQ</a></li>
+  <li><a routerLink="/contact" routerLinkActive="text-primary font-semibold"
+      class="text-sm text-muted hover:text-primary transition-colors duration-200">Contacte</a></li>
+  <li>
+    <a routerLink="/cart" class="text-sm text-muted hover:text-primary transition-colors duration-200 relative">
+      Carret
+      @if (cart.count() > 0) {
+      <span class="absolute -top-2 -right-3 bg-primary text-white text-xs rounded-full px-1.5 leading-tight">
+        {{ cart.count() }}
+      </span>
+      }
+    </a>
+  </li>
+  @if (auth.isLoggedIn()) {
+  <li><a routerLink="/account" routerLinkActive="text-primary font-semibold"
+      class="text-sm text-muted hover:text-primary transition-colors duration-200">El meu compte</a></li>
+  <li><button (click)="auth.logout()"
+      class="text-sm text-muted hover:text-primary transition-colors duration-200 cursor-pointer">Sortir</button></li>
+  } @else {
+  <li><a routerLink="/auth/login" class="btn-primary py-2 px-5 text-xs">Entrar</a></li>
+  }
   }
 </ng-template>

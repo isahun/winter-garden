@@ -1,0 +1,54 @@
+<section class="container mx-auto px-4 py-12">
+  <div class="grid md:grid-cols-2 gap-12 max-w-4xl mx-auto">
+
+    <div class="space-y-6 sm:pl-5">
+      <div>
+        <h1 class="text-3xl font-semibold mb-3">Parla amb nosaltres</h1>
+        <p class="text-gray-600">Tens preguntes sobre els nostres jardins, tallers o comandes? Escriu-nos i et
+          respondrem en menys de 24 hores.</p>
+      </div>
+      <dl class="space-y-3 text-sm text-gray-600">
+        <div class="flex gap-3">
+          <dt aria-hidden="true">✉️</dt>
+          <dd><a href="mailto:hola@secretgarden.cat" class="hover:underline">hola@secretgarden.cat</a></dd>
+        </div>
+        <div class="flex gap-3">
+          <dt aria-hidden="true">📍</dt>
+          <dd>Barcelona, Catalunya</dd>
+        </div>
+      </dl>
+      <p class="text-sm text-gray-400 italic">"Cada jardí és únic, com la persona que el rep."</p>
+    </div>
+
+    <div>
+      @if (sent()) {
+      <div class="card p-8 text-center space-y-2">
+        <p class="text-3xl">✉️</p>
+        <p class="font-semibold">Missatge enviat!</p>
+        <p class="text-sm text-gray-500">Gràcies per contactar-nos. Et respondrem en breu.</p>
+      </div>
+      } @else {
+      <form [formGroup]="form" (ngSubmit)="submit()" class="card p-6 space-y-4">
+        <div>
+          <label for="c-name" class="block text-sm font-medium mb-1">Nom</label>
+          <input id="c-name" formControlName="name" class="input w-full" placeholder="El teu nom" />
+        </div>
+        <div>
+          <label for="c-email" class="block text-sm font-medium mb-1">Email</label>
+          <input id="c-email" formControlName="email" type="email" class="input w-full"
+            placeholder="correu@exemple.com" />
+        </div>
+        <div>
+          <label for="c-message" class="block text-sm font-medium mb-1">Missatge</label>
+          <textarea id="c-message" formControlName="message" rows="5" class="input w-full"
+            placeholder="Escriu el teu missatge..."></textarea>
+        </div>
+        <button type="submit" [disabled]="form.invalid || sending()" class="btn-primary w-full">
+          {{ sending() ? 'Enviant...' : 'Enviar missatge' }}
+        </button>
+      </form>
+      }
+    </div>
+
+  </div>
+</section>

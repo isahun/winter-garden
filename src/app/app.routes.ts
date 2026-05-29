@@ -60,6 +60,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/faq/faq').then((module) => module.Faq),
       },
       {
+        path: 'contact',
+        loadComponent: () => import('./features/contact/contact').then((module) => module.Contact),
+      },
+      {
         path: 'account',
         canActivate: [authGuard],
         children: [
@@ -113,6 +117,5 @@ export const routes: Routes = [
       },
     ],
   },
-
   { path: '**', redirectTo: '' },
 ];
