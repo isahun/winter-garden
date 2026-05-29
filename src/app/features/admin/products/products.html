@@ -1,9 +1,9 @@
 <section class="container mx-auto px-4 py-8">
-  <header class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-semibold">Gestió de productes</h1>
-    <div class="flex items-center gap-4">
-      <a routerLink="/shop" class="btn-secondary hover:underline">Veure catàleg</a>
-      <button (click)="createProductAdmin()" class="btn-primary">+ Nou producte</button>
+  <header class="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center mb-6">
+    <h1 class="text-2xl md:text-3xl font-semibold">Gestió de productes</h1>
+    <div class="flex gap-2">
+      <a routerLink="/shop" class="btn-secondary inline-flex items-center justify-center px-3 py-1.5 text-sm">Veure catàleg</a>
+      <button (click)="createProductAdmin()" class="btn-primary inline-flex items-center justify-center px-3 py-1.5 text-sm">+ Nou producte</button>
     </div>
   </header>
 
@@ -82,22 +82,32 @@
             <img [src]="product.images[0] || 'assets/placeholder.jpg'" [alt]="product.name"
               class="w-10 h-10 rounded object-cover shrink-0" />
             <span>
-              {{ product.name }}
-              @if (product.stock === 0) {
+              <a [routerLink]="['/shop', product.id]" class="hover:underline hover:text-primary">{{ product.name }}</a>
+              @if (product.archived) {
+              <span class="ml-2 text-xs text-gray-400 font-medium">Arxivat</span>
+              } @else if (product.stock === 0) {
               <span class="ml-2 text-xs text-red-500 font-medium">Sense estoc</span>
               }
             </span>
           </td>
           <td class="py-3">{{ product.price }}€</td>
           <td class="py-3">{{ product.stock }}</td>
-          <td class="py-3 flex gap-2">
+          <td class="py-3 flex gap-2 flex-wrap">
+            @if (product.archived) {
+            <button (click)="restoreProductAdmin(product.id)" class="text-green-600 hover:underline text-sm">
+              Restaurar
+            </button>
+            <button (click)="deleteProductAdmin(product.id)" class="text-red-500 hover:underline text-sm">
+              Eliminar
+            </button>
+            } @else {
             <button (click)="openEditAdmin(product)" class="text-blue-600 hover:underline text-sm">
               Editar
             </button>
-            <button (click)="deleteProductAdmin(product.id)" class="text-red-500 hover:underline text-sm"
-              [attr.aria-label]="'Eliminar ' + product.name">
-              Eliminar
+            <button (click)="archiveProductAdmin(product.id)" class="text-gray-400 hover:underline text-sm">
+              Arxivar
             </button>
+            }
           </td>
         </tr>
         }

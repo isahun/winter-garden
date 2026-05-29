@@ -1,4 +1,5 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ProductService } from '../../../core/services/product.service';
@@ -20,11 +21,16 @@ export class Products implements OnInit {
   isNew = signal(false);
   uploading = signal(false);
 
+  private readonly platformId = inject(PLATFORM_ID);
+
   async ngOnInit() {
-    const { data } = await this.productService.getAllProducts();
+    const { data } = await this.productService.getAllProductsAdmin();
     this.products.set(data ?? []);
     const { data: cats } = await this.productService.getCategories();
     this.categories.set(cats ?? []);
+    if (isPlatformBrowser(this.platformId) && history.state?.['autoCreate']) {
+      this.createProductAdmin();
+    }
   }
 
   createProductAdmin() {
@@ -77,9 +83,21 @@ export class Products implements OnInit {
     await this.ngOnInit();
   }
 
+  async archiveProductAdmin(id: number) {
+    if (!confirm('Arxivar aquest producte? Deixarà de ser visible al catàleg.')) return;
+    await this.productService.archiveProduct(id);
+    await this.ngOnInit();
+  }
+
+  async restoreProductAdmin(id: number) {
+    await this.productService.restoreProduct(id);
+    await this.ngOnInit();
+  }
+
   async deleteProductAdmin(id: number) {
-    if (!confirm('Segur que vols eliminar aquest producte?')) return;
-    await this.productService.deleteProduct(id);
+    if (!confirm('⚠️ Eliminar definitivament? Aquesta acció NO es pot desfer.')) return;
+    const { error } = await this.productService.deleteProduct(id);
+    if (error?.code === '23503') { alert('No es pot eliminar: té comandes associades. Arxiva\'l en comptes.'); return; }
     await this.ngOnInit();
   }
 }
