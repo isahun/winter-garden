@@ -1,4 +1,4 @@
-﻿import { Component, OnInit, inject, signal, PLATFORM_ID } from '@angular/core';
+﻿import { Component, OnInit, inject, signal, computed, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser, CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SupabaseService } from '../../../core/supabase.service';
@@ -15,6 +15,13 @@ export class AdminOrders implements OnInit {
   private auth = inject(AuthService);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   orders = signal<Order[]>([]);
+  statusFilter = signal<string>('');
+
+  filtered = computed(() => {
+    const status = this.statusFilter();
+    if (!status) return this.orders();
+    return this.orders().filter(o => o.status === status);
+  })
 
   async ngOnInit() {
     if (!this.isBrowser) return;

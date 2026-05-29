@@ -2,8 +2,10 @@
   <header class="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center mb-6">
     <h1 class="text-2xl md:text-3xl font-semibold">Gestió de tallers</h1>
     <div class="flex gap-2">
-      <a routerLink="/events" class="btn-secondary inline-flex items-center justify-center px-3 py-1.5 text-sm">Vista de calendari</a>
-      <button (click)="createNewEventAdmin()" class="btn-primary inline-flex items-center justify-center px-3 py-1.5 text-sm">+ Nou taller</button>
+      <a routerLink="/events" class="btn-secondary inline-flex items-center justify-center px-3 py-1.5 text-sm">Vista de
+        calendari</a>
+      <button (click)="createNewEventAdmin()"
+        class="btn-primary inline-flex items-center justify-center px-3 py-1.5 text-sm">+ Nou taller</button>
     </div>
   </header>
 
@@ -34,8 +36,23 @@
   </section>
   }
 
+  <div class="flex gap-2 mb-4">
+    <button (click)="dateFilter.set('all')"
+      [class]="dateFilter() === 'all' ? 'btn-primary px-3 py-1.5 text-sm' : 'btn-secondary px-3 py-1.5 text-sm'">
+      Tots
+    </button>
+    <button (click)="dateFilter.set('upcoming')"
+      [class]="dateFilter() === 'upcoming' ? 'btn-primary px-3 py-1.5 text-sm' : 'btn-secondary px-3 py-1.5 text-sm'">
+      Futurs
+    </button>
+    <button (click)="dateFilter.set('past')"
+      [class]="dateFilter() === 'past' ? 'btn-primary px-3 py-1.5 text-sm' : 'btn-secondary px-3 py-1.5 text-sm'">
+      Passats
+    </button>
+  </div>
+
   <ul class="space-y-3 list-none">
-    @for (w of workshops(); track w.id) {
+    @for (w of filtered(); track w.id) {
     <li class="border rounded-lg overflow-hidden">
       <div class="p-4 flex justify-between items-start gap-4">
         <div class="flex-1 min-w-0">
@@ -50,7 +67,8 @@
           }
         </div>
         <div class="flex flex-col gap-2 items-end shrink-0">
-          <button (click)="editEventAdmin(w)" class="text-blue-600 hover:cursor-pointer hover:underline text-sm">Editar</button>
+          <button (click)="editEventAdmin(w)"
+            class="text-blue-600 hover:cursor-pointer hover:underline text-sm">Editar</button>
           <button (click)="deleteEventAdmin(w.id)" class="text-red-500 hover:cursor-pointer hover:underline text-sm"
             [attr.aria-label]="'Eliminar taller ' + w.title">
             Eliminar
@@ -63,16 +81,16 @@
         </summary>
         <div class="px-4 pb-3">
           @if (getSignups(w.id).length === 0) {
-            <p class="text-sm text-gray-400 py-2">Cap persona inscrita.</p>
+          <p class="text-sm text-gray-400 py-2">Cap persona inscrita.</p>
           } @else {
-            <ul class="divide-y text-sm list-none">
-              @for (s of getSignups(w.id); track s.user_id) {
-              <li class="py-2 flex gap-3">
-                <span class="font-medium">{{ s.profiles?.name ?? '—' }}</span>
-                <span class="text-gray-500">{{ s.profiles?.email ?? '—' }}</span>
-              </li>
-              }
-            </ul>
+          <ul class="divide-y text-sm list-none">
+            @for (s of getSignups(w.id); track s.user_id) {
+            <li class="py-2 flex gap-3">
+              <span class="font-medium">{{ s.profiles?.name ?? '—' }}</span>
+              <span class="text-gray-500">{{ s.profiles?.email ?? '—' }}</span>
+            </li>
+            }
+          </ul>
           }
         </div>
       </details>
