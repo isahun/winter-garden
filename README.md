@@ -105,7 +105,7 @@ Projecte final de Bootcamp Frontend — Angular 22 · Supabase · Stripe · Gemi
 
 | Rol | Email | Contrasenya |
 |-----|-------|-------------|
-| Usuari | user@test.com | test123 |
+| Usuari | user1@test.com | test123 |
 | Admin | admin@test.com | test123 |
 
 ### Targetes de prova Stripe
