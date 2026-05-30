@@ -1,10 +1,18 @@
 <div class="container mx-auto px-4 py-8">
+
+  <div class="h-48 md:h-64 overflow-hidden rounded-xl mb-6">
+    <img
+      src="https://res.cloudinary.com/dou285kwq/image/upload/w_1400,h_400,c_fill,f_auto,q_auto/v1780135400/pexels-karola-g-4751996_tabt3j.jpg"
+      alt="Taller de terrariums Secret Garden" class="w-full h-full object-cover" />
+  </div>
   <div class="flex justify-between items-center mb-6">
     <h1 class="text-3xl font-semibold">Tallers i esdeveniments</h1>
     @if (auth.isAdmin()) {
     <div class="flex gap-2">
-      <button routerLink="/admin/events" class="btn-secondary inline-flex items-center justify-center px-3 py-1.5 text-sm">Panell d'edició</button>
-      <button (click)="startNewWorkshop()" class="btn-primary inline-flex items-center justify-center px-3 py-1.5 text-sm">+ Nou taller</button>
+      <button routerLink="/admin/events"
+        class="btn-secondary inline-flex items-center justify-center px-3 py-1.5 text-sm">Panell d'edició</button>
+      <button (click)="startNewWorkshop()"
+        class="btn-primary inline-flex items-center justify-center px-3 py-1.5 text-sm">+ Nou taller</button>
     </div>
     }
   </div>
@@ -17,6 +25,9 @@
     <aside class="w-72 shrink-0 border rounded-xl p-5 space-y-3 self-start sticky top-4 mt-17">
       <button (click)="closePanel()" class="text-sm text-gray-400 hover:text-gray-600">← Tancar</button>
       <h2 class="text-lg font-semibold">{{ w.title }}</h2>
+      @if (w.image_url) {
+      <img [src]="w.image_url" [alt]="w.title" class="w-full aspect-video object-cover rounded-lg" />
+      }
       <p class="text-sm text-gray-600">{{ w.description }}</p>
       <p class="text-sm text-gray-500">📍 {{ w.location }}</p>
       @if (w.price) {
@@ -30,21 +41,19 @@
       <p class="text-sm text-gray-500">👥 Aforament: {{ w.capacity }}</p>
       }
       @if (!isPast(w.date) && !auth.isAdmin()) {
-        @if (isFull(w) && !isSignedUp(w.id)) {
-        <button disabled class="btn-secondary w-full mt-2 opacity-50 cursor-not-allowed">Taller complet</button>
-        } @else {
-        <button
-          (click)="toggleSignup(w)"
-          class="w-full mt-2"
-          [class]="isSignedUp(w.id) ? 'btn-secondary' : 'btn-primary'"
-        >
-          {{ isSignedUp(w.id) ? 'Cancel·lar inscripció' : "Inscriure'm" }}
-        </button>
-        }
+      @if (isFull(w) && !isSignedUp(w.id)) {
+      <button disabled class="btn-secondary w-full mt-2 opacity-50 cursor-not-allowed">Taller complet</button>
+      } @else {
+      <button (click)="toggleSignup(w)" class="w-full mt-2"
+        [class]="isSignedUp(w.id) ? 'btn-secondary' : 'btn-primary'">
+        {{ isSignedUp(w.id) ? 'Cancel·lar inscripció' : "Inscriure'm" }}
+      </button>
+      }
       }
       @if (auth.isAdmin()) {
       <button (click)="startEditingWorkshop(w)" class="btn-secondary w-full text-sm">✏️ Editar taller</button>
-      <button (click)="deleteWorkshop(w)" class="text-sm text-red-500 hover:text-red-700 w-full text-center cursor-pointer">Eliminar taller</button>
+      <button (click)="deleteWorkshop(w)"
+        class="text-sm text-red-500 hover:text-red-700 w-full text-center cursor-pointer">Eliminar taller</button>
       }
     </aside>
     } @else if (editingWorkshop(); as ew) {
@@ -56,7 +65,8 @@
       <input [(ngModel)]="ew.location" name="location" placeholder="Lloc" class="input" />
       <input [(ngModel)]="ew.capacity" name="capacity" type="number" placeholder="Aforament" class="input" />
       <input [(ngModel)]="ew.price" name="price" type="number" placeholder="Preu en € (buit = gratuït)" class="input" />
-      <textarea [(ngModel)]="ew.description" name="description" placeholder="Descripció" class="input" rows="3"></textarea>
+      <textarea [(ngModel)]="ew.description" name="description" placeholder="Descripció" class="input"
+        rows="3"></textarea>
       <div class="flex flex-col gap-2">
         <button (click)="saveEditingWorkshop()" class="btn-primary w-full">Guardar</button>
         <button (click)="closePanel()" class="btn-secondary w-full">Cancel·lar</button>
@@ -71,7 +81,8 @@
       <input [(ngModel)]="nw.location" name="location" placeholder="Lloc" class="input" />
       <input [(ngModel)]="nw.capacity" name="capacity" type="number" placeholder="Aforament" class="input" />
       <input [(ngModel)]="nw.price" name="price" type="number" placeholder="Preu en € (buit = gratuït)" class="input" />
-      <textarea [(ngModel)]="nw.description" name="description" placeholder="Descripció" class="input" rows="3"></textarea>
+      <textarea [(ngModel)]="nw.description" name="description" placeholder="Descripció" class="input"
+        rows="3"></textarea>
       <div class="flex flex-col gap-2">
         <button (click)="saveNewWorkshop()" class="btn-primary w-full">Guardar</button>
         <button (click)="closePanel()" class="btn-secondary w-full">Cancel·lar</button>
@@ -88,58 +99,58 @@
     </div>
 
     @if (workshopsForMonth().length === 0) {
-      <p class="text-center text-gray-500 py-10">Cap taller aquest mes.</p>
+    <p class="text-center text-gray-500 py-10">Cap taller aquest mes.</p>
     } @else {
-      <ul class="space-y-3 list-none">
-        @for (w of workshopsForMonth(); track w.id) {
-        <li class="border rounded-xl p-4">
-          <div class="flex justify-between items-start mb-1">
-            <h3 class="font-medium">{{ w.title }}</h3>
-            <time class="text-xs text-gray-400 shrink-0 ml-2">{{ w.date | date:'d MMM' }}</time>
-          </div>
-          <p class="text-sm text-gray-500 mb-1">📍 {{ w.location }}</p>
-          <p class="text-sm text-gray-500 mb-1">💶 @if (w.price) { {{ w.price }}€ } @else { Gratuït }</p>
-          @if (auth.isAdmin()) {
-          <p class="text-sm text-gray-500 mb-1">👥 {{ w.signup_count ?? 0 }}/{{ w.capacity }} inscrits</p>
-          } @else {
-          <p class="text-sm text-gray-500 mb-1">👥 {{ w.capacity }} places</p>
-          }
-          @if (w.description) {
-          <details class="mt-1 mb-3">
-            <summary class="text-xs text-gray-400 cursor-pointer hover:text-gray-600 select-none">Descripció</summary>
-            <p class="text-sm text-gray-600 mt-1">{{ w.description }}</p>
-          </details>
-          } @else {
-          <div class="mb-3"></div>
-          }
-          @if (auth.isAdmin()) {
-          <div class="flex gap-2">
-            <button (click)="startEditingWorkshop(w)" class="btn-secondary flex-1 text-sm">✏️ Editar</button>
-            <button (click)="deleteWorkshop(w)" class="btn-secondary flex-1 text-sm text-red-500 border-red-200 hover:border-red-400 hover:text-red-700">🗑️ Eliminar</button>
-          </div>
-          } @else if (!isPast(w.date)) {
-            @if (isFull(w) && !isSignedUp(w.id)) {
-            <button disabled class="btn-secondary w-full text-sm opacity-50 cursor-not-allowed">Taller complet</button>
-            } @else {
-            <button
-              (click)="toggleSignup(w)"
-              class="w-full text-sm"
-              [class]="isSignedUp(w.id) ? 'btn-secondary' : 'btn-primary'"
-            >
-              {{ isSignedUp(w.id) ? 'Cancel·lar inscripció' : "Inscriure'm" }}
-            </button>
-            }
-          }
-        </li>
+    <ul class="space-y-3 list-none">
+      @for (w of workshopsForMonth(); track w.id) {
+      <li class="border rounded-xl p-4">
+        <div class="flex justify-between items-start mb-1">
+          <h3 class="font-medium">{{ w.title }}</h3>
+          <time class="text-xs text-gray-400 shrink-0 ml-2">{{ w.date | date:'d MMM' }}</time>
+        </div>
+        <p class="text-sm text-gray-500 mb-1">📍 {{ w.location }}</p>
+        <p class="text-sm text-gray-500 mb-1">💶 @if (w.price) { {{ w.price }}€ } @else { Gratuït }</p>
+        @if (auth.isAdmin()) {
+        <p class="text-sm text-gray-500 mb-1">👥 {{ w.signup_count ?? 0 }}/{{ w.capacity }} inscrits</p>
+        } @else {
+        <p class="text-sm text-gray-500 mb-1">👥 {{ w.capacity }} places</p>
         }
-      </ul>
+        @if (w.description) {
+        <details class="mt-1 mb-3">
+          <summary class="text-xs text-gray-400 cursor-pointer hover:text-gray-600 select-none">Descripció</summary>
+          <p class="text-sm text-gray-600 mt-1">{{ w.description }}</p>
+        </details>
+        } @else {
+        <div class="mb-3"></div>
+        }
+        @if (auth.isAdmin()) {
+        <div class="flex gap-2">
+          <button (click)="startEditingWorkshop(w)" class="btn-secondary flex-1 text-sm">✏️ Editar</button>
+          <button (click)="deleteWorkshop(w)"
+            class="btn-secondary flex-1 text-sm text-red-500 border-red-200 hover:border-red-400 hover:text-red-700">🗑️
+            Eliminar</button>
+        </div>
+        } @else if (!isPast(w.date)) {
+        @if (isFull(w) && !isSignedUp(w.id)) {
+        <button disabled class="btn-secondary w-full text-sm opacity-50 cursor-not-allowed">Taller complet</button>
+        } @else {
+        <button (click)="toggleSignup(w)" class="w-full text-sm"
+          [class]="isSignedUp(w.id) ? 'btn-secondary' : 'btn-primary'">
+          {{ isSignedUp(w.id) ? 'Cancel·lar inscripció' : "Inscriure'm" }}
+        </button>
+        }
+        }
+      </li>
+      }
+    </ul>
     }
   </div>
 </div>
 
 @if (editingWorkshop(); as ew) {
 <div class="fixed inset-0 bg-black/50 z-40 md:hidden" (click)="closePanel()" aria-hidden="true"></div>
-<div class="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl md:hidden max-h-[90vh] flex flex-col" role="dialog" aria-modal="true">
+<div class="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl md:hidden max-h-[90vh] flex flex-col" role="dialog"
+  aria-modal="true">
   <div class="flex justify-center pt-3 pb-1">
     <div class="w-10 h-1 bg-gray-300 rounded-full"></div>
   </div>
@@ -153,7 +164,8 @@
     <input [(ngModel)]="ew.location" name="location" placeholder="Lloc" class="input" />
     <input [(ngModel)]="ew.capacity" name="capacity" type="number" placeholder="Aforament" class="input" />
     <input [(ngModel)]="ew.price" name="price" type="number" placeholder="Preu en € (buit = gratuït)" class="input" />
-    <textarea [(ngModel)]="ew.description" name="description" placeholder="Descripció" class="input" rows="3"></textarea>
+    <textarea [(ngModel)]="ew.description" name="description" placeholder="Descripció" class="input"
+      rows="3"></textarea>
   </div>
   <div class="px-6 pb-8 pt-3 border-t flex flex-col gap-2">
     <button (click)="saveEditingWorkshop()" class="btn-primary w-full">Guardar</button>

@@ -28,6 +28,9 @@
       <label class="sr-only" for="w-desc">Descripció</label>
       <textarea id="w-desc" [(ngModel)]="editing()!.description" name="description" placeholder="Descripció"
         class="input md:col-span-2"></textarea>
+      <label class="sr-only" for="w-image">URL de la imatge</label>
+      <input id="w-image" [(ngModel)]="editing()!.image_url" name="image_url"
+        placeholder="URL de la imatge (Cloudinary)" class="input md:col-span-2" />
       <div class="flex gap-3 md:col-span-2">
         <button type="button" (click)="saveEventAdmin()" class="btn-primary">Guardar</button>
         <button type="button" (click)="cancelEditAdmin()" class="btn-secondary">Cancel·lar</button>
