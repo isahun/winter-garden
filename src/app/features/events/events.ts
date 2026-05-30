@@ -1,6 +1,6 @@
 import { Component, inject, signal, computed, afterNextRender, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { SupabaseService } from '../../core/supabase.service';
+import { WorkshopService } from '../../core/services/workshop.service';
 import { AuthService } from '../../core/auth/auth.service';
 import { Workshop } from '../../core/models';
 import { DatePipe } from '@angular/common';
@@ -14,7 +14,7 @@ import { RouterLink } from '@angular/router';
   styleUrl: './events.css',
 })
 export class Events {
-  private supabase = inject(SupabaseService).client;
+  private workshopService = inject(WorkshopService);
   auth = inject(AuthService);
   private router = inject(Router);
   private element = inject(ElementRef);
@@ -41,15 +41,12 @@ export class Events {
 
   constructor() {
     afterNextRender(async () => {
-      const { data } = await this.supabase.from('workshops').select('*').order('date');
+      const { data } = await this.workshopService.getAllWorkshops();
       const ws = (data as Workshop[]) ?? [];
       this.workshops.set(ws);
 
       if (this.auth.isLoggedIn()) {
-        const { data: signups } = await this.supabase
-          .from('workshop_signups')
-          .select('workshop_id')
-          .eq('user_id', this.auth.user()!.id);
+        const { data: signups } = await this.workshopService.getUserSignups(this.auth.user()!.id);
         this.signedUpIds.set(new Set((signups ?? []).map((s) => s.workshop_id)));
       }
 
@@ -118,7 +115,7 @@ export class Events {
 
   async deleteWorkshop(w: Workshop) {
     if (!confirm('Eliminar aquest taller? Aquesta acció no es pot desfer.')) return;
-    const { error } = await this.supabase.from('workshops').delete().eq('id', w.id);
+    const { error } = await this.workshopService.deleteWorkshop(w.id);
     if (error) { alert('Error en eliminar el taller.'); return; }
     this.workshops.update(ws => ws.filter(ww => ww.id !== w.id));
     this.calendar?.getEventById(String(w.id))?.remove();
@@ -128,12 +125,7 @@ export class Events {
   async saveEditingWorkshop() {
     const data = this.editingWorkshop();
     if (!data?.id) return;
-    const { data: updated } = await this.supabase
-      .from('workshops')
-      .update(data)
-      .eq('id', data.id)
-      .select()
-      .single<Workshop>();
+    const { data: updated } = await this.workshopService.updateWorkshop(data.id, data);
     if (updated) {
       this.workshops.update(ws => ws.map(w => w.id === updated.id ? updated : w));
       const calEvent = this.calendar?.getEventById(String(updated.id));
@@ -155,11 +147,7 @@ export class Events {
   async saveNewWorkshop() {
     const data = this.newWorkshop();
     if (!data?.title || !data.date) return;
-    const { data: created } = await this.supabase
-      .from('workshops')
-      .insert(data)
-      .select()
-      .single<Workshop>();
+    const { data: created } = await this.workshopService.createWorkshop(data);
     if (created) {
       this.workshops.update(ws => [...ws, created]);
       const { bg, border } = this.getEventColor(created);
@@ -200,11 +188,7 @@ export class Events {
     }
     const userId = this.auth.user()!.id;
     if (this.isSignedUp(workshop.id)) {
-      await this.supabase
-        .from('workshop_signups')
-        .delete()
-        .eq('workshop_id', workshop.id)
-        .eq('user_id', userId);
+      await this.workshopService.removeSignup(workshop.id, userId);
       this.signedUpIds.update((s) => {
         const newSet = new Set(s);
         newSet.delete(workshop.id);
@@ -215,9 +199,7 @@ export class Events {
         : w
       ));
     } else {
-      await this.supabase
-        .from('workshop_signups')
-        .insert({ workshop_id: workshop.id, user_id: userId });
+      await this.workshopService.addSignup(workshop.id, userId);
       this.signedUpIds.update(s => new Set([...s, workshop.id]));
       this.workshops.update(ws => ws.map(w => w.id === workshop.id
         ? { ...w, signup_count: (w.signup_count ?? 0) + 1 }

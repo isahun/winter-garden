@@ -11,14 +11,32 @@ export class WorkshopService {
   }
 
   async createWorkshop(workshop: Partial<Workshop>) {
-    return this.supabase.from('workshops').insert(workshop);
+    return this.supabase.from('workshops').insert(workshop).select().single<Workshop>();
   }
 
   async updateWorkshop(id: number, workshop: Partial<Workshop>) {
-    return this.supabase.from('workshops').update(workshop).eq('id', id);
+    return this.supabase.from('workshops').update(workshop).eq('id', id).select().single<Workshop>();
   }
 
   async deleteWorkshop(id: number) {
     return this.supabase.from('workshops').delete().eq('id', id);
+  }
+
+  async getUserSignups(userId: string) {
+    return this.supabase.from('workshop_signups').select('workshop_id').eq('user_id', userId);
+  }
+
+  async addSignup(workshopId: number, userId: string) {
+    return this.supabase
+      .from('workshop_signups')
+      .insert({ workshop_id: workshopId, user_id: userId });
+  }
+
+  async removeSignup(workshopId: number, userId: string) {
+    return this.supabase
+      .from('workshop_signups')
+      .delete()
+      .eq('workshop_id', workshopId)
+      .eq('user_id', userId);
   }
 }
