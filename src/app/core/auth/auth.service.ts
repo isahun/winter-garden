@@ -20,9 +20,12 @@ export class AuthService {
 
   private _role = signal<'user' | 'admin' | null>(null);
   readonly isAdmin = computed(() => this._role() === 'admin');
+  readonly displayName = computed(
+    () => this._session()?.user?.user_metadata?.['name'] ?? null,
+  );
 
   private _resolveReady!: () => void;
-  readonly ready = new Promise<void>(resolve => (this._resolveReady = resolve));
+  readonly ready = new Promise<void>((resolve) => (this._resolveReady = resolve));
 
   constructor() {
     this.supabase.auth.getSession().then(({ data }) => {

@@ -1,14 +1,19 @@
 <section class="container mx-auto px-4 py-8 max-w-lg">
+  <div class="h-32 overflow-hidden rounded-xl mb-6">
+    <img
+      src="https://res.cloudinary.com/dou285kwq/image/upload/w_800,h_300,c_fill,f_auto,q_auto/v1779459200/Firefly_Small_glass_bowl_terrarium_with_delicate_preserved_moss_tiny_dried_golden_wildflower_654278_e2p1rt.png"
+      alt="" aria-hidden="true" class="w-full h-full object-cover" />
+  </div>
   <h1 class="text-3xl font-semibold mb-6">El meu compte</h1>
 
   <dl class="card p-6 space-y-3 mb-6">
     <div class="flex gap-2">
-      <dt class="font-semibold">Email:</dt>
-      <dd>{{ auth.user()?.email }}</dd>
+      <dt class="font-semibold">Nom:</dt>
+      <dd>{{ auth.displayName() ?? '-' }}</dd>
     </div>
     <div class="flex gap-2">
-      <dt class="font-semibold">Rol:</dt>
-      <dd>{{ auth.isAdmin() ? 'Administrador' : 'Usuari' }}</dd>
+      <dt class="font-semibold">Email:</dt>
+      <dd>{{ auth.user()?.email }}</dd>
     </div>
   </dl>
 

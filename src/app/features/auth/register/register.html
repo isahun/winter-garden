@@ -4,35 +4,40 @@
       <a routerLink="/" class="text-gray-500 hover:underline">← Inici</a>
       <a routerLink="/shop" class="text-gray-500 hover:underline">Catàleg</a>
     </div>
-  <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
-    <h1 class="text-2xl font-semibold">Crear compte</h1>
+    <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
+      <h1 class="text-2xl font-semibold">Crear compte</h1>
 
-    @if (error()) {
+      @if (error()) {
       <p class="text-red-600 text-sm" role="alert" aria-live="polite">{{ error() }}</p>
-    }
+      }
 
-    <label for="reg-name" class="sr-only">Nom</label>
-    <input id="reg-name" formControlName="name" type="text" placeholder="Nom" class="input w-full" />
+      <label for="reg-name" class="sr-only">Nom</label>
+      <input id="reg-name" formControlName="name" type="text" placeholder="Nom" class="input w-full" />
 
-    <label for="reg-email" class="sr-only">Email</label>
-    <input id="reg-email" formControlName="email" type="email" placeholder="Email" class="input w-full" />
+      <label for="reg-email" class="sr-only">Email</label>
+      <input id="reg-email" formControlName="email" type="email" placeholder="Email" class="input w-full" />
 
-    <label for="reg-password" class="sr-only">Contrasenya</label>
-    <input id="reg-password" formControlName="password" type="password"
-      placeholder="Contrasenya (mínim 6 car.)" class="input w-full"
-      aria-describedby="reg-password-hint" />
+      <label for="reg-password" class="sr-only">Contrasenya</label>
+      <input id="reg-password" formControlName="password" type="password" placeholder="Contrasenya (mínim 6 car.)"
+        class="input w-full" aria-describedby="reg-password-hint" />
+      <label for="reg-confirm" class="sr-only">Confirma la contrasenya</label>
+      <input id="reg-confirm" formControlName="confirmPassword" type="password" placeholder="Confirma la contrasenya"
+        class="input w-full" />
+      @if (form.hasError('passwordMismatch') && form.get('confirmPassword')?.touched) {
+      <p class="text-red-500 text-xs" role="alert">Les contrasenyes no coincideixen</p>
+      }
 
-    @if (form.get('password')?.invalid && form.get('password')?.touched) {
+      @if (form.get('password')?.invalid && form.get('password')?.touched) {
       <p id="reg-password-hint" class="text-red-500 text-xs" role="alert">Mínim 6 caràcters</p>
-    }
+      }
 
-    <button type="submit" [disabled]="loading()" class="btn-primary w-full">
-      {{ loading() ? 'Carregant...' : 'Crear compte' }}
-    </button>
+      <button type="submit" [disabled]="loading()" class="btn-primary w-full">
+        {{ loading() ? 'Carregant...' : 'Crear compte' }}
+      </button>
 
-    <p class="text-sm text-center">
-      Ja tens compte? <a routerLink="/auth/login" class="underline">Inicia sessió</a>
-    </p>
-  </form>
+      <p class="text-sm text-center">
+        Ja tens compte? <a routerLink="/auth/login" class="underline">Inicia sessió</a>
+      </p>
+    </form>
   </div>
 </div>
