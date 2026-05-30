@@ -12,7 +12,7 @@
   </div>
 
   @if (error()) {
-  <p class="text-red-600 mb-4 text-sm" role="alert" aria-live="polite">{{ error() }}</p>
+  <p class="text-red-500 mb-4 text-sm" role="alert" aria-live="polite">{{ error() }}</p>
   }
 
   <button (click)="pay()" [disabled]="!ready() || paying()" class="btn-primary w-full">
