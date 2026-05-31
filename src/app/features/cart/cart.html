@@ -15,8 +15,8 @@
       <img [src]="item.product.images[0] || 'assets/placeholder.jpg'" [alt]="item.product.name"
         class="w-16 h-16 object-cover rounded" />
       <div class="flex-1">
-        <h2 class="font-medium">{{ item.product.name }}</h2>
-        <p class="text-green-700">{{ item.product.price | currency:'EUR' }}</p>
+        <h2 class="font-medium text-sm">{{ item.product.name }}</h2>
+        <p class="text-sm text-green-700">{{ item.product.price | currency:'EUR' }}</p>
       </div>
 
       <div class="flex items-center gap-2" role="group" [attr.aria-label]="'Quantitat de ' + item.product.name">
