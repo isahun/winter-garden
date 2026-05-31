@@ -5,38 +5,35 @@ import { ProductService } from '../../../core/services/product.service';
 import { Product } from '../../../core/models';
 import { FavoritesService } from '../../../core/services/favorites.service';
 import { AuthService } from '../../../core/auth/auth.service';
+import { CartService } from '../../../core/services/cart.service';
+import { ShopFiltersService } from '../../../core/services/shop-filters.service';
 
 @Component({
   selector: 'app-shop',
   imports: [RouterLink, CurrencyPipe, NgTemplateOutlet],
   templateUrl: './shop.html',
+  providers: [ShopFiltersService],
 })
 export class Shop implements OnInit {
   private productService = inject(ProductService);
   private router = inject(Router);
   favorites = inject(FavoritesService);
   auth = inject(AuthService);
-
-  readonly PAGE_SIZE = 9;
+  cart = inject(CartService);
+  filters = inject(ShopFiltersService);
 
   products = signal<Product[]>([]);
-  search = signal('');
-  selectedCategories = signal<string[]>([]);
-  selectedPriceRange = signal('');
-  selectedSizes = signal<string[]>([]);
-  filtersOpen = signal(false);
-  currentPage = signal(1);
+  addedIds = signal<Set<number>>(new Set());
 
   filteredProducts = computed(() => {
-    const searchTerm = this.search().toLowerCase();
-    const categories = this.selectedCategories();
-    const price = this.selectedPriceRange();
-    const sizes = this.selectedSizes();
+    const searchTerm = this.filters.search().toLowerCase();
+    const categories = this.filters.selectedCategories();
+    const price = this.filters.selectedPriceRange();
+    const sizes = this.filters.selectedSizes();
 
-    return this.products().filter((product) => {
+    return this.products().filter(product => {
       const matchSearch = product.name.toLowerCase().includes(searchTerm);
-      const matchCat =
-        categories.length === 0 || categories.includes(product.categories?.slug ?? '');
+      const matchCat = categories.length === 0 || categories.includes(product.categories?.slug ?? '');
       const matchPrice =
         !price ||
         (price === 'under25' && product.price <= 25) ||
@@ -48,50 +45,19 @@ export class Shop implements OnInit {
   });
 
   paginatedProducts = computed(() => {
-    const start = (this.currentPage() - 1) * this.PAGE_SIZE;
-    return this.filteredProducts().slice(start, start + this.PAGE_SIZE);
+    const start = (this.filters.currentPage() - 1) * this.filters.PAGE_SIZE;
+    return this.filteredProducts().slice(start, start + this.filters.PAGE_SIZE);
   });
 
-  totalPages = computed(() => Math.ceil(this.filteredProducts().length / this.PAGE_SIZE));
+  totalPages = computed(() => Math.ceil(this.filteredProducts().length / this.filters.PAGE_SIZE));
 
-  activeFiltersCount = computed(
-    () =>
-      this.selectedCategories().length +
-      (this.selectedPriceRange() ? 1 : 0) +
-      this.selectedSizes().length,
-  );
-
-  setSearch(value: string) {
-    this.search.set(value);
-    this.currentPage.set(1);
-  }
-
-  toggleCategory(slug: string) {
-    const current = this.selectedCategories();
-    this.selectedCategories.set(
-      current.includes(slug) ? current.filter((s) => s !== slug) : [...current, slug],
-    );
-    this.currentPage.set(1);
-  }
-
-  toggleSize(size: string) {
-    const current = this.selectedSizes();
-    this.selectedSizes.set(
-      current.includes(size) ? current.filter((s) => s !== size) : [...current, size],
-    );
-    this.currentPage.set(1);
-  }
-
-  setPriceRange(value: string) {
-    this.selectedPriceRange.set(value);
-    this.currentPage.set(1);
-  }
-
-  clearFilters() {
-    this.selectedCategories.set([]);
-    this.selectedPriceRange.set('');
-    this.selectedSizes.set([]);
-    this.currentPage.set(1);
+  addToCart(product: Product, event: MouseEvent) {
+    event.stopPropagation();
+    this.cart.addToCart(product);
+    this.addedIds.update(s => new Set([...s, product.id]));
+    setTimeout(() => {
+      this.addedIds.update(s => { const n = new Set(s); n.delete(product.id); return n; });
+    }, 1500);
   }
 
   navigateToProduct(productId: number) {

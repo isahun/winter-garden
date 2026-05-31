@@ -3,11 +3,11 @@
     <img src="https://res.cloudinary.com/dou285kwq/image/upload/w_1200,h_300,c_fill,f_auto,q_auto/v1779459370/pexels-scottwebb-185498_xa5myc.jpg"
       alt="" aria-hidden="true" class="w-full h-full object-cover" />
   </div>
-  <div class="flex justify-between items-center mb-6">
+  <div class="flex justify-between items-center mb-6 gap-4">
     <h1 class="text-3xl font-semibold">Catàleg</h1>
     @if (auth.isAdmin()) {
     <div class="flex gap-2">
-      <a routerLink="/admin/products" class="btn-secondary inline-flex items-center justify-center px-3 py-1.5 text-sm">Panell d'edició</a>
+      <button routerLink="/admin/products" class="btn-secondary inline-flex items-center justify-center px-3 py-1.5 text-sm">Panell d'edició</button>
       <button (click)="navigateToCreate()" class="btn-primary inline-flex items-center justify-center px-3 py-1.5 text-sm">+ Nou producte</button>
     </div>
     }
@@ -16,14 +16,14 @@
     <search class="flex-1">
       <label for="search-input" class="sr-only">Cercar productes</label>
       <input id="search-input" type="search" placeholder="Cercar productes..."
-        (input)="setSearch($any($event.target).value)" class="input w-full" />
+        (input)="filters.setSearch($any($event.target).value)" class="input w-full" />
     </search>
-    <button (click)="filtersOpen.set(true)" class="btn-secondary md:hidden flex items-center gap-2 px-4 py-2"
+    <button (click)="filters.filtersOpen.set(true)" class="btn-secondary md:hidden flex items-center gap-2 px-4 py-2"
       aria-label="Obrir filtres">
       Filtres
-      @if (activeFiltersCount() > 0) {
+      @if (filters.activeFiltersCount() > 0) {
       <span class="bg-green-700 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-        {{ activeFiltersCount() }}
+        {{ filters.activeFiltersCount() }}
       </span>
       }
     </button>
@@ -33,9 +33,9 @@
     <aside class="hidden md:block w-52 shrink-0">
       <div class="sticky top-4 space-y-6">
         <ng-container [ngTemplateOutlet]="filterContent" />
-        @if (activeFiltersCount() > 0) {
-        <button (click)="clearFilters()" class="text-sm text-red-500 hover:underline">
-          Netejar filtres ({{ activeFiltersCount() }})
+        @if (filters.activeFiltersCount() > 0) {
+        <button (click)="filters.clearFilters()" class="text-sm text-red-500 hover:underline">
+          Netejar filtres ({{ filters.activeFiltersCount() }})
         </button>
         }
       </div>
@@ -57,6 +57,15 @@
             <div class="p-3">
               <h3 class="font-medium">{{ product.name }}</h3>
               <p class="text-green-700 font-semibold">{{ product.price | currency:'EUR' }}</p>
+              @if (!auth.isAdmin()) {
+              <button (click)="addToCart(product, $event)"
+                class="mt-2 w-full text-sm py-1.5 rounded-lg border transition-colors cursor-pointer"
+                [class]="addedIds().has(product.id)
+                  ? 'bg-green-700 text-white border-green-700'
+                  : 'border-green-700 text-green-700 hover:bg-green-700 hover:text-white'">
+                {{ addedIds().has(product.id) ? '✓ Afegit' : 'Afegeix al carret' }}
+              </button>
+              }
             </div>
             @if (auth.isAdmin()) {
             <div class="absolute bottom-2 right-2 flex gap-1" (click)="$event.stopPropagation()">
@@ -79,12 +88,12 @@
 
       @if (totalPages() > 1) {
       <nav class="flex items-center justify-center gap-4 mt-8" aria-label="Paginació">
-        <button (click)="currentPage.set(currentPage() - 1)" [disabled]="currentPage() === 1"
+        <button (click)="filters.currentPage.set(filters.currentPage() - 1)" [disabled]="filters.currentPage() === 1"
           class="btn-secondary px-4 py-2 disabled:opacity-40">
           ← Anterior
         </button>
-        <span class="text-sm text-gray-600">Pàgina {{ currentPage() }} de {{ totalPages() }}</span>
-        <button (click)="currentPage.set(currentPage() + 1)" [disabled]="currentPage() === totalPages()"
+        <span class="text-sm text-gray-600">Pàgina {{ filters.currentPage() }} de {{ totalPages() }}</span>
+        <button (click)="filters.currentPage.set(filters.currentPage() + 1)" [disabled]="filters.currentPage() === totalPages()"
           class="btn-secondary px-4 py-2 disabled:opacity-40">
           Següent →
         </button>
@@ -94,8 +103,8 @@
   </div>
 </section>
 
-@if (filtersOpen()) {
-<div class="fixed inset-0 bg-black/50 z-40 md:hidden" (click)="filtersOpen.set(false)" aria-hidden="true"></div>
+@if (filters.filtersOpen()) {
+<div class="fixed inset-0 bg-black/50 z-40 md:hidden" (click)="filters.filtersOpen.set(false)" aria-hidden="true"></div>
 <div class="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl md:hidden max-h-[80vh] flex flex-col" role="dialog"
   aria-modal="true" aria-label="Filtres">
   <div class="flex justify-center pt-3 pb-1">
@@ -103,17 +112,17 @@
   </div>
   <div class="flex justify-between items-center px-6 py-3">
     <h2 class="font-semibold text-lg">Filtres</h2>
-    <button (click)="filtersOpen.set(false)" aria-label="Tancar filtres" class="text-gray-500 text-xl">✕</button>
+    <button (click)="filters.filtersOpen.set(false)" aria-label="Tancar filtres" class="text-gray-500 text-xl">✕</button>
   </div>
   <div class="overflow-y-auto flex-1 px-6 pb-4 space-y-6">
     <ng-container [ngTemplateOutlet]="filterContent" />
   </div>
   <div class="px-6 py-4 border-t flex gap-3">
-    <button (click)="filtersOpen.set(false); currentPage.set(1)" class="btn-primary flex-1">
+    <button (click)="filters.filtersOpen.set(false); filters.currentPage.set(1)" class="btn-primary flex-1">
       Aplicar
     </button>
-    @if (activeFiltersCount() > 0) {
-    <button (click)="clearFilters()" class="btn-secondary flex-1">
+    @if (filters.activeFiltersCount() > 0) {
+    <button (click)="filters.clearFilters()" class="btn-secondary flex-1">
       Netejar
     </button>
     }
@@ -129,7 +138,7 @@
       'terraris', label: 'Terraris'}]; track cat.slug) {
       <li>
         <label class="flex items-center gap-2 cursor-pointer text-sm">
-          <input type="checkbox" [checked]="selectedCategories().includes(cat.slug)" (change)="toggleCategory(cat.slug)"
+          <input type="checkbox" [checked]="filters.selectedCategories().includes(cat.slug)" (change)="filters.toggleCategory(cat.slug)"
             class="accent-green-700" />
           {{ cat.label }}
         </label>
@@ -145,7 +154,7 @@
       '25€ – 50€'}, {value: 'over50', label: 'Més de 50€'}]; track range.value) {
       <li>
         <label class="flex items-center gap-2 cursor-pointer text-sm">
-          <input type="radio" [checked]="selectedPriceRange() === range.value" (change)="setPriceRange(range.value)"
+          <input type="radio" [checked]="filters.selectedPriceRange() === range.value" (change)="filters.setPriceRange(range.value)"
             class="accent-green-700" />
           {{ range.label }}
         </label>
@@ -161,7 +170,7 @@
       (L)'}, {value: 'XL', label: 'Extra gran (XL)'}]; track size.value) {
       <li>
         <label class="flex items-center gap-2 cursor-pointer text-sm">
-          <input type="checkbox" [checked]="selectedSizes().includes(size.value)" (change)="toggleSize(size.value)"
+          <input type="checkbox" [checked]="filters.selectedSizes().includes(size.value)" (change)="filters.toggleSize(size.value)"
             class="accent-green-700" />
           {{ size.label }}
         </label>
