@@ -14,23 +14,50 @@
       <dl>
         <dd class="text-3xl font-bold text-green-700">{{ totalOrders() }}</dd>
         <dt class="text-sm text-gray-500 mt-1">Comandes</dt>
+        <dd class="mt-2"><a routerLink="/admin/orders" class="text-xs text-green-700 hover:underline hover:cursor-pointer">Gestionar comandes
+            →</a></dd>
       </dl>
     </div>
     <div class="card p-6 text-center col-span-2 md:col-span-1">
       <dl>
         <dd class="text-3xl font-bold text-green-700">{{ activeProducts() }}</dd>
         <dt class="text-sm text-gray-500 mt-1">Productes en estoc</dt>
+        <dd class="mt-2"><a routerLink="/admin/products" class="text-xs text-green-700 hover:underline hover:cursor-pointer">Gestionar estoc
+            →</a></dd>
       </dl>
     </div>
   </div>
-  <div class="grid md:grid-cols-2 gap-8">
+  <div class="grid md:grid-cols-2 gap-8 mb-8">
     <article class="card p-6">
-      <h2 class="font-semibold mb-4">Vendes per mes</h2>
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-semibold">Vendes per mes</h2>
+        <div class="flex items-center gap-2 text-sm">
+          <button (click)="prevYear()" [disabled]="!canGoPrev()"
+            class="w-7 h-7 flex items-center justify-center border rounded hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer">
+            ‹
+          </button>
+          <span class="w-10 text-center font-medium">{{ selectedYear() }}</span>
+          <button (click)="nextYear()" [disabled]="!canGoNext()"
+            class="w-7 h-7 flex items-center justify-center border rounded hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer">
+            ›
+          </button>
+        </div>
+      </div>
       <canvas id="sales-chart" aria-label="Gràfica de vendes per mes" role="img"></canvas>
     </article>
     <article class="card p-6">
-      <h2 class="font-semibold mb-4">Estat de comandes</h2>
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-semibold">Estat de comandes</h2>
+        <a routerLink="/admin/orders" class="text-xs text-green-700 hover:underline">Veure comandes →</a>
+      </div>
       <canvas id="status-chart" aria-label="Gràfica d'estats de comandes" role="img"></canvas>
     </article>
   </div>
+  <article class="card p-6">
+    <h2 class="font-semibold mb-4">Top 5 productes més venuts</h2>
+    <canvas id="top-products-chart" [hidden]="!hasTopProducts()" aria-label="Gràfica de productes més venuts" role="img"></canvas>
+    @if (!hasTopProducts()) {
+      <p class="text-sm text-gray-400 text-center py-8">Sense dades de vendes encara.</p>
+    }
+  </article>
 </section>
