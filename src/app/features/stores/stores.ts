@@ -28,9 +28,12 @@ export class Stores {
         iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
         shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
       });
-      
+
       const map = L.map('map').setView([41.3851, 2.1734], 13);
       this.mapRef = map;
+
+      const ro = new ResizeObserver(() => map.invalidateSize());
+      ro.observe(document.getElementById('map')!);
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors',
