@@ -15,7 +15,12 @@ export class WorkshopService {
   }
 
   async updateWorkshop(id: number, workshop: Partial<Workshop>) {
-    return this.supabase.from('workshops').update(workshop).eq('id', id).select().single<Workshop>();
+    return this.supabase
+      .from('workshops')
+      .update(workshop)
+      .eq('id', id)
+      .select()
+      .single<Workshop>();
   }
 
   async deleteWorkshop(id: number) {
@@ -24,6 +29,13 @@ export class WorkshopService {
 
   async getUserSignups(userId: string) {
     return this.supabase.from('workshop_signups').select('workshop_id').eq('user_id', userId);
+  }
+
+  async getSignupsByWorkshop(workshopId: number) {
+    return this.supabase
+      .from('workshop_signups')
+      .select('user_id, profiles(name, email)')
+      .eq('workshop_id', workshopId);
   }
 
   async addSignup(workshopId: number, userId: string) {

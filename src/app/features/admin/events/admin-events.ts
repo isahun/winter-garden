@@ -4,7 +4,6 @@ import { DatePipe } from '@angular/common';
 import { WorkshopService } from '../../../core/services/workshop.service';
 import { Workshop } from '../../../core/models';
 import { RouterLink } from '@angular/router';
-import { SupabaseService } from '../../../core/supabase.service';
 
 interface WorkshopSignupRow {
   user_id: string;
@@ -18,7 +17,6 @@ interface WorkshopSignupRow {
 })
 export class AdminEvents implements OnInit {
   private workshopService = inject(WorkshopService);
-  private supabase = inject(SupabaseService).client;
 
   workshops = signal<Workshop[]>([]);
   editing = signal<Partial<Workshop> | null>(null);
@@ -80,31 +78,10 @@ export class AdminEvents implements OnInit {
 
   async loadSignups(workshopId: number) {
     if (this.signups().has(workshopId)) return;
-    const { data: rows } = await this.supabase
-      .from('workshop_signups')
-      .select('user_id')
-      .eq('workshop_id', workshopId);
-    if (!rows || rows.length === 0) {
-      this.signups.update((map) => {
-        const next = new Map(map);
-        next.set(workshopId, []);
-        return next;
-      });
-      return;
-    }
-    const userIds = rows.map((r) => r.user_id);
-    const { data: profiles } = await this.supabase
-      .from('profiles')
-      .select('id, name, email')
-      .in('id', userIds);
-    const profileMap = new Map((profiles ?? []).map((p) => [p.id, p]));
-    const result: WorkshopSignupRow[] = rows.map((r) => ({
-      user_id: r.user_id,
-      profiles: profileMap.get(r.user_id) ?? null,
-    }));
+    const { data } = await this.workshopService.getSignupsByWorkshop(workshopId);
     this.signups.update((map) => {
       const next = new Map(map);
-      next.set(workshopId, result);
+      next.set(workshopId, (data ?? []) as unknown as WorkshopSignupRow[]);
       return next;
     });
   }
