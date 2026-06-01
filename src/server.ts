@@ -13,7 +13,12 @@ import 'dotenv/config';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
 const app = express();
-const angularApp = new AngularNodeAppEngine();
+app.set('trust proxy', true); // necessari per a Render (reverse proxy)
+
+const angularApp = new AngularNodeAppEngine({
+  allowedHosts: ['winter-garden.onrender.com'],
+  trustProxyHeaders: true,
+});
 
 // Client Supabase amb service role (bypassa RLS, mai al frontend)
 const supabaseAdmin = createClient(
