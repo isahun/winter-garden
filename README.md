@@ -4,7 +4,7 @@
 
 Projecte final de Bootcamp Frontend — Angular 22 · Supabase · Stripe · Gemini AI
 
-**[Demo en viu](#)** (no funciona encara) <!-- canviar x URL d Railway quan hagi fet el deploy -->
+**[Demo en viu](#)** <!-- TODO: afegir URL de Render -->
 
 ---
 
@@ -43,7 +43,7 @@ Projecte final de Bootcamp Frontend — Angular 22 · Supabase · Stripe · Gemi
 | Calendari | FullCalendar |
 | Imatges | Cloudinary |
 | Gràfiques | Chart.js |
-| Testing | Karma + Jasmine (21 tests, format Gherkin) |
+| Testing | Vitest |
 
 ---
 
@@ -233,44 +233,75 @@ src/
 
 ---
 
-## Refactors recents
-
-### Capa de serveis (maig 2026)
-
-La lògica de negoci que estava acoblada als components s'ha extret progressivament a serveis dedicats dins de `core/services/`:
-
-| Servei | Responsabilitat | Extret de |
-|--------|----------------|-----------|
-| `WorkshopService` | CRUD de tallers, inscripcions i cancel·lacions a Supabase | `admin-events` component |
-| `ImageService` | Pujada i transformació d'imatges a Cloudinary | `admin-products` component |
-| `DashboardService` | Consultes de KPIs (vendes, comandes, productes) a Supabase | `admin-dashboard` component |
-
-Cada component admin ara delega tota la comunicació amb serveis externs al servei corresponent i només gestiona l'estat de la UI.
-
-### Navbar (glassmorphism + mòbil)
-
-- Top navbar amb efecte glassmorphism, visible en desktop
-- Bottom navigation fixa en mòbil (signal `menuOpen` + classes `md:hidden` / `md:flex`)
-- Padding inferior afegit als layouts per evitar solapament amb el bottom nav
-
----
-
 ## Arquitectura
 
-El projecte utilitza Angular SSR amb Node Express com a servidor únic:
-- Les rutes `/api/*` les gestiona Express directament (Stripe i Gemini no poden anar al client per seguretat)
+### Servidor únic (SSR + API)
+
+Angular SSR amb Node Express com a servidor únic:
+- Les rutes `/api/*` les gestiona Express directament — Stripe i Gemini mai arriben al client
 - La resta de peticions les processa Angular SSR
-- Supabase s'usa tant des del client (amb `anonKey` + RLS) com des del servidor (amb `service_role` per al context del chatbot)
+- Supabase s'usa des del client (`anonKey` + RLS) i des del servidor (`service_role` per al chatbot)
+
+### Capa de serveis (SRP)
+
+Tota la comunicació amb serveis externs viu a `core/services/` — els components gestionen únicament l'estat de la UI:
+
+| Servei | Responsabilitat |
+|--------|----------------|
+| `WorkshopService` | CRUD de tallers, inscripcions i cancel·lacions a Supabase |
+| `ImageService` | Pujada i transformació d'imatges a Cloudinary |
+| `DashboardService` | Consultes de KPIs (vendes, comandes, productes) a Supabase |
+| `ProductService` | CRUD de productes a Supabase |
+| `CartService` | Carret persistent a `localStorage` |
+| `FavoritesService` | Favorits de l'usuari a Supabase |
+| `ChatService` | Streaming Gemini AI via chunked response |
+
+### Patrons Angular destacats
+
+**Signals + `computed`**
+Estat reactiu sense RxJS. Els filtres del catàleg, el comptador del carret i l'estat del chatbot són signals; les derivades s'expressen amb `computed()`.
+
+**`auth.ready` Promise**
+Problema de producció en SSR: al fer F5, Angular renderitza al servidor sense sessió. El guard comprova `isLoggedIn()` en mil·lisegons i retorna `false`, redirigint a `/login` tot i tenir sessió vàlida. La solució és una Promise que es resol quan Supabase confirma la sessió real:
+
+```ts
+readonly ready = new Promise<void>(resolve => (this._resolveReady = resolve));
+// al inicialitzar:
+supabase.auth.getSession().then(() => this._resolveReady());
+// al guard:
+await this.auth.ready;
+return this.auth.isLoggedIn();
+```
+
+**Interceptors**
+- `AuthInterceptor` — injecta el token JWT a cada petició sortint
+- `ErrorInterceptor` — captura errors HTTP i redirigeix a `/login` en 401
+- `LoadingInterceptor` — gestiona un indicador de càrrega global
+
+**`afterNextRender`**
+Chart.js, Leaflet i FullCalendar manipulen el DOM directament i no poden inicialitzar-se durant el render de servidor. Tots s'inicialitzen dins d'`afterNextRender()` per garantir l'execució exclusiva al client.
+
+**Chatbot en streaming**
+El servidor Express escriu la resposta de Gemini en chunks mentre es genera:
+
+```ts
+res.setHeader('Transfer-Encoding', 'chunked');
+for await (const chunk of stream) {
+  if (chunk.text) res.write(chunk.text);
+}
+res.end();
+```
 
 ---
 
-## Deploy a Railway
+## Deploy a Render
 
-1. Crea un projecte nou a [railway.app](https://railway.app) i connecta el repositori de GitHub.
-2. Railway detecta `package.json` automàticament. Configura manualment:
+1. Crea un nou **Web Service** a [render.com](https://render.com) i connecta el repositori de GitHub.
+2. Configura el servei:
    - **Build command:** `ng build`
    - **Start command:** `node dist/secret-garden/server/server.mjs`
-3. Afegeix les variables d'entorn des del panell de Railway (les mateixes que al fitxer `.env` local):
+   - **Environment:** Node
+3. Afegeix les variables d'entorn des del panell de Render:
 
 | Variable | On obtenir-la |
 |----------|---------------|
@@ -278,10 +309,9 @@ El projecte utilitza Angular SSR amb Node Express com a servidor únic:
 | `SUPABASE_SERVICE_KEY` | Supabase → Project Settings → API → `service_role` |
 | `STRIPE_SECRET_KEY` | Stripe Dashboard → Developers → API keys |
 | `GEMINI_API_KEY` | Google AI Studio → API keys |
+| `PORT` | `4000` (Render també el pot injectar automàticament) |
 
-> Railway injecta `PORT` automàticament — no cal afegir-la.
-
-4. Afegeix la URL del deploy de Railway a la llista de dominis autoritzats de Supabase (Authentication → URL Configuration).
+4. Afegeix la URL del deploy de Render a la llista de dominis autoritzats de Supabase (Authentication → URL Configuration).
 
 ---
 
