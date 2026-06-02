@@ -4,7 +4,7 @@
 
 Projecte final de Bootcamp Frontend — Angular 22 · Supabase · Stripe · Gemini AI
 
-**[Demo en viu](https://winter-garden.onrender.com/cart)**
+**[Demo en viu](https://winter-garden.onrender.com/)**
 
 ---
 
