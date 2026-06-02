@@ -33,11 +33,13 @@ export class Stores {
       this.mapRef = map;
 
       let resizeTimer: ReturnType<typeof setTimeout>;
-      const ro = new ResizeObserver(() => {
+      const onResize = () => {
         clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(() => map.invalidateSize(), 150);
-      });
+        resizeTimer = setTimeout(() => map.invalidateSize(), 200);
+      };
+      const ro = new ResizeObserver(onResize);
       ro.observe(document.getElementById('map')!);
+      window.addEventListener('resize', onResize);
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors',
