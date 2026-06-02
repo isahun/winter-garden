@@ -93,39 +93,39 @@ describe('Shop - filteredProducts (computed)', () => {
   });
 
   it('Given filtre categoria "jardins-fets", When s\'aplica, Then només apareixen jardins', () => {
-    component.toggleCategory('jardins-fets');
+    component.filters.toggleCategory('jardins-fets');
     const result = component.filteredProducts();
     expect(result.length).toBe(2);
     expect(result.every((p) => p.categories?.slug === 'jardins-fets')).toBe(true);
   });
 
   it('Given filtre preu "under25", When s\'aplica, Then tots els productes costen ≤25€', () => {
-    component.setPriceRange('under25');
+    component.filters.setPriceRange('under25');
     expect(component.filteredProducts().every((p) => p.price <= 25)).toBe(true);
   });
 
   it('Given filtre mida "S", When s\'aplica, Then només apareixen productes de mida S', () => {
-    component.toggleSize('S');
+    component.filters.toggleSize('S');
     expect(component.filteredProducts().every((p) => p.size === 'S')).toBe(true);
   });
 
   it('Given cerca "howl", When s\'escriu al cercador, Then apareix 1 producte amb aquell nom', () => {
-    component.setSearch('howl');
+    component.filters.setSearch('howl');
     expect(component.filteredProducts().length).toBe(1);
     expect(component.filteredProducts()[0].name).toBe('Jardí Howl');
   });
 
   it('Given filtres actius, When es crida clearFilters, Then es mostren tots els productes i activeFiltersCount és 0', () => {
-    component.toggleCategory('jardins-fets');
-    component.setPriceRange('under25');
-    component.clearFilters();
+    component.filters.toggleCategory('jardins-fets');
+    component.filters.setPriceRange('under25');
+    component.filters.clearFilters();
     expect(component.filteredProducts().length).toBe(4);
-    expect(component.activeFiltersCount()).toBe(0);
+    expect(component.filters.activeFiltersCount()).toBe(0);
   });
 
   it('Given filtres categoria "jardins-fets" i preu "under25", When s\'apliquen, Then només apareix el jardí barat', () => {
-    component.toggleCategory('jardins-fets');
-    component.setPriceRange('under25');
+    component.filters.toggleCategory('jardins-fets');
+    component.filters.setPriceRange('under25');
     expect(component.filteredProducts().length).toBe(1);
     expect(component.filteredProducts()[0].name).toBe('Jardí Howl');
   });
