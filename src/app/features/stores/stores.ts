@@ -32,7 +32,11 @@ export class Stores {
       const map = L.map('map').setView([41.3851, 2.1734], 13);
       this.mapRef = map;
 
-      const ro = new ResizeObserver(() => map.invalidateSize());
+      let resizeTimer: ReturnType<typeof setTimeout>;
+      const ro = new ResizeObserver(() => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => map.invalidateSize(), 150);
+      });
       ro.observe(document.getElementById('map')!);
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
