@@ -76,7 +76,7 @@ erDiagram
         numeric price
         int stock
         int category_id FK
-        text[] images
+        text images
         text size
         boolean featured
         timestamptz created_at
@@ -225,7 +225,7 @@ flowchart TD
 
 ```mermaid
 sequenceDiagram
-    actor User
+    participant User
     participant Angular
     participant AuthInterceptor
     participant SupabaseAuth
@@ -255,9 +255,9 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    actor User
+    participant User
     participant Angular
-    participant SSR as Express SSR<br/>/api/payment-intent
+    participant SSR as ExpressSSR /api/payment-intent
     participant Stripe
     participant DB as Supabase PostgreSQL
 
@@ -284,11 +284,11 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    actor User
+    participant User
     participant Widget as ChatbotWidget
-    participant SSR as Express SSR<br/>/api/chatbot
+    participant SSR as ExpressSSR /api/chatbot
     participant DB as Supabase PostgreSQL
-    participant Gemini as Gemini API<br/>gemini-2.5-flash
+    participant Gemini as Gemini API gemini-2.5-flash
 
     User->>Widget: Tinc un raco de 30x30cm amb poca llum
     Widget->>SSR: POST /api/chatbot { message }
