@@ -10,23 +10,26 @@ Projecte final de Bootcamp Frontend — Angular 22 · Supabase · Stripe · Gemi
 
 ## Captures de pantalla
 
-<!-- m falta posar captures a public/screenshots/ -->
-
 **Home**
-<!-- ![Home desktop](public/screenshots/home-desktop.png) -->
-> *(captura pendent)*
+![Home](public/screenshots/HOMEreadme.png)
 
-**Catàleg i detall de producte**
-<!-- ![Shop](public/screenshots/shop.png) ![Product detail](public/screenshots/product-detail.png) -->
-> *(captura pendent)*
+**Catàleg**
+![Catàleg](public/screenshots/HOMEcatalog.png)
 
-**Calendari de tallers · Mapa de botigues**
-<!-- ![Events](public/screenshots/events.png) ![Stores](public/screenshots/stores.png) -->
-> *(captura pendent)*
+**Detall de producte**
+![Detall de producte](public/screenshots/HOMEdetail.png)
 
-**Chatbot IA · Panell d'administració**
-<!-- ![Chatbot](public/screenshots/chatbot.png) ![Admin](public/screenshots/admin.png) -->
-> *(captura pendent)*
+**Calendari de tallers**
+![Calendari](public/screenshots/HOMEevents.png)
+
+**Mapa de botigues**
+![Mapa de botigues](public/screenshots/HOMEstores.png)
+
+**Chatbot IA**
+![Chatbot](public/screenshots/HOMEchat.png)
+
+**Panell d'administració**
+![Dashboard admin](public/screenshots/HOMEadmindashboard.png)
 
 ---
 
