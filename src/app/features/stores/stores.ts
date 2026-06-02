@@ -35,7 +35,12 @@ export class Stores {
       let resizeTimer: ReturnType<typeof setTimeout>;
       const onResize = () => {
         clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(() => map.invalidateSize(), 200);
+        resizeTimer = setTimeout(() => {
+          const center = map.getCenter();
+          const zoom = map.getZoom();
+          map.invalidateSize({ animate: false });
+          map.setView(center, zoom, { animate: false });
+        }, 200);
       };
       const ro = new ResizeObserver(onResize);
       ro.observe(document.getElementById('map')!);
