@@ -23,12 +23,12 @@ graph TB
     subgraph Supabase["Supabase · Backend"]
         AUTH["Auth Service<br/>JWT + RLS"]
         DB[("PostgreSQL<br/>products · orders · favorites<br/>workshops · stores")]
-        STR["Storage<br/>product images"]
     end
 
     subgraph External["Serveis externs"]
         STRIPE["Stripe API<br/>pagaments"]
         GEMINI["Gemini API<br/>gemini-2.5-flash"]
+        CLOUDINARY["Cloudinary<br/>emmagatzematge d'imatges"]
     end
 
     UI --> SVC
@@ -36,8 +36,8 @@ graph TB
     GRD --> AUTH
     SVC --> AUTH
     SVC --> DB
-    SVC --> STR
     SVC --> INT
+    SVC --> CLOUDINARY
     INT --> AUTH
     INT --> API_PAY
     SVC --> API_CHAT
