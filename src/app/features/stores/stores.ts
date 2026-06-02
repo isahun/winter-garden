@@ -32,15 +32,22 @@ export class Stores {
       const map = L.map('map').setView([41.3851, 2.1734], 13);
       this.mapRef = map;
 
+      const forceRedraw = () => {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            map.invalidateSize({ animate: false });
+            map.setView(map.getCenter(), map.getZoom(), { animate: false });
+          });
+        });
+      };
+
+      const mq = window.matchMedia('(min-width: 768px)');
+      mq.addEventListener('change', forceRedraw);
+
       let resizeTimer: ReturnType<typeof setTimeout>;
       const onResize = () => {
         clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(() => {
-          const center = map.getCenter();
-          const zoom = map.getZoom();
-          map.invalidateSize({ animate: false });
-          map.setView(center, zoom, { animate: false });
-        }, 200);
+        resizeTimer = setTimeout(() => map.invalidateSize({ animate: false }), 200);
       };
       const ro = new ResizeObserver(onResize);
       ro.observe(document.getElementById('map')!);
