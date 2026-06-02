@@ -4,7 +4,7 @@
 
 Projecte final de Bootcamp Frontend — Angular 22 · Supabase · Stripe · Gemini AI
 
-**[Demo en viu](#)** <!-- TODO: afegir URL de Render -->
+**[Demo en viu](https://winter-garden.onrender.com/cart)**
 
 ---
 
@@ -191,13 +191,15 @@ src/
 │   │   ├── interceptors/      # auth, error, loading
 │   │   ├── models/            # Interfaces TypeScript
 │   │   └── services/
-│   │       ├── cart.service         # Carret — localStorage
-│   │       ├── chat.service         # Streaming Gemini AI
-│   │       ├── dashboard.service    # KPIs i estadístiques del panell admin
-│   │       ├── favorites.service    # Favorits de l'usuari (Supabase)
-│   │       ├── image.service        # Pujada d'imatges a Cloudinary
-│   │       ├── product.service      # CRUD de productes (Supabase)
-│   │       └── workshop.service     # CRUD de tallers i inscripcions (Supabase)
+│   │       ├── cart.service          # Carret — localStorage
+│   │       ├── chat.service          # Streaming Gemini AI
+│   │       ├── dashboard.service     # KPIs i estadístiques del panell admin
+│   │       ├── favorites.service     # Favorits de l'usuari (Supabase)
+│   │       ├── image.service         # Pujada d'imatges a Cloudinary
+│   │       ├── payment.service       # Stripe Elements — mount i confirm
+│   │       ├── product.service       # CRUD de productes (Supabase)
+│   │       ├── shop-filters.service  # Filtres i paginació del catàleg
+│   │       └── workshop.service      # CRUD de tallers i inscripcions (Supabase)
 │   ├── features/
 │   │   ├── admin/
 │   │   │   ├── dashboard/     # KPIs i gràfiques Chart.js
@@ -254,6 +256,8 @@ Tota la comunicació amb serveis externs viu a `core/services/` — els componen
 | `ProductService` | CRUD de productes a Supabase |
 | `CartService` | Carret persistent a `localStorage` |
 | `FavoritesService` | Favorits de l'usuari a Supabase |
+| `PaymentService` | Stripe Elements — mount, confirm i recuperació del PaymentIntent |
+| `ShopFiltersService` | Filtres combinats i paginació del catàleg (signals + SRP) |
 | `ChatService` | Streaming Gemini AI via chunked response |
 
 ### Patrons Angular destacats
@@ -290,6 +294,19 @@ for await (const chunk of stream) {
   if (chunk.text) res.write(chunk.text);
 }
 res.end();
+```
+
+**Pagament Stripe (client secret pattern)**
+La clau secreta mai arriba al client. El servidor crea el `PaymentIntent` i retorna només el `clientSecret`; el client l'usa per muntar Stripe Elements:
+
+```ts
+// server.ts — clau secreta, només al servidor
+const intent = await stripe.paymentIntents.create({ amount, currency: 'eur' });
+res.json({ clientSecret: intent.client_secret });
+
+// payment.service.ts — clau pública al client
+this.elements = stripe.elements({ clientSecret });
+this.elements.create('payment').mount('#payment-element');
 ```
 
 ---
