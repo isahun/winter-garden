@@ -115,7 +115,11 @@ export const routes: Routes = [
           },
         ],
       },
+      {
+        path: '**',
+        loadComponent: () =>
+          import('./features/not-found/not-found').then((module) => module.NotFound),
+      },
     ],
   },
-  { path: '**', redirectTo: '' },
 ];
