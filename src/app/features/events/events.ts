@@ -6,6 +6,7 @@ import { Workshop } from '../../core/models';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { ConfirmDialogService } from '../../core/services/confirm-dialog.service';
 
 @Component({
   selector: 'app-events',
@@ -15,6 +16,7 @@ import { RouterLink } from '@angular/router';
 })
 export class Events {
   private workshopService = inject(WorkshopService);
+  private confirmDialog = inject(ConfirmDialogService);
   auth = inject(AuthService);
   private router = inject(Router);
   private element = inject(ElementRef);
@@ -114,9 +116,10 @@ export class Events {
   }
 
   async deleteWorkshop(w: Workshop) {
-    if (!confirm('Eliminar aquest taller? Aquesta acció no es pot desfer.')) return;
+    const ok = await this.confirmDialog.confirm('Eliminar aquest taller? Aquesta acció no es pot desfer.', { danger: true });
+    if (!ok) return;
     const { error } = await this.workshopService.deleteWorkshop(w.id);
-    if (error) { alert('Error en eliminar el taller.'); return; }
+    if (error) { await this.confirmDialog.alert('Error en eliminar el taller.'); return; }
     this.workshops.update(ws => ws.filter(ww => ww.id !== w.id));
     this.calendar?.getEventById(String(w.id))?.remove();
     this.closePanel();

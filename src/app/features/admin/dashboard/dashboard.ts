@@ -117,8 +117,7 @@ export class Dashboard {
             scales: { x: { ticks: { stepSize: 1 } } },
           },
         });
-      } catch (err) {
-        console.error('[Dashboard] Error carregant dades:', err);
+      } catch {
         this.loadError.set(true);
       }
     });

@@ -10,7 +10,6 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
     catchError((err) => {
       if (err.status === 401) auth.logout();
-      if (err.status === 500) console.error('Error servidor:', err.message);
       return throwError(() => err);
     })
   );

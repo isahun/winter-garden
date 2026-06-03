@@ -51,8 +51,7 @@ export class Chatbot {
             return prev;
           });
         }
-      } catch (error) {
-        console.error('Error durant el streaming:', error);
+      } catch {
         data.set({ error: new Error("No es va poder connectar amb l'IA. Prova-ho més tard.") });
       }
 
