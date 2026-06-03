@@ -2,6 +2,8 @@ import { Component, inject, afterNextRender, ElementRef, signal, computed, effec
 import { DashboardService } from '../../../core/services/dashboard.service';
 import { CurrencyPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import type { Chart as ChartJS } from 'chart.js';
+import { Order } from '../../../core/models';
 
 @Component({
   selector: 'app-dashboard',
@@ -13,8 +15,8 @@ export class Dashboard {
   private dashboardService = inject(DashboardService);
   private element = inject(ElementRef);
 
-  private salesChart: any = null;
-  private allOrders: any[] = [];
+  private salesChart: ChartJS | null = null;
+  private allOrders: Order[] = [];
 
   totalRevenue = signal(0);
   totalOrders = signal(0);
@@ -83,10 +85,14 @@ export class Dashboard {
           options: { responsive: true },
         });
 
-        const { data: ordersWithItems } = await this.dashboardService.getTopProducts();
+        type TopProductRow = {
+          status: string;
+          order_items: Array<{ quantity: number; products: { name: string } | null }> | null;
+        };
+        const { data: rawTopOrders } = await this.dashboardService.getTopProducts();
         const qtyByProduct: Record<string, number> = {};
-        (ordersWithItems ?? []).forEach(order => {
-          ((order as any).order_items ?? []).forEach((item: any) => {
+        (rawTopOrders as TopProductRow[] ?? []).forEach(order => {
+          (order.order_items ?? []).forEach(item => {
             const name = item.products?.name;
             if (name) qtyByProduct[name] = (qtyByProduct[name] ?? 0) + item.quantity;
           });
