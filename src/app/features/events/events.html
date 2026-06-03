@@ -63,8 +63,8 @@
       <input [(ngModel)]="ew.title" name="title" placeholder="Títol" class="input" />
       <input [(ngModel)]="ew.date" name="date" type="datetime-local" class="input" />
       <input [(ngModel)]="ew.location" name="location" placeholder="Lloc" class="input" />
-      <input [(ngModel)]="ew.capacity" name="capacity" type="number" placeholder="Aforament" class="input" />
-      <input [(ngModel)]="ew.price" name="price" type="number" placeholder="Preu en € (buit = gratuït)" class="input" />
+      <input [(ngModel)]="ew.capacity" name="capacity" type="number" min="1" placeholder="Aforament" class="input" />
+      <input [(ngModel)]="ew.price" name="price" type="number" min="0" placeholder="Preu en € (buit = gratuït)" class="input" />
       <textarea [(ngModel)]="ew.description" name="description" placeholder="Descripció" class="input"
         rows="3"></textarea>
       <div class="flex flex-col gap-2">
@@ -79,8 +79,8 @@
       <input [(ngModel)]="nw.title" name="title" placeholder="Títol" class="input" />
       <input [(ngModel)]="nw.date" name="date" type="datetime-local" class="input" />
       <input [(ngModel)]="nw.location" name="location" placeholder="Lloc" class="input" />
-      <input [(ngModel)]="nw.capacity" name="capacity" type="number" placeholder="Aforament" class="input" />
-      <input [(ngModel)]="nw.price" name="price" type="number" placeholder="Preu en € (buit = gratuït)" class="input" />
+      <input [(ngModel)]="nw.capacity" name="capacity" type="number" min="1" placeholder="Aforament" class="input" />
+      <input [(ngModel)]="nw.price" name="price" type="number" min="0" placeholder="Preu en € (buit = gratuït)" class="input" />
       <textarea [(ngModel)]="nw.description" name="description" placeholder="Descripció" class="input"
         rows="3"></textarea>
       <div class="flex flex-col gap-2">
@@ -162,8 +162,8 @@
     <input [(ngModel)]="ew.title" name="title" placeholder="Títol" class="input" />
     <input [(ngModel)]="ew.date" name="date" type="datetime-local" class="input" />
     <input [(ngModel)]="ew.location" name="location" placeholder="Lloc" class="input" />
-    <input [(ngModel)]="ew.capacity" name="capacity" type="number" placeholder="Aforament" class="input" />
-    <input [(ngModel)]="ew.price" name="price" type="number" placeholder="Preu en € (buit = gratuït)" class="input" />
+    <input [(ngModel)]="ew.capacity" name="capacity" type="number" min="1" placeholder="Aforament" class="input" />
+    <input [(ngModel)]="ew.price" name="price" type="number" min="0" placeholder="Preu en € (buit = gratuït)" class="input" />
     <textarea [(ngModel)]="ew.description" name="description" placeholder="Descripció" class="input"
       rows="3"></textarea>
   </div>

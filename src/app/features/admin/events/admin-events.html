@@ -20,10 +20,10 @@
       <label class="sr-only" for="w-location">Lloc</label>
       <input id="w-location" [(ngModel)]="editing()!.location" name="location" placeholder="Lloc" class="input" />
       <label class="sr-only" for="w-capacity">Aforament</label>
-      <input id="w-capacity" [(ngModel)]="editing()!.capacity" name="capacity" type="number" placeholder="Aforament"
+      <input id="w-capacity" [(ngModel)]="editing()!.capacity" name="capacity" type="number" min="1" placeholder="Aforament"
         class="input" />
       <label class="sr-only" for="w-price">Preu (€)</label>
-      <input id="w-price" [(ngModel)]="editing()!.price" name="price" type="number"
+      <input id="w-price" [(ngModel)]="editing()!.price" name="price" type="number" min="0"
         placeholder="Preu en € (buit = gratuït)" class="input" />
       <label class="sr-only" for="w-desc">Descripció</label>
       <textarea id="w-desc" [(ngModel)]="editing()!.description" name="description" placeholder="Descripció"

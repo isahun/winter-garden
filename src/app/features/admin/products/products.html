@@ -16,9 +16,9 @@
       <label class="sr-only" for="p-name">Nom</label>
       <input id="p-name" [(ngModel)]="editing()!.name" name="name" placeholder="Nom" class="input" />
       <label class="sr-only" for="p-price">Preu</label>
-      <input id="p-price" [(ngModel)]="editing()!.price" name="price" type="number" placeholder="Preu" class="input" />
+      <input id="p-price" [(ngModel)]="editing()!.price" name="price" type="number" min="0" placeholder="Preu" class="input" />
       <label class="sr-only" for="p-stock">Estoc</label>
-      <input id="p-stock" [(ngModel)]="editing()!.stock" name="stock" type="number" placeholder="Estoc" class="input" />
+      <input id="p-stock" [(ngModel)]="editing()!.stock" name="stock" type="number" min="0" placeholder="Estoc" class="input" />
       <label class="sr-only" for="p-size">Mida</label>
       <input id="p-size" [(ngModel)]="editing()!.size" name="size" placeholder="Mida (opcional)" class="input" />
       <label class="sr-only" for="p-category">Categoria</label>
