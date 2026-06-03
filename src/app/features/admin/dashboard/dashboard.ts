@@ -3,7 +3,7 @@ import { DashboardService } from '../../../core/services/dashboard.service';
 import { CurrencyPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import type { Chart as ChartJS } from 'chart.js';
-import { Order } from '../../../core/models';
+type OrderStat = { id: number; total: number; status: 'pending' | 'shipped' | 'completed' | 'cancelled'; created_at: string };
 
 @Component({
   selector: 'app-dashboard',
@@ -16,7 +16,7 @@ export class Dashboard {
   private element = inject(ElementRef);
 
   private salesChart: ChartJS | null = null;
-  private allOrders: Order[] = [];
+  private allOrders: OrderStat[] = [];
 
   totalRevenue = signal(0);
   totalOrders = signal(0);
@@ -86,14 +86,13 @@ export class Dashboard {
         });
 
         type TopProductRow = {
-          status: string;
-          order_items: Array<{ quantity: number; products: { name: string } | null }> | null;
+          order_items: Array<{ quantity: number; products: Array<{ name: string }> }> | null;
         };
         const { data: rawTopOrders } = await this.dashboardService.getTopProducts();
         const qtyByProduct: Record<string, number> = {};
-        (rawTopOrders as TopProductRow[] ?? []).forEach(order => {
+        ((rawTopOrders ?? []) as unknown as TopProductRow[]).forEach(order => {
           (order.order_items ?? []).forEach(item => {
-            const name = item.products?.name;
+            const name = item.products?.[0]?.name;
             if (name) qtyByProduct[name] = (qtyByProduct[name] ?? 0) + item.quantity;
           });
         });
@@ -134,6 +133,7 @@ export class Dashboard {
   }
 
   private updateSalesChart(year: number) {
+    if (!this.salesChart) return;
     this.salesChart.data.datasets[0].data = this.monthlyData(year);
     this.salesChart.update();
   }
