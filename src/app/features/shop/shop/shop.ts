@@ -7,6 +7,7 @@ import { FavoritesService } from '../../../core/services/favorites.service';
 import { AuthService } from '../../../core/auth/auth.service';
 import { CartService } from '../../../core/services/cart.service';
 import { ShopFiltersService } from '../../../core/services/shop-filters.service';
+import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
 
 @Component({
   selector: 'app-shop',
@@ -17,6 +18,7 @@ import { ShopFiltersService } from '../../../core/services/shop-filters.service'
 export class Shop implements OnInit {
   private productService = inject(ProductService);
   private router = inject(Router);
+  private confirmDialog = inject(ConfirmDialogService);
   favorites = inject(FavoritesService);
   auth = inject(AuthService);
   cart = inject(CartService);
@@ -73,9 +75,10 @@ export class Shop implements OnInit {
   }
 
   async archiveProduct(productId: number) {
-    if (!confirm('Arxivar aquest producte? Deixarà de ser visible al catàleg.')) return;
+    const ok = await this.confirmDialog.confirm('Arxivar aquest producte? Deixarà de ser visible al catàleg.');
+    if (!ok) return;
     const { error } = await this.productService.archiveProduct(productId);
-    if (error) { alert('Error en arxivar el producte.'); return; }
+    if (error) { await this.confirmDialog.alert('Error en arxivar el producte.'); return; }
     this.products.update(ps => ps.filter(p => p.id !== productId));
   }
 

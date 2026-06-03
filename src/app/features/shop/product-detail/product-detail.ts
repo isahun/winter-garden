@@ -8,6 +8,7 @@ import { CartService } from '../../../core/services/cart.service';
 import { Product, Category } from '../../../core/models';
 import { FavoritesService } from '../../../core/services/favorites.service';
 import { AuthService } from '../../../core/auth/auth.service';
+import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
 
 @Component({
   selector: 'app-product-detail',
@@ -21,6 +22,7 @@ export class ProductDetail {
   private productService = inject(ProductService);
   private cart = inject(CartService);
   private router = inject(Router);
+  private confirmDialog = inject(ConfirmDialogService);
   private readonly autoEdit = isPlatformBrowser(inject(PLATFORM_ID)) && history.state?.['autoEdit'] === true;
   favorites = inject(FavoritesService);
   auth = inject(AuthService);
@@ -87,11 +89,12 @@ export class ProductDetail {
   }
 
   async archiveProduct() {
-    if (!confirm('Arxivar aquest producte? Deixarà de ser visible al catàleg.')) return;
+    const ok = await this.confirmDialog.confirm('Arxivar aquest producte? Deixarà de ser visible al catàleg.');
+    if (!ok) return;
     const p = this.product();
     if (!p) return;
     const { error } = await this.productService.archiveProduct(p.id);
-    if (error) { alert('Error en arxivar el producte.'); return; }
+    if (error) { await this.confirmDialog.alert('Error en arxivar el producte.'); return; }
     this.router.navigate(['/shop']);
   }
 }

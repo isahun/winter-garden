@@ -4,6 +4,7 @@ import { DatePipe } from '@angular/common';
 import { WorkshopService } from '../../../core/services/workshop.service';
 import { Workshop } from '../../../core/models';
 import { RouterLink } from '@angular/router';
+import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
 
 interface WorkshopSignupRow {
   user_id: string;
@@ -17,6 +18,7 @@ interface WorkshopSignupRow {
 })
 export class AdminEvents implements OnInit {
   private workshopService = inject(WorkshopService);
+  private confirmDialog = inject(ConfirmDialogService);
 
   workshops = signal<Workshop[]>([]);
   editing = signal<Partial<Workshop> | null>(null);
@@ -71,7 +73,8 @@ export class AdminEvents implements OnInit {
   }
 
   async deleteEventAdmin(id: number) {
-    if (!confirm('Eliminar aquest taller?')) return;
+    const ok = await this.confirmDialog.confirm('Eliminar aquest taller? Aquesta acció no es pot desfer.', { danger: true, confirmLabel: 'Eliminar' });
+    if (!ok) return;
     await this.workshopService.deleteWorkshop(id);
     await this.ngOnInit();
   }

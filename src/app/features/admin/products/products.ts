@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 import { ProductService } from '../../../core/services/product.service';
 import { ImageService } from '../../../core/services/image.service';
 import { Product, Category } from '../../../core/models';
+import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
 
 @Component({
   selector: 'app-products',
@@ -14,6 +15,7 @@ import { Product, Category } from '../../../core/models';
 export class Products implements OnInit {
   private productService = inject(ProductService);
   private imageService = inject(ImageService);
+  private confirmDialog = inject(ConfirmDialogService);
 
   products = signal<Product[]>([]);
   categories = signal<Category[]>([]);
@@ -112,7 +114,8 @@ export class Products implements OnInit {
   }
 
   async archiveProductAdmin(id: number) {
-    if (!confirm('Arxivar aquest producte? Deixarà de ser visible al catàleg.')) return;
+    const ok = await this.confirmDialog.confirm('Arxivar aquest producte? Deixarà de ser visible al catàleg.');
+    if (!ok) return;
     await this.productService.archiveProduct(id);
     await this.ngOnInit();
   }
@@ -123,10 +126,11 @@ export class Products implements OnInit {
   }
 
   async deleteProductAdmin(id: number) {
-    if (!confirm('⚠️ Eliminar definitivament? Aquesta acció NO es pot desfer.')) return;
+    const ok = await this.confirmDialog.confirm('Eliminar definitivament? Aquesta acció NO es pot desfer.', { danger: true, confirmLabel: 'Eliminar' });
+    if (!ok) return;
     const { error } = await this.productService.deleteProduct(id);
     if (error?.code === '23503') {
-      alert("No es pot eliminar: té comandes associades. Arxiva'l en comptes.");
+      await this.confirmDialog.alert("No es pot eliminar: té comandes associades. Arxiva'l en comptes.");
       return;
     }
     await this.ngOnInit();
