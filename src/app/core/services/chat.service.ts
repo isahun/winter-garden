@@ -9,13 +9,9 @@ export class ChatService {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: prompt }),
       });
-      if (!response.body) {
-        console.error('El cos de la resposta de streaming és nul.');
-        return undefined;
-      }
+      if (!response.body) return undefined;
       return response.body.getReader();
-    } catch (error) {
-      console.error('Error en la petició de streaming:', error);
+    } catch {
       return undefined;
     }
   }
