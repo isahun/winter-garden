@@ -173,3 +173,30 @@
   </div>
 </div>
 }
+
+@if (newWorkshop(); as nw) {
+<div class="fixed inset-0 bg-black/50 z-40 md:hidden" (click)="closePanel()" aria-hidden="true"></div>
+<div class="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl md:hidden max-h-[90vh] flex flex-col" role="dialog"
+  aria-modal="true">
+  <div class="flex justify-center pt-3 pb-1">
+    <div class="w-10 h-1 bg-gray-300 rounded-full"></div>
+  </div>
+  <div class="flex justify-between items-center px-6 py-3 border-b">
+    <h2 class="font-semibold">Nou taller</h2>
+    <button (click)="closePanel()" class="text-gray-500 text-xl" aria-label="Tancar">✕</button>
+  </div>
+  <div class="overflow-y-auto flex-1 px-6 py-4 space-y-3">
+    <input [(ngModel)]="nw.title" name="title" placeholder="Títol" class="input" />
+    <input [(ngModel)]="nw.date" name="date" type="datetime-local" class="input" />
+    <input [(ngModel)]="nw.location" name="location" placeholder="Lloc" class="input" />
+    <input [(ngModel)]="nw.capacity" name="capacity" type="number" min="1" placeholder="Aforament" class="input" />
+    <input [(ngModel)]="nw.price" name="price" type="number" min="0" placeholder="Preu en € (buit = gratuït)" class="input" />
+    <textarea [(ngModel)]="nw.description" name="description" placeholder="Descripció" class="input"
+      rows="3"></textarea>
+  </div>
+  <div class="px-6 pb-8 pt-3 border-t flex flex-col gap-2">
+    <button (click)="saveNewWorkshop()" class="btn-primary w-full">Guardar</button>
+    <button (click)="closePanel()" class="btn-secondary w-full">Cancel·lar</button>
+  </div>
+</div>
+}
